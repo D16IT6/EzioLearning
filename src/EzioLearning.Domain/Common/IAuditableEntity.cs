@@ -1,7 +1,7 @@
 ﻿
 namespace EzioLearning.Domain.Common;
 
-internal class AuditableEntity<T>
+public interface IAuditableEntity<T>
 {
     public DateTime CreatedDate { get; set; }
     public T? CreatedBy { get; set; }
