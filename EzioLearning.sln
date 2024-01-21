@@ -13,15 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{CBF0D4F2-F705-445E-906E-9D7773A06687}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.Api", "src\EzioLearning.Api\EzioLearning.Api.csproj", "{2E28BF3F-8974-47E1-9771-D722E1E9595C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Api", "src\EzioLearning.Api\EzioLearning.Api.csproj", "{2E28BF3F-8974-47E1-9771-D722E1E9595C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.Core", "src\EzioLearning.Core\EzioLearning.Core.csproj", "{BA855EE4-3E1E-4E33-AED8-73B3F7579954}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Core", "src\EzioLearning.Core\EzioLearning.Core.csproj", "{BA855EE4-3E1E-4E33-AED8-73B3F7579954}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.Domain", "src\EzioLearning.Domain\EzioLearning.Domain.csproj", "{42F29C93-6AB2-4C15-9263-C0E8661FFDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Domain", "src\EzioLearning.Domain\EzioLearning.Domain.csproj", "{42F29C93-6AB2-4C15-9263-C0E8661FFDDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Infrastructure", "src\EzioLearning.Infrastructure\EzioLearning.Infrastructure.csproj", "{6E62BCB7-12D8-4342-A10F-B3EC502DF49D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.WebApp", "src\EzioLearning.WebApp\EzioLearning.WebApp.csproj", "{BCEF0860-EE4F-4F42-8F8F-4858C06587F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.WebApp", "src\EzioLearning.WebApp\EzioLearning.WebApp\EzioLearning.WebApp.csproj", "{45B7C82D-FB32-43BF-8D0D-16B448996BCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.WebApp.Client", "src\EzioLearning.WebApp\EzioLearning.WebApp.Client\EzioLearning.WebApp.Client.csproj", "{C7CB0B19-FE73-41B4-800C-85EDA0808656}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +47,14 @@ Global
 		{6E62BCB7-12D8-4342-A10F-B3EC502DF49D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E62BCB7-12D8-4342-A10F-B3EC502DF49D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E62BCB7-12D8-4342-A10F-B3EC502DF49D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCEF0860-EE4F-4F42-8F8F-4858C06587F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCEF0860-EE4F-4F42-8F8F-4858C06587F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCEF0860-EE4F-4F42-8F8F-4858C06587F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCEF0860-EE4F-4F42-8F8F-4858C06587F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45B7C82D-FB32-43BF-8D0D-16B448996BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45B7C82D-FB32-43BF-8D0D-16B448996BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45B7C82D-FB32-43BF-8D0D-16B448996BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45B7C82D-FB32-43BF-8D0D-16B448996BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7CB0B19-FE73-41B4-800C-85EDA0808656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7CB0B19-FE73-41B4-800C-85EDA0808656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7CB0B19-FE73-41B4-800C-85EDA0808656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7CB0B19-FE73-41B4-800C-85EDA0808656}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,7 +68,8 @@ Global
 		{BA855EE4-3E1E-4E33-AED8-73B3F7579954} = {C19BA70C-A1BE-4D73-A36E-7C9B07D79784}
 		{42F29C93-6AB2-4C15-9263-C0E8661FFDDC} = {C19BA70C-A1BE-4D73-A36E-7C9B07D79784}
 		{6E62BCB7-12D8-4342-A10F-B3EC502DF49D} = {D9436CBC-24E3-4007-8C2C-201FAFB707F7}
-		{BCEF0860-EE4F-4F42-8F8F-4858C06587F5} = {CBF0D4F2-F705-445E-906E-9D7773A06687}
+		{45B7C82D-FB32-43BF-8D0D-16B448996BCD} = {CBF0D4F2-F705-445E-906E-9D7773A06687}
+		{C7CB0B19-FE73-41B4-800C-85EDA0808656} = {CBF0D4F2-F705-445E-906E-9D7773A06687}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3137E8CF-2562-48D0-A542-13E239491321}

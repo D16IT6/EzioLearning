@@ -7,7 +7,6 @@ namespace EzioLearning.Infrastructure.DbContext
 {
     public class EzioLearningDbContextFactory : IDesignTimeDbContextFactory<EzioLearningDbContext>
     {
-
         public EzioLearningDbContext CreateDbContext(string[] args)
         {
             var configuration = new ConfigurationBuilder()

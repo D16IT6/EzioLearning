@@ -1,5 +1,4 @@
 ﻿using EzioLearning.Core.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EzioLearning.Api.Controllers
@@ -10,7 +9,7 @@ namespace EzioLearning.Api.Controllers
     {
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<ActionResult> GetAllUsers()
         {
             var users = await userRepository.GetPage(null);
             return Ok(users);
