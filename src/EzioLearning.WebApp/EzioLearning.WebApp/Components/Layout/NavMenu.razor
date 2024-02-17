@@ -1,35 +1,111 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">EzioLearning.WebApp</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="heading-example">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Heading Example
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+﻿<ul class="main-nav">
+    <li class="has-submenu">
+        <NavLink class="" href="/">
+            Home
+            @* <i class="fas fa-chevron-down"></i> *@
+        </NavLink>
+        @*  <ul class="submenu">
+        <li class="active"><NavLink href="index.html">Home</NavLink></li>
+        <li><NavLink href="index-two.html">Home Two</NavLink></li>
+        <li><NavLink href="index-three.html">Home Three</NavLink></li>
+        <li><NavLink href="index-four.html">Home Four</NavLink></li>
+        </ul> *@
+    </li>
+    <li class="has-submenu">
+        <NavLink href="counter">Instructor <i class="fas fa-chevron-down"></i></NavLink>
+        <ul class="submenu">
+            <li><NavLink href="instructor-dashboard.html">Dashboard</NavLink></li>
+            <li class="has-submenu">
+                <NavLink href="instructor-list.html">Instructor</NavLink>
+                <ul class="submenu">
+                    <li><NavLink href="instructor-list.html">List</NavLink></li>
+                    <li><NavLink href="instructor-grid.html">Grid</NavLink></li>
+                </ul>
+            </li>
+            <li><NavLink href="instructor-course.html">My Course</NavLink></li>
+            <li><NavLink href="instructor-reviews.html">Reviews</NavLink></li>
+            <li><NavLink href="instructor-earnings.html">Earnings</NavLink></li>
+            <li><NavLink href="instructor-orders.html">Orders</NavLink></li>
+            <li><NavLink href="instructor-payouts.html">Payouts</NavLink></li>
+            <li><NavLink href="instructor-tickets.html">Support Ticket</NavLink></li>
+            <li><NavLink href="instructor-edit-profile.html">Instructor Profile</NavLink></li>
+            <li><NavLink href="instructor-security.html">Security</NavLink></li>
+            <li><NavLink href="instructor-social-profiles.html">Social Profiles</NavLink></li>
+            <li><NavLink href="instructor-notification.html">Notifications</NavLink></li>
+            <li><NavLink href="instructor-profile-privacy.html">Profile Privacy</NavLink></li>
+            <li><NavLink href="instructor-delete-profile.html">Delete Profile</NavLink></li>
+            <li><NavLink href="instructor-linked-account.html">Linked Accounts</NavLink></li>
+        </ul>
+    </li>
+    <li class="has-submenu">
+        <NavLink href="weather">Weather <i class="fas fa-chevron-down"></i></NavLink>
+        <ul class="submenu first-submenu">
+            <li class="has-submenu ">
+                <NavLink href="students-list.html">Student</NavLink>
+                <ul class="submenu">
+                    <li><NavLink href="students-list.html">List</NavLink></li>
+                    <li><NavLink href="students-grid.html">Grid</NavLink></li>
+                </ul>
+            </li>
+            <li><NavLink href="setting-edit-profile.html">Student Profile</NavLink></li>
+            <li><NavLink href="setting-student-security.html">Security</NavLink></li>
+            <li><NavLink href="setting-student-social-profile.html">Social profile</NavLink></li>
+            <li><NavLink href="setting-student-notification.html">Notification</NavLink></li>
+            <li><NavLink href="setting-student-privacy.html">Profile Privacy</NavLink></li>
+            <li><NavLink href="setting-student-accounts.html">Link Accounts</NavLink></li>
+            <li><NavLink href="setting-student-referral.html">Referal</NavLink></li>
+            <li><NavLink href="setting-student-subscription.html">Subscribtion</NavLink></li>
+            <li><NavLink href="setting-student-billing.html">Billing</NavLink></li>
+            <li><NavLink href="setting-student-payment.html">Payment</NavLink></li>
+            <li><NavLink href="setting-student-invoice.html">Invoice</NavLink></li>
+            <li><NavLink href="setting-support-tickets.html">Support Tickets</NavLink></li>
+        </ul>
+    </li>
+    <li class="has-submenu">
+        <NavLink href="weather2">Weather 2 <i class="fas fa-chevron-down"></i></NavLink>
+        <ul class="submenu">
+            <li><NavLink href="notifications.html">Notification</NavLink></li>
+            <li><NavLink href="pricing-plan.html">Pricing Plan</NavLink></li>
+            <li><NavLink href="wishlist.html">Wishlist</NavLink></li>
+            <li class="has-submenu">
+                <NavLink href="course-list.html">Course</NavLink>
+                <ul class="submenu">
+                    <li><NavLink href="add-course.html">Add Course</NavLink></li>
+                    <li><NavLink href="course-list.html">Course List</NavLink></li>
+                    <li><NavLink href="course-grid.html">Course Grid</NavLink></li>
+                    <li><NavLink href="course-details.html">Course Details</NavLink></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <NavLink href="come-soon.html">Error</NavLink>
+                <ul class="submenu">
+                    <li><NavLink href="come-soon.html">Comeing soon</NavLink></li>
+                    <li><NavLink href="error-404.html">404</NavLink></li>
+                    <li><NavLink href="error-500.html">500</NavLink></li>
+                    <li><NavLink href="under-construction.html">Under Construction</NavLink></li>
+                </ul>
+            </li>
+            <li><NavLink href="faq.html">FAQ</NavLink></li>
+            <li><NavLink href="support.html">Support</NavLink></li>
+            <li><NavLink href="job-category.html">Category</NavLink></li>
+            <li><NavLink href="cart.html">Cart</NavLink></li>
+            <li><NavLink href="checkout.html">Checkout</NavLink></li>
+            <li><NavLink href="login.html">Login</NavLink></li>
+            <li><NavLink href="register.html">Register</NavLink></li>
+            <li><NavLink href="forgot-password.html">Forgot Password</NavLink></li>
+        </ul>
+    </li>
+    <li class="has-submenu">
+        <NavLink href="#">Blog <i class="fas fa-chevron-down"></i></NavLink>
+        <ul class="submenu">
+            <li><NavLink href="blog-list.html">Blog List</NavLink></li>
+            <li><NavLink href="blog-grid.html">Blog Grid</NavLink></li>
+            <li><NavLink href="blog-masonry.html">Blog Masonry</NavLink></li>
+            <li><NavLink href="blog-modern.html">Blog Modern</NavLink></li>
+            <li><NavLink href="blog-details.html">Blog Details</NavLink></li>
+        </ul>
+    </li>
+    <li class="login-link">
+        <NavLink href="login.html">Login / Signup</NavLink>
+    </li>
+</ul>
