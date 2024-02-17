@@ -1,6 +1,4 @@
-﻿
-
-namespace EzioLearning.Core.Models
+﻿namespace EzioLearning.Core.Models.Pages
 {
     public class PageResultBase
     {
@@ -12,12 +10,7 @@ namespace EzioLearning.Core.Models
                 var pageCount = RowCount * 1.0 / PageSize;
                 return (int)Math.Ceiling(pageCount);
             }
-            protected set
-            {
-                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value));
-                PageCount = value;
-            }
-
+            protected set => PageCount = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         public int PageSize { get; set; }

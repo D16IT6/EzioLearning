@@ -21,9 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Domain", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Infrastructure", "src\EzioLearning.Infrastructure\EzioLearning.Infrastructure.csproj", "{6E62BCB7-12D8-4342-A10F-B3EC502DF49D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.WebApp", "src\EzioLearning.WebApp\EzioLearning.WebApp\EzioLearning.WebApp.csproj", "{45B7C82D-FB32-43BF-8D0D-16B448996BCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.WebApp", "src\EzioLearning.WebApp\EzioLearning.WebApp\EzioLearning.WebApp.csproj", "{45B7C82D-FB32-43BF-8D0D-16B448996BCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.WebApp.Client", "src\EzioLearning.WebApp\EzioLearning.WebApp.Client\EzioLearning.WebApp.Client.csproj", "{C7CB0B19-FE73-41B4-800C-85EDA0808656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.WebApp.Client", "src\EzioLearning.WebApp\EzioLearning.WebApp.Client\EzioLearning.WebApp.Client.csproj", "{C7CB0B19-FE73-41B4-800C-85EDA0808656}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

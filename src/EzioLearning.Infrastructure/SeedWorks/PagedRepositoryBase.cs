@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using EzioLearning.Core.Models;
+using EzioLearning.Core.Models.Pages;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;

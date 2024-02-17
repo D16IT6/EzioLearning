@@ -1,6 +1,35 @@
-@EzioLearning.Api_HostAddress = http://localhost:5226
+@EzioLearning.Api_HostAddress = https://localhost:7000/api
+@Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiIxYTc0NzExOS1jZDgzLTQwMGEtODY3Mi1mN2RjZjgxODFlMTciLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGFsb25lemlvIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoidnV0aGVtYW5oMTcwN0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcwODE4MTM2NywiaXNzIjoiRXppb0xlYXJuaW5nLmhlaGUiLCJhdWQiOiJFemlvTGVhcm5pbmcuaGVoZSJ9.Na1Q4crsBZIdC4aGJTdh0GULgL6B76rGQdclqH9bgVE
+###Auth
+POST {{EzioLearning.Api_HostAddress}}/Auth/Login
+Accept: application/json
+Content-Type: application/json
 
-GET {{EzioLearning.Api_HostAddress}}/weatherforecast/
+{
+  "userName":"talonezio",
+  "passWord":"TalonEzio177!@#"
+}
+###
+POST {{EzioLearning.Api_HostAddress}}/Auth/RefreshToken
+Authorization: Bearer {{Token}}
+Accept: application/json
+###
+POST {{EzioLearning.Api_HostAddress}}/Auth/RevokeToken
+Authorization: Bearer {{Token}}
+Accept: application/json
+
+### CourseCategory
+GET {{EzioLearning.Api_HostAddress}}/CourseCategory
+Authorization: Bearer {{Token}}
 Accept: application/json
 
 ###
+PUT {{EzioLearning.Api_HostAddress}}/CourseCategory
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{Token}}
+
+{
+  "name":"talonezio",
+  "isActive": true
+}

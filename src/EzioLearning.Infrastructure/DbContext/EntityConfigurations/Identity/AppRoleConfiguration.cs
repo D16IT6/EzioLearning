@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations
+namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations.Identity
 {
     internal class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
     {

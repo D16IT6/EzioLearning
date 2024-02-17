@@ -3,11 +3,25 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using EzioLearning.Domain.Common;
+using EzioLearning.Domain.Entities.Learning;
 
 namespace EzioLearning.Infrastructure.DbContext
 {
     public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext<AppUser, AppRole, Guid>(options)
     {
+        #region Tables
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseCategory> CourseCategories { get; set; }
+        public DbSet<CourseRating> CourseRatings { get; set; }
+        public DbSet<CourseLesson> CourseLessons { get; set; }
+        public DbSet<LessonComment> LessonComments { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Trainer> Trainers { get; set; }
+
+        #endregion
+
+        #region Model Creating
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -15,29 +29,40 @@ namespace EzioLearning.Infrastructure.DbContext
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+            ConfigIdentity(builder);
+
+
+        }
+
+        public void ConfigIdentity(ModelBuilder builder, string prefix = "App", string schema = "Auth")
+        {
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
                 var tableName = entityType.GetTableName();
                 if (tableName != null && tableName.StartsWith("AspNet"))
                 {
-                    entityType.SetTableName(tableName.Replace("AspNet", "App"));
-                    //entityType.SetTableName(tableName.Substring(6));
+                    entityType.SetTableName(tableName.Replace("AspNet", prefix));
+                    entityType.SetSchema(schema);
                 }
             }
         }
 
+        #endregion
+
+        #region SaveChanges
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
 
-            UpdateAudiableProperty(
+            UpdateAuditableProperty(
                 EntityState.Added,
-                AudiablePropertyConstants.CreatedDate,
+                AuditablePropertyConstants.CreatedDate,
                 DateTime.Now
             );
 
-            UpdateAudiableProperty(
+            UpdateAuditableProperty(
                 EntityState.Modified,
-                AudiablePropertyConstants.ModifiedDate,
+                AuditablePropertyConstants.ModifiedDate,
                 DateTime.Now
             );
 
@@ -45,7 +70,7 @@ namespace EzioLearning.Infrastructure.DbContext
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
-        private void UpdateAudiableProperty(EntityState state, string propertyName, object value)
+        private void UpdateAuditableProperty(EntityState state, string propertyName, object value)
         {
             var entities = ChangeTracker.Entries().Where(x => x.State == state);
 
@@ -59,5 +84,7 @@ namespace EzioLearning.Infrastructure.DbContext
                 }
             }
         }
+
+        #endregion
     }
 }

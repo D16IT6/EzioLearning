@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations
+namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations.Identity
 {
     public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
     {
@@ -24,6 +24,8 @@ namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations
             builder.Property(x => x.Email).HasMaxLength(32);
             builder.Property(x => x.NormalizedEmail).HasMaxLength(50);
             builder.Property(x => x.PhoneNumber).HasMaxLength(32);
+
+            
         }
     }
 }

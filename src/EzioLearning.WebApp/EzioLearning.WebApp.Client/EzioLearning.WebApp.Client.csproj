@@ -9,7 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EzioLearning.Core\EzioLearning.Core.csproj" />
+    <ProjectReference Include="..\..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ namespace EzioLearning.Api
 
             builder.ConfigureBuilder();
 
+
             var app = builder.Build();
 
             app.Configure();
