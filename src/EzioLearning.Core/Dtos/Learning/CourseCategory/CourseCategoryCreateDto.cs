@@ -1,6 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 
 namespace EzioLearning.Core.Dtos.Learning.CourseCategory
 {
@@ -11,6 +12,8 @@ namespace EzioLearning.Core.Dtos.Learning.CourseCategory
         [Required(ErrorMessage = "{0} là bắt buộc")]
         [StringLength(50, ErrorMessage = "{0} chỉ dài từ {1} tới {2} ký tự.", MinimumLength = 5)]
         public required string Name { get; set; }
+
+        public IFormFile? Image { get; set; }
         public bool IsActive { get; set; }
         public Guid? ParentId { get; set; }
 

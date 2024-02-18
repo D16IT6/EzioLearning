@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EzioLearning.Core\EzioLearning.Core.csproj" />
+    <ProjectReference Include="..\..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
+    <ProjectReference Include="..\EzioLearning.Blazor.Client\EzioLearning.Blazor.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
+  </ItemGroup>
+
+</Project>

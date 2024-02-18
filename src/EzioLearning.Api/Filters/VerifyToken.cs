@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
-using EzioLearning.Api.Models.Response;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Models.Constants;
+using EzioLearning.Core.Models.Response;
 
 namespace EzioLearning.Api.Filters
 {
@@ -22,7 +23,7 @@ namespace EzioLearning.Api.Filters
                 context.Result = new BadRequestObjectResult(new ResponseBase
                 {
                     Message = "Token giả mạo!",
-                    StatusCode = 400
+                    StatusCode = HttpStatusCode.BadRequest
                 });
             }
             base.OnActionExecuting(context);

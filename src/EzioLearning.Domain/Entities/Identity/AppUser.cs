@@ -24,7 +24,7 @@ public class AppUser : IdentityUser<Guid>
     public Trainer? Trainer { get; set; }
     public ICollection<Student> Students { get; set; } = new List<Student>();
 
-
+    public string? CacheKey { get; set; }
     public DateTime CreatedDate { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }

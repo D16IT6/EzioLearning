@@ -1,16 +1,16 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Models.Constants;
-using EzioLearning.Api.Models.Response;
-using EzioLearning.Api.Models.Token;
 using EzioLearning.Api.Services;
 using EzioLearning.Core.Dtos.Auth;
+using EzioLearning.Core.Models.Response;
+using EzioLearning.Core.Models.Token;
 using EzioLearning.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 namespace EzioLearning.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -18,7 +18,7 @@ namespace EzioLearning.Api.Controllers
     public class AuthController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
-        IJwtService jwtService,
+        JwtService jwtService,
         JwtConfiguration jwtConfiguration,
         CacheService cacheService)
         : ControllerBase
@@ -30,80 +30,88 @@ namespace EzioLearning.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginRequestDto model)
         {
-            var user = await userManager.FindByNameAsync(model.UserName);
+            var user = await userManager.FindByNameAsync(model.UserName!);
             if (user == null)
                 return BadRequest(new ResponseBase()
                 {
-                    StatusCode = 400,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Message = "Không tìm thấy tài khoản"
                 });
 
             var signInResult = await signInManager
-                .CheckPasswordSignInAsync(user, model.PassWord, true);
+                .CheckPasswordSignInAsync(user, model.PassWord!, true);
 
 
             if (signInResult.IsLockedOut)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản bị khoá",
-                    StatusCode = 400
+                    StatusCode = HttpStatusCode.BadRequest
                 });
             if (signInResult.IsNotAllowed)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản chưa xác thực",
-                    StatusCode = 400
+                    StatusCode = HttpStatusCode.BadRequest
                 });
 
             if (signInResult.RequiresTwoFactor)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản cần xác thực 2 lớp",
-                    StatusCode = 400
+                    StatusCode = HttpStatusCode.BadRequest
                 });
             if (!signInResult.Succeeded)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Thông tin đăng nhập không chính xác",
-                    StatusCode = 400
+                    StatusCode = HttpStatusCode.BadRequest
                 });
 
-            var memoryToken = cacheService.Get<string>(user.Id.ToString(), PrefixCache);
+            var memoryToken = cacheService.Get<string>(user.CacheKey ?? "", PrefixCache);
 
             if (!string.IsNullOrEmpty(memoryToken))
             {
-                return Ok(new ResponseBase()
+                return Ok(new ResponseBaseWithData<TokenResponse>()
                 {
-                    Data = new
+                    Data = new TokenResponse()
                     {
                         AccessToken = memoryToken,
-                        user.RefreshToken
+                        RefreshToken = user.RefreshToken
                     }
                 });
             }
 
             var jwtToken = await GenerateAndCacheToken(user);
 
-            return Ok(new ResponseBase()
+            return Ok(new ResponseBaseWithData<TokenResponse>()
             {
                 Data = jwtToken,
                 Message = "Đăng nhập thành công",
-                StatusCode = 200
+                StatusCode = HttpStatusCode.OK
             });
         }
 
 
         [HttpPost("RevokeToken")]
         [Authorize]
-        public Task<IActionResult> RevokeToken()
+        public async Task<IActionResult> RevokeToken()
         {
             var sId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value ?? string.Empty;
             cacheService.Remove(sId, PrefixCache);
-            return Task.FromResult<IActionResult>(Ok(new ResponseBase()
+
+            var user = await GetUserFromEmailClaim();
+
+            if (user != null)
             {
-                StatusCode = 200,
+                user.CacheKey = string.Empty;
+                await userManager.UpdateAsync(user);
+            }
+            return Ok(new ResponseBase()
+            {
+                StatusCode = HttpStatusCode.OK,
                 Message = "Revoked token!"
-            }));
+            });
         }
 
         [HttpPost("RefreshToken")]
@@ -115,40 +123,44 @@ namespace EzioLearning.Api.Controllers
             {
                 return BadRequest(new ResponseBase()
                 {
-                    StatusCode = 400,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Message = "Fake request!"
                 });
             }
             var item = cacheService.Get<string>(sId, prefix: PrefixCache);
+
             if (!string.IsNullOrEmpty(item))
             {
                 cacheService.Remove(sId, PrefixCache);
             }
 
-            var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
-
-            var user = await userManager.FindByEmailAsync(email);
+            var user = await GetUserFromEmailClaim();
             if (user == null)
             {
                 return BadRequest(new ResponseBase()
                 {
-                    StatusCode = 400,
+                    StatusCode = HttpStatusCode.BadRequest,
                     Message = "Fake request!"
                 });
             }
 
             var jwtToken = await GenerateAndCacheToken(user);
 
-            return Ok(new ResponseBase()
+            return Ok(new ResponseBaseWithData<TokenResponse>()
             {
                 Data = jwtToken,
                 Message = "Refresh token thành công",
-                StatusCode = 200
+                StatusCode = HttpStatusCode.OK
             });
 
         }
 
-        private async Task<JwtResponse> GenerateAndCacheToken(AppUser user)
+        private async Task<AppUser?> GetUserFromEmailClaim()
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+            return await userManager.FindByEmailAsync(email);
+        }
+        private async Task<TokenResponse> GenerateAndCacheToken(AppUser user)
         {
             var expiredTime = user.RefreshTokenExpiryTime;
             var roleList = await userManager.GetRolesAsync(user);
@@ -165,9 +177,13 @@ namespace EzioLearning.Api.Controllers
             var cacheKey = jwtSecurityToken.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
             var cacheTime = DateTimeOffset.UtcNow.AddSeconds((jwtSecurityToken.ValidTo - DateTime.UtcNow).TotalSeconds);
 
+
+            user.CacheKey = cacheKey;
+            await userManager.UpdateAsync(user);
+
             cacheService.Set(cacheKey, accessToken, cacheTime, PrefixCache);
 
-            return new JwtResponse()
+            return new TokenResponse()
             {
                 AccessToken = accessToken,
                 RefreshToken = user.RefreshToken

@@ -1,6 +1,6 @@
-﻿using EzioLearning.Api.Models.Token;
-using EzioLearning.Api.Services;
+﻿using EzioLearning.Api.Services;
 using EzioLearning.Core.Dtos.Learning.CourseCategory;
+using EzioLearning.Core.Models.Token;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
@@ -10,181 +10,184 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 namespace EzioLearning.Api
 {
-    public static class Startup
-    {
-        public static void ConfigureBuilder(this WebApplicationBuilder builder)
-        {
-            var services = builder.Services;
-            var configuration = builder.Configuration;
+	public static class Startup
+	{
+		public static void ConfigureBuilder(this WebApplicationBuilder builder)
+		{
+			var services = builder.Services;
+			var configuration = builder.Configuration;
 
-            services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+			services.AddControllers();
+			services.AddEndpointsApiExplorer();
+			services.AddSwaggerGen();
 
+			services.AddCors(option =>
+			{
+				option.AddPolicy("CorsPolicy", policyBuilder =>
+				{
+					policyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+				});
+			});
 
-            services.AddCors(option =>
-            {
-                option.AddPolicy("CorsPolicy", policyBuilder =>
-                {
-                    policyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-                });
-            });
-
-            services.AddDbContext<EzioLearningDbContext>(option =>
-            {
-                option.UseSqlServer(configuration.GetConnectionString(ConnectionConstants.ConnectionStringName));
-            });
-
-
-            services.ConfigureIdentity();
-            services.ConfigureRepository();
-            services.AddAutoMapper(typeof(CourseCategoryCreateDto));
-
-            services.ConfigureAuthentication(configuration);
-
-            services.AddTransient((_) =>
-            {
-                var jwtConfiguration = new JwtConfiguration
-                {
-                    PrivateKey = "Default if cannot bind configuration @#!^%&"
-                };
-                configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
-                return jwtConfiguration;
-            });
-
-            services.AddTransient<IJwtService, JwtService>();
-            services.AddMemoryCache();
-            services.AddSingleton<CacheService>();
-        }
+			services.AddDbContext<EzioLearningDbContext>(option =>
+			{
+				option.UseSqlServer(configuration.GetConnectionString(ConnectionConstants.ConnectionStringName));
+			});
 
 
+			services.ConfigureIdentity();
 
-        public static void ConfigureIdentity(this IServiceCollection services)
-        {
-            services.AddIdentity<AppUser, AppRole>()
-                .AddEntityFrameworkStores<EzioLearningDbContext>()
-                .AddApiEndpoints();
+			services.ConfigureRepository();
 
-            services.Configure<IdentityOptions>(option =>
-            {
-                //Signin options
-                option.SignIn.RequireConfirmedAccount = false;
-                option.SignIn.RequireConfirmedEmail = true;
-                option.SignIn.RequireConfirmedPhoneNumber = false;
+			services.AddAutoMapper(typeof(CourseCategoryCreateDto));
 
-                //Password options
-                option.Password.RequireDigit = false;
-                option.Password.RequireLowercase = false;
-                option.Password.RequireUppercase = false;
-                option.Password.RequireNonAlphanumeric = false;
-                option.Password.RequiredLength = 6;
+			services.ConfigureAuthentication(configuration);
 
-                //Lockout options
-                option.Lockout.AllowedForNewUsers = true;
-                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                option.Lockout.MaxFailedAccessAttempts = 3;
-
-                //User options
-
-                option.User.RequireUniqueEmail = true;
-            });
+			services.AddTransient((_) =>
+			{
+				var jwtConfiguration = new JwtConfiguration
+				{
+					PrivateKey = "Default if cannot bind configuration @#!^%&"
+				};
+				configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
+				return jwtConfiguration;
+			});
 
 
-        }
+			services.AddMemoryCache();
 
-        private static void ConfigureRepository(this IServiceCollection services)
-        {
-            services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+			services.AddSingleton<CacheService>();
+			services.AddTransient<JwtService>();
+			services.AddTransient<FileService>();
+		}
 
-            var repositoryServices = typeof(RepositoryBase<,>).Assembly.GetTypes()
-                .Where(x =>
-                    x.GetInterfaces().Any(i => i.Name == typeof(IRepository<,>).Name)
-                    && x is { IsAbstract: false, IsClass: true, IsGenericType: false }
-                );
+		public static void ConfigureIdentity(this IServiceCollection services)
+		{
+			services.AddIdentity<AppUser, AppRole>()
+				.AddEntityFrameworkStores<EzioLearningDbContext>()
+				.AddApiEndpoints();
 
-            foreach (var repositoryService in repositoryServices)
-            {
-                var allInterfaces = repositoryService.GetInterfaces();
-                var directInterface = allInterfaces.Except(allInterfaces.SelectMany(t => t.GetInterfaces())).FirstOrDefault();
-                if (directInterface != null)
-                {
-                    services.Add(new ServiceDescriptor(directInterface, repositoryService, ServiceLifetime.Scoped));
-                }
-            }
-        }
+			services.Configure<IdentityOptions>(option =>
+			{
+				//Signin options
+				option.SignIn.RequireConfirmedAccount = false;
+				option.SignIn.RequireConfirmedEmail = true;
+				option.SignIn.RequireConfirmedPhoneNumber = false;
 
-        public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
-        {
-            var jwtConfiguration = new JwtConfiguration
-            {
-                PrivateKey = "Default if cannot bind configuration @#!^%&"
-            };
-            configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
+				//Password options
+				option.Password.RequireDigit = false;
+				option.Password.RequireLowercase = false;
+				option.Password.RequireUppercase = false;
+				option.Password.RequireNonAlphanumeric = false;
+				option.Password.RequiredLength = 6;
 
-            //https://github.com/dotnet/aspnetcore/issues/9039
+				//Lockout options
+				option.Lockout.AllowedForNewUsers = true;
+				option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+				option.Lockout.MaxFailedAccessAttempts = 3;
 
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfiguration.Issuer,
-                        ValidAudience = jwtConfiguration.Audience,
-                        IssuerSigningKey = new JwtService(jwtConfiguration).SecurityKey
-                    };
-                });
+				//User options
+
+				option.User.RequireUniqueEmail = true;
+			});
 
 
-            services.AddAuthorization();
-        }
+		}
 
-        public static void MigrateData(this WebApplication app)
-        {
-            using var scope = app.Services.CreateScope();
-            using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-            context.Database.Migrate();
-            new DataSeeder().SeedAsync(context).Wait();
-        }
-        public static void Configure(this WebApplication app)
-        {
+		private static void ConfigureRepository(this IServiceCollection services)
+		{
+			services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                ConnectionConstants.ConnectionStringName = ConnectionStringName.Development;
-            }
+			var repositoryServices = typeof(RepositoryBase<,>).Assembly.GetTypes()
+				.Where(x =>
+					x.GetInterfaces().Any(i => i.Name == typeof(IRepository<,>).Name)
+					&& x is { IsAbstract: false, IsClass: true, IsGenericType: false }
+				);
 
+			foreach (var repositoryService in repositoryServices)
+			{
+				var allInterfaces = repositoryService.GetInterfaces();
+				var directInterface = allInterfaces.Except(allInterfaces.SelectMany(t => t.GetInterfaces())).FirstOrDefault();
+				if (directInterface != null)
+				{
+					services.Add(new ServiceDescriptor(directInterface, repositoryService, ServiceLifetime.Scoped));
+				}
+			}
+		}
+
+		public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+		{
+			var jwtConfiguration = new JwtConfiguration
+			{
+				PrivateKey = "Default if cannot bind configuration @#!^%&"
+			};
+			configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
+
+			//https://github.com/dotnet/aspnetcore/issues/9039
+
+			services.AddAuthentication(options =>
+				{
+					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+				})
+				.AddJwtBearer(options =>
+				{
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = true,
+						ValidateAudience = true,
+						ValidateLifetime = true,
+						ValidateIssuerSigningKey = true,
+						ValidIssuer = jwtConfiguration.Issuer,
+						ValidAudience = jwtConfiguration.Audience,
+						IssuerSigningKey = new JwtService(jwtConfiguration).SecurityKey
+					};
+				});
+
+
+			services.AddAuthorization();
+		}
+
+		public static void MigrateData(this WebApplication app)
+		{
+			using var scope = app.Services.CreateScope();
+			using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+			context.Database.Migrate();
+			new DataSeeder().SeedAsync(context).Wait();
+		}
+		public static void Configure(this WebApplication app)
+		{
             ConnectionConstants.ConnectionStringName = ConnectionStringName.Production;
 
-            app.UseCors("CorsPolicy");
+            if (app.Environment.IsDevelopment())
+			{
+				app.UseSwagger();
+				app.UseSwaggerUI();
+				ConnectionConstants.ConnectionStringName = ConnectionStringName.Development;
+			}
 
-            app.UseHttpsRedirection();
 
-            app.UseAuthentication();
+			app.UseCors("CorsPolicy");
 
-            app.UseAuthorization();
+			app.UseHttpsRedirection();
 
-            app.MapControllers();
+			app.UseStaticFiles();
 
-            app.MigrateData();
+			app.UseAuthentication();
 
-        }
+			app.UseAuthorization();
 
-    }
+			app.MapControllers();
+
+			app.MigrateData();
+
+		}
+
+	}
 
 }

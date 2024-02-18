@@ -1,7 +1,4 @@
-﻿
-using System.Linq.Expressions;
-using EzioLearning.Core.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using System.Linq.Expressions;
 
 namespace EzioLearning.Core.SeedWorks
 {

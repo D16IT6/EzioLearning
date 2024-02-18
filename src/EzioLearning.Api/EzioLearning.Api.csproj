@@ -22,4 +22,10 @@
 		<ProjectReference Include="..\EzioLearning.Infrastructure\EzioLearning.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="wwwroot\Uploads\Images\CourseCategories\default-course-category.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
 </Project>

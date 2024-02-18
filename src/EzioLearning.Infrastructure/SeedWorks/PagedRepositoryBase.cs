@@ -7,29 +7,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EzioLearning.Infrastructure.SeedWorks
 {
-    public class PagedRepositoryBase<T, TKey, TDto>(EzioLearningDbContext context, IMapper mapper)
-        : RepositoryBase<T, TKey>(context), IPagedRepository<T, TKey, TDto>
-        where TDto : class
-        where T : class
-    {
-        public async Task<PageResult<TDto>> GetPage(Expression<Func<T, bool>>? expression, int pageNumber = 1, int pageSize = 10)
-        {
+	public class PagedRepositoryBase<T, TKey, TDto>(EzioLearningDbContext context, IMapper mapper)
+		: RepositoryBase<T, TKey>(context), IPagedRepository<T, TKey, TDto>
+		where TDto : class
+		where T : class
+	{
 
-            var query = DbSet.AsQueryable();
-            if (expression != null)
-            {
-                query = query.Where(expression);
-            }
+		public async Task<PageResult<TDto>> GetPage(Expression<Func<T, bool>>? expression, int pageNumber = 1, int pageSize = 10)
+		{
 
-            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-            return new PageResult<TDto>()
-            {
-                Data = await mapper.ProjectTo<TDto>(query).ToListAsync(),
-                CurrentPage = pageNumber,
-                PageSize = pageSize,
-                RowCount = await query.CountAsync(),
-            };
+			var query = DbSet.AsQueryable();
+			if (expression != null)
+			{
+				query = query.Where(expression);
+			}
 
-        }
-    }
+			query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+			return new PageResult<TDto>()
+			{
+				Data = await mapper.ProjectTo<TDto>(query).ToListAsync(),
+				CurrentPage = pageNumber,
+				PageSize = pageSize,
+				RowCount = await query.CountAsync(),
+			};
+
+		}
+
+		public async Task<IEnumerable<TDto>> GetAllWithDto(Expression<Func<T, bool>>? expression = default)
+		{
+			var query = DbSet.AsQueryable();
+			if (expression != null)
+			{
+				query = query.Where(expression);
+			}
+
+			return await mapper.ProjectTo<TDto>(query).ToListAsync();
+		}
+
+
+	}
 }

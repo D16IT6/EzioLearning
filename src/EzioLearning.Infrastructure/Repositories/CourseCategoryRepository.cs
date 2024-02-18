@@ -1,12 +1,15 @@
-﻿using EzioLearning.Core.Repositories;
+﻿using AutoMapper;
+using EzioLearning.Core.Dtos.Learning.CourseCategory;
+using EzioLearning.Core.Repositories;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.SeedWorks;
 
 namespace EzioLearning.Infrastructure.Repositories
 {
-    public class CourseCategoryRepository(EzioLearningDbContext context) 
-        : RepositoryBase<CourseCategory, Guid>(context),ICourseCategoryRepository
+    public class CourseCategoryRepository(EzioLearningDbContext context,IMapper mapper) 
+        : PagedRepositoryBase<CourseCategory, Guid,CourseCategoryViewDto>(context,mapper),
+	        ICourseCategoryRepository
     {
         
     }

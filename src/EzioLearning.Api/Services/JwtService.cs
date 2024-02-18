@@ -2,15 +2,15 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using EzioLearning.Api.Models.Token;
+using EzioLearning.Core.Models.Token;
 using EzioLearning.Domain.Entities.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EzioLearning.Api.Services
 {
-    public class JwtService(JwtConfiguration jwtConfiguration) : IJwtService
+    public class JwtService(JwtConfiguration jwtConfiguration) 
     {
-        public SymmetricSecurityKey SecurityKey = new(Encoding.Unicode.GetBytes(jwtConfiguration.PrivateKey));
+        public readonly SymmetricSecurityKey SecurityKey = new(Encoding.Unicode.GetBytes(jwtConfiguration.PrivateKey));
 
         public JwtSecurityToken GenerateAccessToken(AppUser user,IList<string> roleList)
         {
@@ -24,8 +24,8 @@ namespace EzioLearning.Api.Services
                     new(ClaimTypes.Role,string.Join(",",roleList))
                 };
 
-            //var tempExpiredAccessTokenTime = DateTime.Now.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
-            var tempExpiredAccessTokenTime = DateTime.UtcNow.AddMinutes(1);
+            var tempExpiredAccessTokenTime = DateTime.Now.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
+            //var tempExpiredAccessTokenTime = DateTime.UtcNow.AddMinutes(1);//Test token
 
             var naturalExpiredTokenTime =
                 user.RefreshTokenExpiryTime < tempExpiredAccessTokenTime && user.RefreshTokenExpiryTime != null

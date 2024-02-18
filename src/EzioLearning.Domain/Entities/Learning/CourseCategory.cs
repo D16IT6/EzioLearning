@@ -9,6 +9,7 @@ namespace EzioLearning.Domain.Entities.Learning
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
+        public string? Image { get; set; }
         public bool IsActive { get; set; }
 
         [ForeignKey(nameof(Parent))]
