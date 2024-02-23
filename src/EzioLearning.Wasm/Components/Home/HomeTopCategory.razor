@@ -1,0 +1,29 @@
+﻿<!-- Top Categories -->
+@using BlazorAnimate
+<section class="section how-it-works">
+    <div class="container">
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
+            <div class="section-sub-head">
+                <span>Favourite Course</span>
+                <h2>Top Category</h2>
+            </div>
+            <div class="all-btn all-category d-flex align-items-center">
+                <a href="job-category.html" class="btn btn-primary">All Categories</a>
+            </div>
+        </Animate>
+
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-text">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
+        </Animate>
+
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="owl-carousel mentoring-course owl-theme">
+                @foreach (var item in TopCourseCategories)
+                {
+                    <CascadingValue Value="@item">
+                        <HomeTopCategoryItem></HomeTopCategoryItem>
+                    </CascadingValue>
+                }
+        </Animate>
+    </div>
+</section>
+<!-- /Top Categories -->

@@ -14,6 +14,7 @@ namespace EzioLearning.Core.Dtos.Learning.CourseCategory
 			public CourseCategoryViewDtoProfile()
 			{
 				CreateMap<CourseCategoryViewDto, Domain.Entities.Learning.CourseCategory>();
+
 				CreateMap<Domain.Entities.Learning.CourseCategory, CourseCategoryViewDto>()
 					.ForMember(dest => dest.ParentName,
 						otp =>

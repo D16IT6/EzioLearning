@@ -115,27 +115,28 @@ namespace EzioLearning.Api.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        [Authorize]
-        public async Task<IActionResult> RefreshToken()
+        //[Authorize]
+        public async Task<IActionResult> RefreshToken([FromBody] RequestNewTokenDto model)
         {
-            var sId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value;
-            if (sId == null)
-            {
-                return BadRequest(new ResponseBase()
-                {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Message = "Fake request!"
-                });
-            }
-            var item = cacheService.Get<string>(sId, prefix: PrefixCache);
+            //var sId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value;
+            //if (sId == null)
+            //{
+            //    return BadRequest(new ResponseBase()
+            //    {
+            //        StatusCode = HttpStatusCode.BadRequest,
+            //        Message = "Fake request!"
+            //    });
+            //}
+            //var item = cacheService.Get<string>(sId, prefix: PrefixCache);
 
-            if (!string.IsNullOrEmpty(item))
-            {
-                cacheService.Remove(sId, PrefixCache);
-            }
+            //if (!string.IsNullOrEmpty(item))
+            //{
+            //    cacheService.Remove(sId, PrefixCache);
+            //}
 
-            var user = await GetUserFromEmailClaim();
-            if (user == null)
+            var user = await userManager.FindByNameAsync(model.UserName);
+
+            if (user == null || user.RefreshToken != model.RefreshToken)
             {
                 return BadRequest(new ResponseBase()
                 {

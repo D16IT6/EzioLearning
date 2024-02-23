@@ -1,11 +1,18 @@
 ﻿using EzioLearning.Api.Services;
+using EzioLearning.Core.Dtos.Learning.Course;
 using EzioLearning.Core.Dtos.Learning.CourseCategory;
+using EzioLearning.Core.Dtos.User;
+using EzioLearning.Core.Dtos.Validators;
 using EzioLearning.Core.Models.Token;
+using EzioLearning.Core.Repositories;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Infrastructure.DbContext;
+using EzioLearning.Infrastructure.Repositories;
 using EzioLearning.Infrastructure.SeedWorks;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +44,7 @@ namespace EzioLearning.Api
 				option.UseSqlServer(configuration.GetConnectionString(ConnectionConstants.ConnectionStringName));
 			});
 
+            services.ConfigureValidator();
 
 			services.ConfigureIdentity();
 
@@ -70,6 +78,7 @@ namespace EzioLearning.Api
 				.AddEntityFrameworkStores<EzioLearningDbContext>()
 				.AddApiEndpoints();
 
+
 			services.Configure<IdentityOptions>(option =>
 			{
 				//Signin options
@@ -97,9 +106,21 @@ namespace EzioLearning.Api
 
 		}
 
-		private static void ConfigureRepository(this IServiceCollection services)
+        private static void ConfigureValidator(this IServiceCollection services)
+        {
+            services
+                .AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
+
+            services.AddValidatorsFromAssembly(typeof(ValidatorInjectClass).Assembly);
+        }
+
+
+        private static void ConfigureRepository(this IServiceCollection services)
 		{
+
 			services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
+
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			var repositoryServices = typeof(RepositoryBase<,>).Assembly.GetTypes()
@@ -117,7 +138,10 @@ namespace EzioLearning.Api
 					services.Add(new ServiceDescriptor(directInterface, repositoryService, ServiceLifetime.Scoped));
 				}
 			}
-		}
+
+            services.AddScoped<ICourseCategoryRepository, CourseCategoryRepository>();
+        }
+
 
 		public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
 		{
@@ -148,8 +172,6 @@ namespace EzioLearning.Api
 						IssuerSigningKey = new JwtService(jwtConfiguration).SecurityKey
 					};
 				});
-
-
 			services.AddAuthorization();
 		}
 

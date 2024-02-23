@@ -1,0 +1,59 @@
+﻿@using EzioLearning.Wasm.Components.Home
+@attribute [Route(RouteConstants.Index)]
+
+@attribute [StreamRendering]
+
+<CascadingValue Value="AnimationType">
+    <CascadingValue Value="AnimationDuration">
+
+
+        <!-- Home Banner -->
+        <CascadingValue Value="@CourseCount">
+            <CascadingValue Value="@CourseCategories">
+                <HomeBanner></HomeBanner>
+            </CascadingValue>
+        </CascadingValue>
+        <!-- /Home Banner -->
+        <!-- Top Categories -->
+        <CascadingValue Value="@TopCourseCategories">
+            <HomeTopCategory></HomeTopCategory>
+        </CascadingValue>
+        <!-- /Top Categories -->
+        <!-- Course Features -->
+        <CascadingValue Value="FeatureCourses">
+            <CourseFeature></CourseFeature>
+        </CascadingValue>
+        <!-- /Course Features -->
+        <!-- Master Skill -->
+        <MasterSkill></MasterSkill>
+        <!-- Master Skill -->
+        <!-- Trending Course -->
+        <CascadingValue Value="TrendingCourses">
+            <CascadingValue Value="FeatureInstructors">
+                <CourseTrending></CourseTrending>
+            </CascadingValue>
+        </CascadingValue>
+        <!-- /Trending Course -->
+        <!-- Leading Companies -->
+        <LeadingCompanies></LeadingCompanies>
+        <!-- /Leading Companies -->
+        <!-- Share Knowledge -->
+        <ShareKnowledge></ShareKnowledge>
+        <!-- /Share Knowledge -->
+        <!-- Users Love -->
+        <UserLove></UserLove>
+        <!-- /Users Love -->
+        <!--chưa làm-->
+        <!-- Say testimonial Four  -->
+        @* <Testimonial></Testimonial> *@
+        <!-- /Say testimonial Four -->
+        <!-- Become An Instructor -->
+        <BecomeAnInstructor></BecomeAnInstructor>
+        <!-- /Become An Instructor -->
+        <!-- Latest Blog -->
+        @* <LatestBlog></LatestBlog> *@
+        <!-- /Latest Blog -->
+
+    </CascadingValue>
+</CascadingValue>
+

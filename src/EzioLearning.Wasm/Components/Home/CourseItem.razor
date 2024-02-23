@@ -1,0 +1,71 @@
+﻿
+<div class="product @CustomClass">
+    <div class="product-img">
+        <a href="course-details.html">
+            <img class="img-fluid" alt="" src="@CourseViewDto.Poster">
+        </a>
+        @{
+            string promotionOrFreeClass = CourseViewDto.Price == 0 ? "combo" : "";
+        }
+        <div class="price @promotionOrFreeClass">
+            @if (CourseViewDto.Price > 0)
+            {
+                @if (CourseViewDto.PromotionPrice > 0)
+                {
+                    <h3>
+                        $@CourseViewDto.PromotionPrice
+                        <span>$@CourseViewDto.Price</span>
+
+                    </h3>
+                }
+                else
+                {
+                    <h3>$@CourseViewDto.Price</h3>
+                }
+            }
+            else
+            {
+                <h3>Free</h3>
+            }
+        </div>
+    </div>
+    <div class="product-content">
+        <div class="course-group d-flex">
+            <div class="course-group-img d-flex">
+                <a href="instructor-profile.html"><img src="@CourseViewDto.TeacherAvatar" alt="" class="img-fluid"></a>
+                <div class="course-name">
+                    <h4><a href="instructor-profile.html">@CourseViewDto.TeacherName</a></h4>
+                    <p>Instructor</p>
+                </div>
+            </div>
+            <div class="course-share d-flex align-items-center justify-content-center">
+                <a href="#"><i class="fa-regular fa-heart"></i></a>
+            </div>
+        </div>
+        <h3 class="title instructor-text"><a href="course-details.html">@CourseViewDto.Name</a></h3>
+        <div class="course-info d-flex align-items-center">
+            <div class="rating-img d-flex align-items-center">
+                <img src="assets/img/icon/icon-01.svg" alt="">
+                <p>@CourseViewDto.Lessons+ Lesson</p>
+            </div>
+            @* <div class="course-view d-flex align-items-center">
+            <img src="assets/img/icon/icon-02.svg" alt="">
+            <p>9hr 30min</p>
+            </div> *@
+        </div>
+        <div class="rating">
+            <i class="fas fa-star filled"></i>
+            <i class="fas fa-star filled"></i>
+            <i class="fas fa-star filled"></i>
+            <i class="fas fa-star filled"></i>
+            <i class="fas fa-star"></i>
+            <span class="d-inline-block average-rating">
+                <span>@Math.Round(CourseViewDto.Rating, 2)</span>
+                @CourseViewDto.RateCount
+            </span>
+        </div>
+        <div class="all-btn all-category d-flex align-items-center">
+            <a href="checkout.html" class="btn btn-primary">BUY NOW</a>
+        </div>
+    </div>
+</div>

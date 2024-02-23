@@ -3,7 +3,6 @@
 namespace EzioLearning.Core.SeedWorks
 {
     public interface IRepository<T, in TKey> where T : class
-
     {
         Task<T?> GetByIdAsync(TKey key);
         Task<IEnumerable<T>> GetAllAsync();

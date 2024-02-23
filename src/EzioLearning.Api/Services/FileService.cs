@@ -31,10 +31,23 @@ namespace EzioLearning.Api.Services
 				pathBuilder.Append(name);
 				pathBuilder.Append($" ({existCount})");
 				pathBuilder.Append(extension);
+            }
+            return pathBuilder.ToString();
+        }
 
-			}
+        public async Task<string> SaveFile(IFormFile file,string folderPath,string outputFileNameWithoutExtension)
+        {
+            var tempFilePath = Path.Combine(folderPath, outputFileNameWithoutExtension + Path.GetExtension(file.Name));
 
-			return pathBuilder.ToString();
-		}
+            var actuallyFilePath = GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
+
+            await using var fileStream = new FileStream(actuallyFilePath, FileMode.OpenOrCreate);
+
+            await file.CopyToAsync(fileStream);
+
+            var result = Path.Combine(folderPath, Path.GetFileName(actuallyFilePath));
+
+            return result;
+        }
 	}
 }

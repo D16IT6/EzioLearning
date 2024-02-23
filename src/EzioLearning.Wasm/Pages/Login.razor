@@ -1,0 +1,76 @@
+﻿@attribute [Route(RouteConstants.Login)]
+@using EzioLearning.Wasm.Components.Auth
+@layout EmptyLayout
+<div class="row">
+
+    <LoginSlide></LoginSlide>
+
+    <div class="col-md-6 login-wrap-bg">
+
+        <!-- Login -->
+        <div class="login-wrapper">
+            <div class="loginbox">
+                <div class="w-100">
+                    <div class="img-logo">
+                        <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">
+                            <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
+                        </NavLink>
+                        <div class="back-home">
+                            <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">Quay về trang chủ</NavLink>
+                        </div>
+                    </div>
+                    <h1>Đăng nhập bằng tài khoản của bạn</h1>
+                    <EditForm FormName="frmLogin"
+                              Enhance="true"
+                              Model="LoginRequest"
+                              OnValidSubmit="LoginSubmit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <div class="input-block">
+                            <label class="form-control-label">Tài khoản</label>
+                            <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Enter your email address"></InputText>
+
+                            <ValidationMessage For="() => LoginRequest.UserName" class="text-danger"></ValidationMessage>
+                        </div>
+                        <div class="input-block">
+
+                            <label class="form-control-label">Mật khẩu</label>
+                            <div class="pass-group">
+                                <InputText type="password" class="form-control pass-input" placeholder="Enter your password" @bind-Value="LoginRequest.PassWord"></InputText>
+
+                                <span class="feather-eye toggle-password"></span>
+                            </div>
+                            <ValidationMessage For="() => LoginRequest.PassWord" class="text-danger"></ValidationMessage>
+
+                        </div>
+                        @* <div class="forgot">
+                            <span><a class="forgot-link" href="forgot-password.html">Quên mật khẩu ?</a></span>
+                        </div> *@
+                      @*   <div class="remember-me">
+                            <label class="custom_check mr-2 mb-0 d-inline-flex remember-me">
+                                Remember me
+                                <input type="checkbox" name="radio">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div> *@
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-start" type="submit">Đăng nhập</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+            <div class="google-bg text-center">
+                <span><a href="#">Hoặc đăng nhập bằng</a></span>
+                <div class="sign-google">
+                    <ul>
+                        <li><a href="#"><img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo"> Đăng nhập với Google</a></li>
+                        <li><a href="#"><img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">Đăng nhập với Facebook</a></li>
+                    </ul>
+                </div>
+                <p class="mb-0">Người mới? <a href="register.html">Tạo tài khoản</a></p>
+            </div>
+        </div>
+        <!-- /Login -->
+
+    </div>
+
+</div>

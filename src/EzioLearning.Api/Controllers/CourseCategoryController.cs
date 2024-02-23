@@ -22,14 +22,43 @@ namespace EzioLearning.Api.Controllers
 		[AllowAnonymous]
 		public async Task<IActionResult> GetAll()
 		{
-			var data = await categoryRepository.GetAllWithDto();
+			var data = 
+				await categoryRepository.GetAllWithDto<CourseCategoryViewDto>(x=> x.IsActive );
+
 			return Ok(new ResponseBaseWithList<CourseCategoryViewDto>()
 			{
-				Data = data,
+				Data = data.ToList(),
 				Message = "Lấy dữ liệu thành công",
 				StatusCode = HttpStatusCode.OK
 			});
 		}
+
+		[HttpGet("Top/{count}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> GetTopCategories([FromRoute] int count)
+		{
+			var data =
+				await categoryRepository.GetAllAsync();
+			data = data
+				.OrderByDescending(x => x.Courses.Count)
+				.ThenBy(x => x.Name)
+                .Take(count);
+
+			var responseData = data.Select(x => new TopCourseCategoryDto()
+			{
+				Name = x.Name,
+				Image = x.Image
+			});
+
+
+			return Ok(new ResponseBaseWithList<TopCourseCategoryDto>()
+			{
+				Data = responseData.ToList(),
+				Message = "Lấy dữ liệu thành công",
+				StatusCode = HttpStatusCode.OK
+			});
+		}
+
 
 		[HttpPut]
 		[ValidateModel]
@@ -54,16 +83,8 @@ namespace EzioLearning.Api.Controllers
 					});
 				}
 
-				var tempFilePath = Path.Combine(FolderPath, newCourseCategory.Name + Path.GetExtension(image.FileName));
-
-				var actuallyFilePath = fileService.GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
-
-				await using var fileStream = new FileStream(actuallyFilePath, FileMode.OpenOrCreate);
-
-				await image.CopyToAsync(fileStream);
-
-				imagePath = Path.Combine(FolderPath, Path.GetFileName(actuallyFilePath));
-			}
+                imagePath = await fileService.SaveFile(image, FolderPath, newCourseCategory.Name);
+            }
 			newCourseCategory.Id = Guid.NewGuid();
 
 			newCourseCategory.Image = imagePath;

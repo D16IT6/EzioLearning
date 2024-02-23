@@ -1,7 +1,7 @@
 ﻿namespace EzioLearning.Core.Models.Response
 {
-    public class ResponseBaseWithData<TItem> : ResponseBase where TItem : class, new() 
+    public class ResponseBaseWithData<TItem> : ResponseBase
     {
-        public TItem Data { get; set; } = new();
+        public TItem? Data { get; set; } 
     }
 }

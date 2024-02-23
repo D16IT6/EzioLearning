@@ -1,6 +1,4 @@
-﻿
-
-using EzioLearning.Core.SeedWorks;
+﻿using EzioLearning.Core.SeedWorks;
 using EzioLearning.Infrastructure.DbContext;
 
 namespace EzioLearning.Infrastructure.SeedWorks

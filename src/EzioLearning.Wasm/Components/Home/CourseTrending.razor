@@ -1,0 +1,65 @@
+﻿<section class="section trend-course">
+    <div class="container">
+
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-header'>
+            <div class="section-sub-head">
+                <span>What’s New</span>
+                <h2>TRENDING COURSES</h2>
+            </div>
+            <div class="all-btn all-category d-flex align-items-center">
+                <a href="course-list.html" class="btn btn-primary">All Courses</a>
+            </div>
+        </Animate>
+
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-text'>
+            <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
+        </Animate>
+
+
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="owl-carousel trending-course owl-theme">
+            @foreach (var item in CourseTrends)
+            {
+                <div class="course-box trend-box">
+
+                    <CascadingValue Value="item">
+                        <CourseItem></CourseItem>
+                    </CascadingValue>
+                </div>
+
+            }
+        </Animate>
+
+        <!-- Feature Instructors -->
+        <div class="feature-instructors">
+            <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-header'>
+                <div class="section-sub-head feature-head text-center">
+                    <h2>Featured Instructor</h2>
+                    <div class="section-text">
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
+                    </div>
+                </div>
+            </Animate>
+            <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="owl-carousel instructors-course owl-theme">
+                @foreach (var instructor in FeatureInstructors)
+                {
+                    <div class="instructors-widget">
+                        <div class="instructors-img ">
+                            <a href="instructor-list.html">
+                                <img class="img-fluid" alt="" src="@instructor.Avatar">
+                            </a>
+                        </div>
+                        <div class="instructors-content text-center">
+                            <h5><a href="instructor-profile.html">@instructor.Name</a></h5>
+                            <p>Web Developer</p>
+                            <div class="student-count d-flex justify-content-center">
+                                <i class="fa-solid fa-user-group"></i>
+                                <span>@instructor.StudentCount Students</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </Animate>
+        </div>
+    </div>
+    <!-- /Feature Instructors -->
+</section>

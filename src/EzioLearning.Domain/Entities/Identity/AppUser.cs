@@ -1,4 +1,5 @@
-﻿using EzioLearning.Domain.Entities.Learning;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using EzioLearning.Domain.Entities.Learning;
 using Microsoft.AspNetCore.Identity;
 
 namespace EzioLearning.Domain.Entities.Identity;
@@ -9,7 +10,7 @@ public class AppUser : IdentityUser<Guid>
 
     [PersonalData] public string? LastName { get; set; }
 
-    [ProtectedPersonalData] public DateTime? DateOfBirth { get; set; }
+    [ProtectedPersonalData] public DateOnly? DateOfBirth { get; set; }
 
     [PersonalData] public string? Avatar { get; set; }
 
@@ -21,12 +22,15 @@ public class AppUser : IdentityUser<Guid>
 
     public override string? ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
-    public Trainer? Trainer { get; set; }
     public ICollection<Student> Students { get; set; } = new List<Student>();
+
+    public ICollection<Course> Courses { get; set; } = new List<Course>();
 
     public string? CacheKey { get; set; }
     public DateTime CreatedDate { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public Guid ModifiedBy { get; set; }
+
+    [NotMapped] public string FullName => $"{FirstName} {LastName}";
 }

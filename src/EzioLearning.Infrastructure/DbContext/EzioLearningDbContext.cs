@@ -10,13 +10,12 @@ namespace EzioLearning.Infrastructure.DbContext
     public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext<AppUser, AppRole, Guid>(options)
     {
         #region Tables
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<CourseCategory> CourseCategories { get; set; }
-        public DbSet<CourseRating> CourseRatings { get; set; }
-        public DbSet<CourseLesson> CourseLessons { get; set; }
-        public DbSet<LessonComment> LessonComments { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Trainer> Trainers { get; set; }
+        public DbSet<Course>? Courses { get; set; }
+        public DbSet<CourseCategory>? CourseCategories { get; set; }
+        public DbSet<CourseRating>? CourseRatings { get; set; }
+        public DbSet<CourseLesson>? CourseLessons { get; set; }
+        public DbSet<LessonComment>? LessonComments { get; set; }
+        public DbSet<Student>? Students { get; set; }
 
         #endregion
 

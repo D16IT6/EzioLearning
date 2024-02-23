@@ -1,0 +1,60 @@
+﻿@using BlazorAnimate
+
+<!-- Home Banner -->
+<section class="home-slide d-flex align-items-center">
+    <div class="container">
+        <div class="row ">
+            <div class="col-md-7">
+                <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='home-slice-face'>
+                    <div class="home-slide-text ">
+                        <h5>The Leader in Online Learning</h5>
+                        <h1>Engaging &  Accessible Online Courses For All</h1>
+                        <p>Own your future learning new skills online</p>
+                    </div>
+                    <div class="banner-content">
+                        <form class="form" action="https://dreamslms.dreamstechnologies.com/html/course-list.html">
+                            <div class="form-inner">
+                                <div class="input-group">
+                                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                    <input type="email" class="form-control" placeholder="Search School, Online eductional centers, etc">
+                                    <span class="drop-detail">
+                                        <select class="form-select select">
+                                            <option value="@Guid.Empty">Chọn thể loại</option>
+                                            @foreach (var courseCategory in CourseCategories)
+                                            {
+                                                <option value="@courseCategory.Name">@courseCategory.Name</option>
+                                            }
+                                        </select>
+                                    </span>
+                                    <button class="btn btn-primary sub-btn" type="submit"><i class="fas fa-arrow-right"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="trust-user">
+                        <p>Trusted by over 15K Users <br>worldwide since 2022</p>
+                        <div class="trust-rating d-flex align-items-center">
+                            <div class="rate-head">
+                                <h2><span>@CourseCount</span>+</h2>
+                            </div>
+                            <div class="rating d-flex align-items-center">
+                                <h2 class="d-inline-block average-rating">4.4</h2>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                            </div>
+                        </div>
+                    </div>
+                </Animate>
+            </div>
+            <div class="col-md-5 d-flex align-items-center">
+                <div class="girl-slide-img">
+                    <img src="assets/img/object.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /Home Banner -->
