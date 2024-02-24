@@ -6,6 +6,6 @@ namespace EzioLearning.Wasm.Services
     public interface IAuthService
     {
         public Task<ResponseBase?> Login(LoginRequestDto loginRequestDto);
-        public Task Logout();
+        public Task<ResponseBase?> Logout();
     }
 }

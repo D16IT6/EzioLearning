@@ -24,7 +24,7 @@ namespace EzioLearning.Domain.Entities.Learning
         public ICollection<CourseLesson> Lessons { get; set; } = new List<CourseLesson>();
         public ICollection<Student> Students { get; set; } = new List<Student>();
 
-        [ForeignKey(nameof(CreatedBy))] public AppUser User { get; set; } = new();
+        [ForeignKey(nameof(CreatedBy))] public AppUser? User { get; set; }
     }
 
     public enum CourseStatus

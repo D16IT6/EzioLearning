@@ -29,14 +29,14 @@
                         </a>
                     </div>
                     <ul class="main-nav">
-                        <li class="has-submenu active">
-                            <NavLink Match="NavLinkMatch.All" class="" href="@RouteConstants.Index">Trang chủ </NavLink>
+                        <li class="has-submenu">
+                            <NavLink href="@RouteConstants.Home" Match="NavLinkMatch.All">Trang chủ </NavLink>
                         </li>
                         <li class="has-submenu">
                             <NavLink href="@RouteConstants.Course" Match="NavLinkMatch.All">Khoá học </NavLink>
                         </li>
                         <li class="has-submenu">
-                            <NavLink href="@RouteConstants.Student">Học viên</NavLink>
+							<NavLink href="@RouteConstants.Student" Match="NavLinkMatch.All">Học viên</NavLink>
 
                         </li>
                         <li class="has-submenu">
@@ -44,11 +44,11 @@
                         </li>
                         <li class="has-submenu">
                             <a href="@RouteConstants.Contact">Liên hệ</a>
+                        </li>
 
-                        </li>
-                        <li class="login-link">
-                            <a href="login.html">Login / Signup</a>
-                        </li>
+                        @* <li class="login-link">
+                            <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Login">Đăng nhập / Đăng ký</NavLink>
+                        </li> *@
                     </ul>
                 </div>
                 <AuthorizeView>
@@ -58,14 +58,11 @@
                                 <NavLink Match="NavLinkMatch.All" class="nav-link header-sign" href="@RouteConstants.Login">Đăng nhập</NavLink>
                             </li>
                             <li class="nav-item">
-                                <NavLink Match="NavLinkMatch.All" class="nav-link header-login" href="@RouteConstants.Signup">Đăng ký</NavLink>
+                                <NavLink Match="NavLinkMatch.All" class="nav-link header-login" href="@RouteConstants.Register">Đăng ký</NavLink>
                             </li>
                         </ul>
                     </NotAuthorized>
                     <Authorized>
-                        @* <ul class="nav header-navbar-rht">
-                            Xin chào @context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)!.Value
-                        </ul> *@
 						<ul class="nav header-navbar-rht">
 							<li class="nav-item">
 								<a href="course-message.html"><img src="assets/img/icon/messages.svg" alt="img"></a>
@@ -291,27 +288,24 @@
 								</div>
 							</li>
                         <li class="nav-item user-nav">
-							@{
-                                var imageUrl =ApiConstants.BaseUrl + context.User.Claims.FirstOrDefault(x => x.Type == CustomClaimTypes.Avatar)!.Value;
-								
-                            }
+
                             <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                 <span class="user-img">
-										<img src="@imageUrl" alt="">
+										<img src="@_imageUrl" alt="">
                                     <span class="status online"></span>
                                 </span>
                             </a>
                             <div class="users dropdown-menu dropdown-menu-right" data-popper-placement="bottom-end">
                                 <div class="user-header">
                                     <div class="avatar avatar-sm">
-											<img src="@imageUrl" alt="User Image" class="avatar-img rounded-circle">
+											<img src="@_imageUrl" alt="User Image" class="avatar-img rounded-circle">
                                     </div>
                                     <div class="user-text">
                                         <h6>@context.User.Identity!.Name</h6>
                                         <p class="text-muted mb-0">@context.User.Claims.First(x => x.Type == ClaimTypes.Role).Value</p>
                                     </div>
                                 </div>
-                                @if (context.User.IsInRole(RoleConstants.Trainer))
+                                @if (context.User.IsInRole(RoleConstants.Teacher))
                                 {
                                     <a class="dropdown-item" href="setting-edit-profile.html"><i class="feather-user me-1"></i> Trang cá nhân (Giảng viên)</a>
 
@@ -329,7 +323,9 @@
                                 <a class="dropdown-item" href="setting-student-subscription.html"><i class="feather-star me-1"></i> Subscription</a>
 
 
-                                <a class="dropdown-item" href="index.html"><i class="feather-log-out me-1"></i> Đăng xuất</a>
+                                <button class="dropdown-item justify-content-start" @onclick="Logout">
+                                    <i class="feather-log-out me-1"></i> Đăng xuất
+                                </button>
                             </div>
                         </li>
 						</ul>

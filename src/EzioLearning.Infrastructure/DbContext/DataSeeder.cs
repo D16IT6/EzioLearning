@@ -74,7 +74,7 @@ namespace EzioLearning.Infrastructure.DbContext
                 NormalizedUserName = "TALONEZIO",
                 UserName = "talonezio",
                 SecurityStamp = Guid.NewGuid().ToString(),
-                IsActive = true,
+                Avatar = "Uploads/Images/Users/default-user.png",
                 LockoutEnabled = false,
                 EmailConfirmed = true,
                 PhoneNumber = "0988344814",

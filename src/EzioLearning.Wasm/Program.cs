@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
-
 namespace EzioLearning.Wasm
 {
     public class Program
@@ -18,6 +17,7 @@ namespace EzioLearning.Wasm
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
 
+
             builder.Services.AddBlazorBootstrap();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddMudServices(config =>
@@ -27,7 +27,7 @@ namespace EzioLearning.Wasm
                 config.SnackbarConfiguration.PreventDuplicates = false;
                 config.SnackbarConfiguration.NewestOnTop = true;
                 config.SnackbarConfiguration.ShowCloseIcon = true;
-                config.SnackbarConfiguration.VisibleStateDuration = 2000;
+                config.SnackbarConfiguration.VisibleStateDuration = 5000;
                 config.SnackbarConfiguration.HideTransitionDuration = 500;
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
@@ -41,9 +41,10 @@ namespace EzioLearning.Wasm
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
 
-            builder.Services.AddScoped(sp => new HttpClient
+            builder.Services.AddScoped(_ => new HttpClient
             {
-                BaseAddress = new Uri(ApiConstants.BaseUrl)
+                BaseAddress = new Uri(ApiConstants.BaseUrl),
+                
             });
             
             await builder.Build().RunAsync();

@@ -77,7 +77,7 @@ namespace EzioLearning.Api.Controllers
                 });
             }
 
-            var result = await userManager.CreateAsync(newUser, model.Password);
+            var result = await userManager.CreateAsync(newUser, model.Password!);
             if (result.Succeeded)
                 return Ok(new ResponseBase()
                 {

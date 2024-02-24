@@ -12,11 +12,11 @@
             <div class="loginbox">
                 <div class="w-100">
                     <div class="img-logo">
-                        <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">
+                        <NavLink href="@RouteConstants.Home" Match="NavLinkMatch.All">
                             <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
                         </NavLink>
                         <div class="back-home">
-                            <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">Quay về trang chủ</NavLink>
+                            <NavLink href="@RouteConstants.Home" Match="NavLinkMatch.All">Quay về trang chủ</NavLink>
                         </div>
                     </div>
                     <h1>Đăng nhập bằng tài khoản của bạn</h1>
@@ -43,14 +43,14 @@
 
                         </div>
                         @* <div class="forgot">
-                            <span><a class="forgot-link" href="forgot-password.html">Quên mật khẩu ?</a></span>
+                        <span><a class="forgot-link" href="forgot-password.html">Quên mật khẩu ?</a></span>
                         </div> *@
-                      @*   <div class="remember-me">
-                            <label class="custom_check mr-2 mb-0 d-inline-flex remember-me">
-                                Remember me
-                                <input type="checkbox" name="radio">
-                                <span class="checkmark"></span>
-                            </label>
+                        @*   <div class="remember-me">
+                        <label class="custom_check mr-2 mb-0 d-inline-flex remember-me">
+                        Remember me
+                        <input type="checkbox" name="radio">
+                        <span class="checkmark"></span>
+                        </label>
                         </div> *@
                         <div class="d-grid">
                             <button class="btn btn-primary btn-start" type="submit">Đăng nhập</button>
@@ -59,14 +59,28 @@
                 </div>
             </div>
             <div class="google-bg text-center">
+
                 <span><a href="#">Hoặc đăng nhập bằng</a></span>
                 <div class="sign-google">
                     <ul>
-                        <li><a href="#"><img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo"> Đăng nhập với Google</a></li>
-                        <li><a href="#"><img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">Đăng nhập với Facebook</a></li>
+
+                        <li>
+                            <a href="@GoogleCallbackUrl">
+                                <img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo">
+                                Đăng nhập với Google
+                            </a>
+                        </li>
+
+                        <li>
+
+                            <a href="@FacebookCallbackUrl">
+                                <img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">
+                                Đăng nhập với Facebook
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <p class="mb-0">Người mới? <a href="register.html">Tạo tài khoản</a></p>
+                <p class="mb-0">Người mới? <a href="@RouteConstants.Register">Tạo tài khoản</a></p>
             </div>
         </div>
         <!-- /Login -->

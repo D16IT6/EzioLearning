@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Size = MudBlazor.Size;
 
-namespace EzioLearning.Wasm.Pages
+namespace EzioLearning.Wasm.Pages.Auth
 {
     public partial class Login
     {
@@ -16,6 +16,10 @@ namespace EzioLearning.Wasm.Pages
         [Inject] private ILogger<Login> Logger { get; set; } = default!;
         [Inject] NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
+
+        private string GoogleCallbackUrl { get; set; } = string.Empty;
+        private string FacebookCallbackUrl { get; set; } = string.Empty;
+
         public async Task LoginSubmit()
         {
             var result = await AuthService.Login(LoginRequest);
@@ -34,7 +38,7 @@ namespace EzioLearning.Wasm.Pages
 
                 await Task.Delay(2000);
 
-                NavigationManager.NavigateTo(RouteConstants.Index, true);
+                NavigationManager.NavigateTo(RouteConstants.Home, true);
             }
 
             else
@@ -48,6 +52,19 @@ namespace EzioLearning.Wasm.Pages
                 });
             }
 
+        }
+
+        protected override void OnInitialized()
+        {
+            GoogleCallbackUrl = 
+                "https://localhost:7000/api/Auth/GoogleLogin?returnUrl=" +
+                NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+            base.OnInitialized();
+            
+            FacebookCallbackUrl = 
+                "https://localhost:7000/api/Auth/FacebookLogin?returnUrl=" +
+                NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+            base.OnInitialized();
         }
     }
 }

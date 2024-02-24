@@ -11,7 +11,7 @@ namespace EzioLearning.Core.Dtos.Validators.Course
 
         public CourseCreateDtoValidator(ICourseCategoryRepository courseCategoryRepository,UserManager<AppUser> userManager)
         {
-            var availableUserIds = userManager.Users.Where(x => x.IsActive).Select(x => x.Id);
+            var availableUserIds = userManager.Users.Select(x => x.Id);
 
             var availableCourseCategoriesIds = 
                 courseCategoryRepository.GetAllAsync().Result
