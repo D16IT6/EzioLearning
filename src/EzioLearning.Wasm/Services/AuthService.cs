@@ -1,66 +1,88 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Blazored.LocalStorage;
-using EzioLearning.Blazor.Client.Providers;
+﻿using EzioLearning.Blazor.Client.Providers;
 using EzioLearning.Core.Dtos.Auth;
 using EzioLearning.Core.Models.Response;
 using EzioLearning.Core.Models.Token;
 using EzioLearning.Wasm.Providers;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace EzioLearning.Wasm.Services
 {
-	public class AuthService(HttpClient httpClient, ILocalStorageService localStorageService, AuthenticationStateProvider stateProvider) : IAuthService
-	{
-		private readonly ApiAuthenticationStateProvider _apiAuthenticationStateProvider =
-			(ApiAuthenticationStateProvider)stateProvider;
-		public async Task<ResponseBase?> Login(LoginRequestDto loginRequestDto)
-		{
-			ResponseBase? data = null;
+    public class AuthService(HttpClient httpClient, ITokenService tokenService, AuthenticationStateProvider stateProvider) : IAuthService
+    {
+        private readonly ApiAuthenticationStateProvider _apiAuthenticationStateProvider =
+            (ApiAuthenticationStateProvider)stateProvider;
+        public async Task<ResponseBase?> Login(LoginRequestDto loginRequestDto)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/Auth/Login", loginRequestDto);
+            await using var stream = await response.Content.ReadAsStreamAsync();
 
-			var response = await httpClient.PostAsJsonAsync("api/Auth/Login", loginRequestDto);
-			await using var stream = await response.Content.ReadAsStreamAsync();
+            ResponseBase? data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream, JsonCommonOptions.DefaultSerializer);
 
-			switch (response.StatusCode)
-			{
-				case HttpStatusCode.BadRequest:
+            if (data!.Status == HttpStatusCode.OK)
+            {
+                await tokenService.SaveFromResponse(data);
+                _apiAuthenticationStateProvider.MarkUserAsAuthenticated(loginRequestDto.UserName!);
+            }
 
-					data = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
-					return data;
-				case HttpStatusCode.OK:
+            return data;
+        }
 
-					data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream, JsonCommonOptions.DefaultSerializer);
+        public async Task<ResponseBase?> Register(RegisterRequestClientDto model, IBrowserFile? avatar)
+        {
+            var multipartContent = new MultipartFormDataContent();
 
-					var dataChild = data as ResponseBaseWithData<TokenResponse>;
+            if (avatar != null)
+            {
+                var fileContent = new StreamContent(avatar.OpenReadStream());
 
-					await localStorageService.SetItemAsync(LocalStorageConstants.AccessToken, dataChild?.Data?.AccessToken);
-					await localStorageService.SetItemAsync(LocalStorageConstants.RefreshToken, dataChild?.Data?.RefreshToken);
+                multipartContent.Add(fileContent, $"{nameof(model.Avatar)}", avatar.Name);
+            }
 
-					_apiAuthenticationStateProvider.MarkUserAsAuthenticated(loginRequestDto.UserName!);
-					break;
-			}
+            multipartContent.Add(new StringContent(model.FirstName!), nameof(model.FirstName));
+            multipartContent.Add(new StringContent(model.LastName!), nameof(model.LastName));
+            multipartContent.Add(new StringContent(model.UserName!), nameof(model.UserName));
 
-			return data;
-		}
+            multipartContent.Add(new StringContent(model.Password!), nameof(model.Password));
+            multipartContent.Add(new StringContent(model.ConfirmPassword!), nameof(model.ConfirmPassword));
 
-		public async Task<ResponseBase?> Logout()
-		{
-			ResponseBase? data = null;
-			var response = await httpClient.PostAsync("api/Auth/RevokeToken", null);
+            multipartContent.Add(new StringContent(model.PhoneNumber!), nameof(model.PhoneNumber));
+            multipartContent.Add(new StringContent(model.Email!), nameof(model.Email));
+            multipartContent.Add(new StringContent(model.DateOfBirth.ToString("yyyy-MM-dd")), nameof(model.DateOfBirth));
 
-			if (response.StatusCode == HttpStatusCode.OK)
-			{
-				await using var stream = await response.Content.ReadAsStreamAsync();
-				data = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
-			}
 
-			await localStorageService.RemoveItemAsync(LocalStorageConstants.AccessToken);
-			await localStorageService.RemoveItemAsync(LocalStorageConstants.RefreshToken);
+            multipartContent.Add(new StringContent(model.LoginProvider!), nameof(model.LoginProvider));
+            multipartContent.Add(new StringContent(model.ProviderName!), nameof(model.ProviderName));
+            multipartContent.Add(new StringContent(model.ProviderKey!), nameof(model.ProviderKey));
 
-			_apiAuthenticationStateProvider.MarkUserAsLoggedOut();
 
-			return data;
-		}
-	}
+            var response = await httpClient.PostAsync("api/Auth/Register", multipartContent);
+
+
+            await using var stream = await response.Content.ReadAsStreamAsync();
+            ResponseBase? data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream, JsonCommonOptions.DefaultSerializer);
+            return data;
+        }
+
+        public async Task<ResponseBase?> Logout()
+        {
+            ResponseBase? data = null;
+            var response = await httpClient.PostAsync("api/Auth/RevokeToken", null);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                data = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
+            }
+
+            await tokenService.DeleteToken();
+
+            _apiAuthenticationStateProvider.MarkUserAsLoggedOut();
+
+            return data;
+        }
+    }
 }

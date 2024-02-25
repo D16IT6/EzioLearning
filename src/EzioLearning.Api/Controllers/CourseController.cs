@@ -26,7 +26,7 @@ namespace EzioLearning.Api.Controllers
             var count = await courseRepository.CountCourses();
             return Ok(new ResponseBaseWithData<int>()
             {
-                StatusCode = HttpStatusCode.OK,
+                Status = HttpStatusCode.OK,
                 Message = "Đếm số khoá học hiện có thành công",
                 Data = count
             });
@@ -45,7 +45,7 @@ namespace EzioLearning.Api.Controllers
 
             return Ok(new ResponseBaseWithList<CourseViewDto>()
             {
-                StatusCode = HttpStatusCode.OK,
+                Status = HttpStatusCode.OK,
                 Message = "Lấy danh sách khoá học thịnh hành thành công",
                 Data = resultData
             });
@@ -66,7 +66,7 @@ namespace EzioLearning.Api.Controllers
                 {
                     return BadRequest(new ResponseBase()
                     {
-                        StatusCode = HttpStatusCode.BadRequest,
+                        Status = HttpStatusCode.BadRequest,
                         Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
                     });
                 }
@@ -86,12 +86,12 @@ namespace EzioLearning.Api.Controllers
                 return Ok(new ResponseBase()
                 {
                     Message = "Thêm mới khoá học thành công",
-                    StatusCode = HttpStatusCode.OK
+                    Status = HttpStatusCode.OK
                 });
             return BadRequest(new ResponseBase()
             {
                 Message = "Thêm mới khoá học thất bại, vui lòng thử lại",
-                StatusCode = HttpStatusCode.BadRequest
+                Status = HttpStatusCode.BadRequest
             });
         }
 

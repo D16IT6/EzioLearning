@@ -1,5 +1,5 @@
-﻿@attribute [Route(RouteConstants.Login)]
-@using EzioLearning.Wasm.Components.Auth
+﻿@using EzioLearning.Wasm.Components.Auth
+@attribute [Route(RouteConstants.Login)]
 @layout EmptyLayout
 <div class="row">
 
@@ -61,25 +61,8 @@
             <div class="google-bg text-center">
 
                 <span><a href="#">Hoặc đăng nhập bằng</a></span>
-                <div class="sign-google">
-                    <ul>
+                <ExternalProvider></ExternalProvider>
 
-                        <li>
-                            <a href="@GoogleCallbackUrl">
-                                <img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo">
-                                Đăng nhập với Google
-                            </a>
-                        </li>
-
-                        <li>
-
-                            <a href="@FacebookCallbackUrl">
-                                <img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">
-                                Đăng nhập với Facebook
-                            </a>
-                        </li>
-                    </ul>
-                </div>
                 <p class="mb-0">Người mới? <a href="@RouteConstants.Register">Tạo tài khoản</a></p>
             </div>
         </div>

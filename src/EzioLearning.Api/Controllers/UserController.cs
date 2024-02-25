@@ -32,7 +32,7 @@ namespace EzioLearning.Api.Controllers
             var data = mapper.ProjectTo<InstructorViewDto>(userList);
             return Ok(new ResponseBaseWithList<InstructorViewDto>()
             {
-                StatusCode = HttpStatusCode.OK,
+                Status = HttpStatusCode.OK,
                 Message = "Lấy danh sách giảng viên nổi bật thành công",
                 Data = await data.ToListAsync()
             });
@@ -55,7 +55,7 @@ namespace EzioLearning.Api.Controllers
                 {
                     return BadRequest(new ResponseBase()
                     {
-                        StatusCode = HttpStatusCode.BadRequest,
+                        Status = HttpStatusCode.BadRequest,
                         Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
                     });
                 }
@@ -71,7 +71,7 @@ namespace EzioLearning.Api.Controllers
             {
                 return BadRequest(new ResponseBaseWithList<IdentityError>()
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    Status = HttpStatusCode.BadRequest,
                     Data = addToRoleResult.Errors.ToList(),
                     Message = "Thêm quyền vào tài khoản thất bại, vui lòng xem lỗi"
                 });
@@ -81,13 +81,13 @@ namespace EzioLearning.Api.Controllers
             if (result.Succeeded)
                 return Ok(new ResponseBase()
                 {
-                    StatusCode = HttpStatusCode.OK,
+                    Status = HttpStatusCode.OK,
                     Message = "Thêm user mới thành công"
                 });
 
             return BadRequest(new ResponseBaseWithList<IdentityError>()
             {
-                StatusCode = HttpStatusCode.BadRequest,
+                Status = HttpStatusCode.BadRequest,
                 Data = result.Errors.ToList(),
                 Message = "Tạo tài khoản thất bại, vui lòng xem lỗi"
             });

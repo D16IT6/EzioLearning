@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using EzioLearning.Core.Dtos.Auth;
-using EzioLearning.Wasm.Common;
+using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,7 +14,7 @@ namespace EzioLearning.Wasm.Pages.Auth
 
         [Inject] private IAuthService AuthService { get; set; } = default!;
         [Inject] private ILogger<Login> Logger { get; set; } = default!;
-        [Inject] NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
 
         private string GoogleCallbackUrl { get; set; } = string.Empty;
@@ -25,7 +25,7 @@ namespace EzioLearning.Wasm.Pages.Auth
             var result = await AuthService.Login(LoginRequest);
             Logger.LogInformation(result!.Message);
 
-            if (result.StatusCode == HttpStatusCode.OK)
+            if (result.Status == HttpStatusCode.OK)
             {
                 SnackBar.Add(result.Message, Severity.Success, (configure) =>
                 {
@@ -40,7 +40,6 @@ namespace EzioLearning.Wasm.Pages.Auth
 
                 NavigationManager.NavigateTo(RouteConstants.Home, true);
             }
-
             else
             {
                 SnackBar.Add(result.Message, Severity.Error, configure =>
@@ -51,18 +50,16 @@ namespace EzioLearning.Wasm.Pages.Auth
                     configure.IconSize = Size.Large;
                 });
             }
-
         }
-
         protected override void OnInitialized()
         {
             GoogleCallbackUrl = 
-                "https://localhost:7000/api/Auth/GoogleLogin?returnUrl=" +
+                $"{ApiConstants.BaseUrl}api/Auth/GoogleLogin?returnUrl=" +
                 NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
             base.OnInitialized();
             
             FacebookCallbackUrl = 
-                "https://localhost:7000/api/Auth/FacebookLogin?returnUrl=" +
+                $"{ApiConstants.BaseUrl}api/Auth/FacebookLogin?returnUrl=" +
                 NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
             base.OnInitialized();
         }

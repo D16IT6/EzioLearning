@@ -14,7 +14,7 @@ namespace EzioLearning.Wasm.Components.Home
         [CascadingParameter]
         private TimeSpan AnimationDuration { get; set; }
         [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
-        private IJSObjectReference JsObjectReference { get; set; } = default;
+        private IJSObjectReference? JsObjectReference { get; set; } = default;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -26,7 +26,7 @@ namespace EzioLearning.Wasm.Components.Home
             }
             else
             {
-                await JsObjectReference.InvokeVoidAsync("loadSlider");
+                await JsObjectReference!.InvokeVoidAsync("loadSlider");
             }
         }
     }

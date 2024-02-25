@@ -19,6 +19,10 @@ namespace EzioLearning.Core.Dtos.Auth
 
         public IFormFile? Avatar { get; set; }
 
+        public string? LoginProvider { get; set; }
+        public string? ProviderName { get; set; }
+        public string? ProviderKey { get; set; }
+
 
         public class RegisterRequestDtoProfile : Profile
         {

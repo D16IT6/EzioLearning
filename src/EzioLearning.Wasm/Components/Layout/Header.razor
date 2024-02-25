@@ -1,7 +1,6 @@
 ﻿@using System.Security.Claims
-@using EzioLearning.Blazor.Client.Providers
 @using EzioLearning.Domain.Common
-@using EzioLearning.Wasm.Providers
+@using EzioLearning.Blazor.Client.Providers
 <!-- Header -->
 <header class="header">
     <div class="header-fixed">
@@ -21,9 +20,9 @@
                 </div>
                 <div class="main-menu-wrapper">
                     <div class="menu-header">
-                        <a href="/login" class="menu-logo">
+                        <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Login" class="menu-logo">
                             <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
-                        </a>
+                        </NavLink>
                         <a id="menu_close" class="menu-close" href="javascript:void(0);">
                             <i class="fas fa-times"></i>
                         </a>

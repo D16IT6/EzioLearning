@@ -1,13 +1,9 @@
-﻿using EzioLearning.Blazor.Client.Providers;
-using EzioLearning.Core.Dtos.Auth;
-using EzioLearning.Core.Models.Response;
-using EzioLearning.Core.Models.Token;
+﻿using EzioLearning.Core.Dtos.Auth;
+using EzioLearning.Wasm.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
 using MudBlazor;
+using System.Net;
 
 namespace EzioLearning.Wasm.Pages.Auth
 {
@@ -15,14 +11,15 @@ namespace EzioLearning.Wasm.Pages.Auth
     {
         private string[] AcceptTypes { get; set; } = [".png", ".bmp", ".jpg", ".jpeg"];
 
-        [SupplyParameterFromQuery]
-        public string? Email { get; set; }
+        [SupplyParameterFromQuery] private string? Email { get; set; } = String.Empty;
 
-        [SupplyParameterFromQuery]
-        public string? FirstName { get; set; }
-        [SupplyParameterFromQuery]
-        public string? LastName { get; set; }
+        [SupplyParameterFromQuery] private string? FirstName { get; set; } = String.Empty;
+        [SupplyParameterFromQuery] private string? LastName { get; set; } = String.Empty;
+        [SupplyParameterFromQuery] private string? UserName { get; set; } = String.Empty;
 
+        [SupplyParameterFromQuery] private string? LoginProvider { get; set; } = String.Empty;
+        [SupplyParameterFromQuery] private string? ProviderName { get; set; } = String.Empty;
+        [SupplyParameterFromQuery] private string? ProviderKey { get; set; } = String.Empty;
 
         [SupplyParameterFromForm]
         public RegisterRequestClientDto RegisterModel { get; set; } = new();
@@ -30,16 +27,43 @@ namespace EzioLearning.Wasm.Pages.Auth
         private bool DisabledEmail { get; set; }
 
         [Inject] private ILogger<Register> Logger { get; set; } = default!;
-        [Inject] private HttpClient HttpClient { get; set; } = default!;
 
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
+        [Inject] private IAuthService AuthService { get; set; } = default!;
+        [Inject] private ITokenService TokenService { get; set; } = default!;
+
+
+        private const long UploadLimit = 10 * 1024 * 1024;
+        private const string FileTooLargeMessage = "File quá lớn, không được phép!";
+        private const string FileNowAllowExtensionMessage = "Không cho phép file định dạng này!";
 
         private IBrowserFile? File { get; set; }
         private Task LoadFile(InputFileChangeEventArgs e)
         {
-            if (e.FileCount > 0)
+            var file = e.File;
+            if (file.Size > 0)
             {
-                File = e.File;
+                var fileExtension = Path.GetExtension(file.Name);
+                if (file.Size > UploadLimit)
+                {
+                    SnackBar.Add(FileTooLargeMessage, Severity.Error, config =>
+                    {
+                        config.ActionColor = Color.Warning;
+                    });
+                }
+                if (!AcceptTypes.Contains(fileExtension))
+                {
+                    SnackBar.Add(FileNowAllowExtensionMessage, Severity.Error, config =>
+                    {
+                        config.ActionColor = Color.Warning;
+                    });
+                    RegisterModel.Avatar = null;
+                    return Task.CompletedTask;
+                }
+                else
+                {
+                    File = file;
+                }
             }
 
             return Task.CompletedTask;
@@ -50,6 +74,11 @@ namespace EzioLearning.Wasm.Pages.Auth
             RegisterModel.Email = Email;
             RegisterModel.FirstName = FirstName;
             RegisterModel.LastName = LastName;
+            RegisterModel.UserName = UserName;
+
+            RegisterModel.LoginProvider = LoginProvider;
+            RegisterModel.ProviderName = ProviderName;
+            RegisterModel.ProviderKey = ProviderKey;
 
             if (!string.IsNullOrEmpty(Email))
             {
@@ -59,49 +88,49 @@ namespace EzioLearning.Wasm.Pages.Auth
                     option.ActionColor = Color.Warning;
                 });
             }
+
+            if (!string.IsNullOrEmpty(ProviderName))
+            {
+                SnackBar.Add($"Bạn đang sử dụng {ProviderName} để xác thực, hãy hoàn tất mẫu đăng ký nhé!", Severity.Info, option =>
+                {
+                    option.ActionColor = Color.Info;
+                });
+            }
         }
 
         private async Task OnValidSubmitRegisterForm()
         {
-            var multipartContent = new MultipartFormDataContent();
+            var data = await AuthService.Register(RegisterModel, File);
 
-
-            var key = $"model.{nameof(RegisterModel.FirstName)}";
-            Logger.LogInformation("Key:" + key);
-            if (File != null)
+            if (data!.Errors.Any())
             {
-                var fileContent = new StreamContent(File.OpenReadStream());
-                multipartContent.Add(fileContent, $"{nameof(RegisterModel.Avatar)}", File.Name);
+                foreach (var dataError in data.Errors)
+                {
+                    if (dataError.Value.Any())
+                    {
+                        foreach (var error in dataError.Value)
+                        {
+                            SnackBar.Add(error, Severity.Warning, option =>
+                            {
+                                option.ActionColor = Color.Warning;
+                            });
+                        }
+                    }
+                }
             }
 
-
-            multipartContent.Add(new StringContent(RegisterModel.FirstName!), nameof(RegisterModel.FirstName));
-            multipartContent.Add(new StringContent(RegisterModel.LastName!), nameof(RegisterModel.LastName));
-            multipartContent.Add(new StringContent(RegisterModel.UserName!), nameof(RegisterModel.UserName));
-            multipartContent.Add(new StringContent(RegisterModel.Password!), nameof(RegisterModel.Password));
-            multipartContent.Add(new StringContent(RegisterModel.ConfirmPassword!), nameof(RegisterModel.ConfirmPassword));
-            multipartContent.Add(new StringContent(RegisterModel.PhoneNumber!), nameof(RegisterModel.PhoneNumber));
-            multipartContent.Add(new StringContent(RegisterModel.Email!), nameof(RegisterModel.Email));
-            multipartContent.Add(new StringContent(RegisterModel.DateOfBirth.ToString("yyyy-MM-dd")), nameof(RegisterModel.DateOfBirth));
-
-            var response = await HttpClient.PostAsync("api/Auth/Register", multipartContent);
-
-            await using var stream = await response.Content.ReadAsStreamAsync();
-
-            ResponseBase? data = null;
-            switch (response.StatusCode)
+            switch (data.Status)
             {
                 case HttpStatusCode.BadRequest:
 
-                    data = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
                     break;
                 case HttpStatusCode.OK:
 
-                    data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream, JsonCommonOptions.DefaultSerializer);
+                    await TokenService.SaveFromResponse(data);
                     break;
             }
 
-            Logger.LogInformation(data!.Message);
+            Logger.LogInformation(data.Message);
         }
     }
 }

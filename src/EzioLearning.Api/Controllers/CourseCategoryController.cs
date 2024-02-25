@@ -29,7 +29,7 @@ namespace EzioLearning.Api.Controllers
 			{
 				Data = data.ToList(),
 				Message = "Lấy dữ liệu thành công",
-				StatusCode = HttpStatusCode.OK
+				Status = HttpStatusCode.OK
 			});
 		}
 
@@ -55,7 +55,7 @@ namespace EzioLearning.Api.Controllers
 			{
 				Data = responseData.ToList(),
 				Message = "Lấy dữ liệu thành công",
-				StatusCode = HttpStatusCode.OK
+				Status = HttpStatusCode.OK
 			});
 		}
 
@@ -78,7 +78,7 @@ namespace EzioLearning.Api.Controllers
 				{
 					return BadRequest(new ResponseBase()
 					{
-						StatusCode = HttpStatusCode.BadRequest,
+						Status = HttpStatusCode.BadRequest,
 						Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
 					});
 				}
@@ -96,12 +96,12 @@ namespace EzioLearning.Api.Controllers
 			if (result > 0) return Ok(
 				new ResponseBase()
 				{
-					StatusCode = HttpStatusCode.OK,
+					Status = HttpStatusCode.OK,
 					Message = "Tạo mới danh mục thành công"
 				});
 			return BadRequest(new ResponseBase()
 			{
-				StatusCode = HttpStatusCode.BadRequest,
+				Status = HttpStatusCode.BadRequest,
 				Message = result.ToString()
 			});
 		}

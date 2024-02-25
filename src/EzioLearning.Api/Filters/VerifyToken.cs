@@ -23,7 +23,7 @@ namespace EzioLearning.Api.Filters
                 context.Result = new BadRequestObjectResult(new ResponseBase
                 {
                     Message = "Token giả mạo!",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
             }
             base.OnActionExecuting(context);

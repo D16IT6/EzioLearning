@@ -38,6 +38,7 @@ namespace EzioLearning.Wasm
             builder.Services.AddCascadingAuthenticationState();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
 

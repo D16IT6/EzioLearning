@@ -11,7 +11,6 @@ using EzioLearning.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SlugGenerator;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -41,6 +40,7 @@ namespace EzioLearning.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> CreateNewUser([FromForm] RegisterRequestDto model)
         {
+            var errors = new Dictionary<string, string[]>();
             var newUser = mapper.Map<AppUser>(model);
             var image = model.Avatar;
 
@@ -52,10 +52,12 @@ namespace EzioLearning.Api.Controllers
             {
                 if (!fileService.IsImageAccept(image.FileName))
                 {
+                    errors.Add("Image", ["Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"]);
                     return BadRequest(new ResponseBase()
                     {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác",
+                        Errors = errors
                     });
                 }
 
@@ -64,31 +66,57 @@ namespace EzioLearning.Api.Controllers
 
             newUser.Avatar = imagePath;
 
-            var addToRoleResult = await userManager.AddToRoleAsync(newUser, RoleConstants.User);
 
-            if (!addToRoleResult.Succeeded)
+
+            var result = await userManager.CreateAsync(newUser, model.Password!);
+
+            
+            if (result.Succeeded)
             {
-                return BadRequest(new ResponseBaseWithList<IdentityError>()
+                var addToRoleResult = await userManager.AddToRoleAsync(newUser, RoleConstants.User);
+
+                if (!addToRoleResult.Succeeded)
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Data = addToRoleResult.Errors.ToList(),
-                    Message = "Thêm quyền vào tài khoản thất bại, vui lòng xem lỗi"
+                    foreach (var addToRole in addToRoleResult.Errors)
+                    {
+                        errors.Add(addToRole.Code, [addToRole.Description]);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(model.ProviderKey) && !string.IsNullOrEmpty(model.LoginProvider))
+                {
+                    var addToLoginResult = await userManager.AddLoginAsync(newUser,
+                        new UserLoginInfo(model.LoginProvider, model.ProviderKey, model.ProviderName));
+
+                    if (addToLoginResult.Succeeded)
+                    {
+                        return Ok(new ResponseBaseWithData<TokenResponse>()
+                        {
+                            Status = HttpStatusCode.OK,
+                            Message = $"Tạo tài khoản mới và liên kết tới {model.ProviderName} thành công",
+                            Data = await GenerateAndCacheToken(newUser)
+                        });
+                    }
+
+                    foreach (var error in addToLoginResult.Errors)
+                    {
+                        errors.Add(error.Code, [error.Description]);
+                    }
+
+                }
+                return Ok(new ResponseBase()
+                {
+                    Status = HttpStatusCode.OK,
+                    Message = $"Tạo tài khoản mới thành công nhưng chưa liên kết được tới ${model.ProviderName}. Hãy dùng tính năng đăng nhập để xác thực lại!",
+                    Errors = errors
                 });
             }
 
-            var result = await userManager.CreateAsync(newUser, model.Password!);
-            if (result.Succeeded)
-                return Ok(new ResponseBase()
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Message = "Tạo tài khoản mới thành công"
-                });
-
-            return BadRequest(new ResponseBaseWithList<string>()
+            return BadRequest(new ResponseBase()
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Data = result.Errors.Select(x => x.Description).ToList(),
-                Message = "Tạo tài khoản thất bại, vui lòng xem lỗi"
+                Status = HttpStatusCode.BadRequest,
+                Message = "Tạo tài khoản thất bại, vui lòng xem lỗi",
+                Errors = errors
             });
         }
 
@@ -106,7 +134,7 @@ namespace EzioLearning.Api.Controllers
             if (user == null)
                 return BadRequest(new ResponseBase()
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    Status = HttpStatusCode.BadRequest,
                     Message = "Không tìm thấy tài khoản"
                 });
 
@@ -118,26 +146,26 @@ namespace EzioLearning.Api.Controllers
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản bị khoá",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
             if (signInResult.IsNotAllowed)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản chưa xác thực",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
 
             if (signInResult.RequiresTwoFactor)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Tài khoản cần xác thực 2 lớp",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
             if (!signInResult.Succeeded)
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Thông tin đăng nhập không chính xác",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
 
             var memoryToken = cacheService.Get<string>(user.CacheKey ?? "", PrefixCache);
@@ -160,7 +188,7 @@ namespace EzioLearning.Api.Controllers
             {
                 Data = jwtToken,
                 Message = "Đăng nhập thành công",
-                StatusCode = HttpStatusCode.OK
+                Status = HttpStatusCode.OK
             });
         }
 
@@ -180,7 +208,7 @@ namespace EzioLearning.Api.Controllers
             }
             return Ok(new ResponseBase()
             {
-                StatusCode = HttpStatusCode.OK,
+                Status = HttpStatusCode.OK,
                 Message = "Revoked token!"
             });
         }
@@ -196,7 +224,7 @@ namespace EzioLearning.Api.Controllers
             {
                 return BadRequest(new ResponseBase()
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    Status = HttpStatusCode.BadRequest,
                     Message = "Fake request!"
                 });
             }
@@ -207,7 +235,7 @@ namespace EzioLearning.Api.Controllers
             {
                 Data = jwtToken,
                 Message = "Refresh token thành công",
-                StatusCode = HttpStatusCode.OK
+                Status = HttpStatusCode.OK
             });
 
         }
@@ -265,7 +293,7 @@ namespace EzioLearning.Api.Controllers
                 return BadRequest(new ResponseBase()
                 {
                     Message = "Không tìm được return url",
-                    StatusCode = HttpStatusCode.BadRequest
+                    Status = HttpStatusCode.BadRequest
                 });
 
             var uriBuilder = new UriBuilder(returnUrl);
@@ -292,8 +320,6 @@ namespace EzioLearning.Api.Controllers
             var fullName = info.Principal.Identity!.Name;
 
             var email = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)!.Value;
-
-            var errorBuilder = new StringBuilder();
 
             //đã có user
             if (externalLoginResult.Succeeded)
@@ -335,55 +361,31 @@ namespace EzioLearning.Api.Controllers
 
             string lastName = fullName.Substring(lastSpaceIndex + 1);
 
-            var newUser = new AppUser()
-            {
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                Id = userId,
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                UserName = fullName.GenerateSlug(),
-                LockoutEnabled = false,
-                Avatar = ImageConstants.DefaultAvatarImage
+            string userName = email.Substring(0, email.IndexOf("@", StringComparison.Ordinal));
 
-            };
+            var loginProvider = info.LoginProvider;
+            var providerKey = info.ProviderKey;
+            var providerName = info.ProviderDisplayName;
 
-            var newUserCreateResult = await userManager.CreateAsync(newUser);
 
-            if (newUserCreateResult.Succeeded)
-            {
-                await userManager.AddToRoleAsync(newUser, RoleConstants.User);
 
-                var addLoginInfoResult = await userManager.AddLoginAsync(newUser, info);
+            query[nameof(userId)] = userId.ToString();
+            query[nameof(email)] = email;
+            query[nameof(firstName)] = firstName;
+            query[nameof(lastName)] = lastName;
+            query[nameof(userName)] = userName;
 
-                if (addLoginInfoResult.Succeeded)
-                {
-                    query[nameof(userId)] = userId.ToString();
-                    query[nameof(email)] = email;
-                    query[nameof(firstName)] = firstName;
-                    query[nameof(lastName)] = lastName;
-                    query["NeedRegister"] = true.ToString();
-                }
-                else
-                {
-                    errorBuilder.AppendJoin(',', addLoginInfoResult.Errors.Select(x => x.Description));
-                    query["BackToLogin"] = true.ToString();
-                }
-            }
-            else
-            {
-                errorBuilder.AppendJoin(',', newUserCreateResult.Errors.Select(x => x.Description));
-                query["BackToLogin"] = true.ToString();
-            }
+            query[nameof(loginProvider)] = loginProvider;
+            query[nameof(providerKey)] = providerKey;
+            query[nameof(providerName)] = providerName;
 
-            query["Errors"] = errorBuilder.ToString();
+            query["NeedRegister"] = true.ToString();
+
+
 
             uriBuilder.Query = query.ToString();
             return Redirect(uriBuilder.ToString());
         }
-
-
         #endregion
 
         #region Support Method

@@ -1,7 +1,7 @@
 ﻿@layout EmptyLayout
 
+@using DataJuggler.Blazor.FileUpload
 @using EzioLearning.Wasm.Components.Auth
-@using EzioLearning.Core.Dtos.Validators.User
 @using EzioLearning.Core.Dtos.Validators.Auth
 
 @attribute [Route(RouteConstants.Register)]
@@ -46,7 +46,7 @@
                         <div class="col-xxl-6">
                             <div class="input-block">
                                 <label class="form-control-label">Email</label>
-                                <InputText @bind-Value="RegisterModel.Email" type="email" class="form-control" placeholder="Địa chỉ email của bạn" disabled="@DisabledEmail"/>
+                                <InputText @bind-Value="RegisterModel.Email" type="email" class="form-control" placeholder="Địa chỉ email của bạn" disabled="@DisabledEmail" />
                                 <ValidationMessage For="() => RegisterModel.Email" class="text-danger mt-1 ms-1"></ValidationMessage>
 
                             </div>
@@ -72,7 +72,7 @@
                         <div class="col-xxl-6">
                             <div class="input-block">
                                 <label class="form-control-label">Ảnh đại diện</label>
-                                <InputFile @bind-Value="RegisterModel.Avatar" OnChange="LoadFile" accept="@string.Join(',', AcceptTypes)" placeholder="Ảnh đại diện" class="pt-3 form-control" />
+                                <InputFile @bind-Value="RegisterModel.Avatar" OnChange="LoadFile" accept="" placeholder="Ảnh đại diện" class="pt-3 form-control" />
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,14 @@
                     <div class="form-check remember-me">
                         <label class="form-check-label mb-0">
                             <InputCheckbox @bind-Value="RegisterModel.AllowPolicy" class="form-check-input" type="checkbox" name="remember" />
-                            Tôi đồng ý với <a href="term-condition.html">Terms of Service</a> and <a href="privacy-policy.html">Privacy Policy.</a>
+                            Tôi đồng ý với
+                            <NavLink Match="NavLinkMatch.All" href="@RouteConstants.TermCondition">
+                                điều khoản dịch vụ
+                            </NavLink>
+                            và
+                            <NavLink Match="NavLinkMatch.All" href="@RouteConstants.PrivacyPolicy">
+                                chính sách bảo mật.
+                            </NavLink>
 
                             <ValidationMessage For="() => RegisterModel.AllowPolicy" class="text-danger mt-1"></ValidationMessage>
                         </label>
@@ -119,14 +126,16 @@
                 </EditForm>
             </div>
             <div class="google-bg text-center">
-                <span><a href="#">Or sign in with</a></span>
-                <div class="sign-google">
-                    <ul>
-                        <li><a href="#"><img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo"> Sign In using Google</a></li>
-                        <li><a href="#"><img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">Sign In using Facebook</a></li>
-                    </ul>
-                </div>
-                <p class="mb-0">Already have an account? <a href="login.html">Sign in</a></p>
+                <span><a href="#">Hoặc đăng ký với</a></span>
+                
+                <ExternalProvider></ExternalProvider>
+
+                <p class="mb-0">
+                    Đã có tài khoản?
+                    <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Login">
+                        Đăng nhập
+                    </NavLink>
+                </p>
             </div>
         </div>
     </div>

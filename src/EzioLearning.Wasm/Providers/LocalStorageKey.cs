@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Wasm.Common
+﻿namespace EzioLearning.Wasm.Providers
 {
     public record LocalStorageKey
     {

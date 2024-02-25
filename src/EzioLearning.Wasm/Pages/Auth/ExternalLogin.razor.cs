@@ -1,5 +1,4 @@
 ﻿using Blazored.LocalStorage;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Providers;
 using Microsoft.AspNetCore.Components;
 
@@ -21,8 +20,14 @@ namespace EzioLearning.Wasm.Pages.Auth
         public string? FirstName { get; set; }
         [SupplyParameterFromQuery]
         public string? LastName { get; set; }
-
-        [SupplyParameterFromQuery] private string[] Errors { get; set; } = [];
+        [SupplyParameterFromQuery]
+        public string? UserName { get; set; }
+        [SupplyParameterFromQuery]
+        public string? LoginProvider { get; set; }
+        [SupplyParameterFromQuery]
+        public string? ProviderKey { get; set; }
+        [SupplyParameterFromQuery]
+        public string? ProviderName { get; set; }
 
         [SupplyParameterFromQuery]
         public string? AccessToken { get; set; }
@@ -56,7 +61,10 @@ namespace EzioLearning.Wasm.Pages.Auth
                     {nameof(Email),Email},
                     {nameof(FirstName),FirstName},
                     {nameof(LastName),LastName},
-                    {"FromExternal",true}
+                    {nameof(UserName),UserName},
+                    {nameof(LoginProvider),LoginProvider},
+                    {nameof(ProviderKey),ProviderKey},
+                    {nameof(ProviderName),ProviderName},
                 };
                 var registerUrl = NavigationManager.GetUriWithQueryParameters(RouteConstants.Register, queryStringParams);
 

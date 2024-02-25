@@ -1,6 +1,6 @@
-﻿namespace EzioLearning.Wasm.Common
+﻿namespace EzioLearning.Wasm.Providers
 {
-    public record RouteConstants
+    public abstract record RouteConstants
     {
         public const string Home = "/";
         public const string Login = $"/{nameof(Login)}";
@@ -10,6 +10,8 @@
         public const string Student = $"/{nameof(Student)}";
         public const string Register = $"/{nameof(Register)}";
         public const string ExternalLogin = $"/{nameof(ExternalLogin)}";
+        public const string TermCondition = $"/{nameof(TermCondition)}";
+        public const string PrivacyPolicy = $"/{nameof(PrivacyPolicy)}";
         public record Error
         {
             public const string NotFound = $"/{nameof(NotFound)}";
@@ -17,5 +19,5 @@
         }
     }
 
-    
+
 }
