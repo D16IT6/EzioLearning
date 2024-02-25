@@ -39,6 +39,7 @@ namespace EzioLearning.Wasm
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<ISnackBarService, SnackBarService>();
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
 

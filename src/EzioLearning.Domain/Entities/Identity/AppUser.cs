@@ -29,6 +29,9 @@ public class AppUser : IdentityUser<Guid>
     public Guid CreatedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public Guid ModifiedBy { get; set; }
+    public override bool LockoutEnabled { get; set; } = false;
+    public override bool EmailConfirmed { get; set; } = true;
+    public override bool PhoneNumberConfirmed { get; set; } = true;
 
     [NotMapped] public string FullName => $"{FirstName} {LastName}";
 }

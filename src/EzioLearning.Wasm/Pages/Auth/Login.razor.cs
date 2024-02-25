@@ -16,9 +16,7 @@ namespace EzioLearning.Wasm.Pages.Auth
         [Inject] private ILogger<Login> Logger { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
-
-        private string GoogleCallbackUrl { get; set; } = string.Empty;
-        private string FacebookCallbackUrl { get; set; } = string.Empty;
+        [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
 
         public async Task LoginSubmit()
         {
@@ -42,26 +40,8 @@ namespace EzioLearning.Wasm.Pages.Auth
             }
             else
             {
-                SnackBar.Add(result.Message, Severity.Error, configure =>
-                {
-                    configure.ActionColor = Color.Error;
-                    configure.Icon = Icons.Material.Filled.Login;
-                    configure.IconColor = Color.Error;
-                    configure.IconSize = Size.Large;
-                });
+                SnackBarService.ShowErrorFromResponse(result);
             }
-        }
-        protected override void OnInitialized()
-        {
-            GoogleCallbackUrl = 
-                $"{ApiConstants.BaseUrl}api/Auth/GoogleLogin?returnUrl=" +
-                NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
-            base.OnInitialized();
-            
-            FacebookCallbackUrl = 
-                $"{ApiConstants.BaseUrl}api/Auth/FacebookLogin?returnUrl=" +
-                NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
-            base.OnInitialized();
         }
     }
 }

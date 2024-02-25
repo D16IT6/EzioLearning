@@ -21,12 +21,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EzioLearning.Api
 {
-    public static class Startup
+    static class Startup
     {
-        public static void ConfigureBuilder(this WebApplicationBuilder builder)
+        internal static void ConfigureBuilder(this WebApplicationBuilder builder)
         {
             var services = builder.Services;
             var configuration = builder.Configuration;
+
+
 
             services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -70,16 +72,33 @@ namespace EzioLearning.Api
 
             services.AddMemoryCache();
 
+            services.ConfigureLocalService(configuration);
+
+        }
+
+        private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
+        {
             services.AddSingleton<CacheService>();
             services.AddTransient<JwtService>();
             services.AddTransient<FileService>();
+
+
+
+            services.AddSingleton(serviceProvider =>
+            {
+                MailSettings mailSettings = new();
+                configuration.Bind(nameof(mailSettings), mailSettings);
+                return mailSettings;
+            });
+            services.AddTransient<MailService>();
+
         }
 
-        public static void ConfigureIdentity(this IServiceCollection services)
+        private static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentity<AppUser, AppRole>()
                 .AddEntityFrameworkStores<EzioLearningDbContext>()
-                .AddApiEndpoints();
+                .AddDefaultTokenProviders();
 
 
             services.Configure<IdentityOptions>(option =>
@@ -97,7 +116,7 @@ namespace EzioLearning.Api
                 option.Password.RequiredLength = 6;
 
                 //Lockout options
-                option.Lockout.AllowedForNewUsers = true;
+                option.Lockout.AllowedForNewUsers = false;
                 option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 option.Lockout.MaxFailedAccessAttempts = 3;
 
@@ -105,6 +124,8 @@ namespace EzioLearning.Api
 
                 option.User.RequireUniqueEmail = true;
             });
+            services.Configure<DataProtectionTokenProviderOptions>(o =>
+                o.TokenLifespan = TimeSpan.FromHours(2));//limit verify code time
 
 
         }
@@ -147,7 +168,7 @@ namespace EzioLearning.Api
         }
 
 
-        public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtConfiguration = new JwtConfiguration
             {
@@ -185,27 +206,27 @@ namespace EzioLearning.Api
                     //external login
                     options.TokenHandlers.Add(new GoogleJwtTokenHandler(externalAuthentication.Google.ClientId));
 
-                }).AddGoogle( options =>
+                }).AddGoogle(options =>
                 {
                     options.ClientId = externalAuthentication.Google.ClientId;
                     options.ClientSecret = externalAuthentication.Google.ClientSecret;
-                }).AddFacebook( options =>
+                }).AddFacebook(options =>
                 {
                     options.ClientId = externalAuthentication.Facebook.ClientId;
                     options.ClientSecret = externalAuthentication.Facebook.ClientSecret;
                 });
-            
+
             services.AddAuthorization();
         }
 
-        public static void MigrateData(this WebApplication app)
+        private static void MigrateData(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
             using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
             context.Database.Migrate();
             new DataSeeder().SeedAsync(context).Wait();
         }
-        public static void Configure(this WebApplication app)
+        internal static void Configure(this WebApplication app)
         {
             ConnectionConstants.ConnectionStringName = ConnectionStringName.Production;
 

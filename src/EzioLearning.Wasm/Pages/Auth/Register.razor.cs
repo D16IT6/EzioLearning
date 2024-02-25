@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Wasm.Providers;
 
 namespace EzioLearning.Wasm.Pages.Auth
 {
@@ -29,9 +30,13 @@ namespace EzioLearning.Wasm.Pages.Auth
         [Inject] private ILogger<Register> Logger { get; set; } = default!;
 
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
+        [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
         [Inject] private IAuthService AuthService { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private ITokenService TokenService { get; set; } = default!;
 
+        private bool DisableSubmitButton { get; set; } = false;
+        private string SubmitButtonText { get; set; } = "Đăng ký";
 
         private const long UploadLimit = 10 * 1024 * 1024;
         private const string FileTooLargeMessage = "File quá lớn, không được phép!";
@@ -100,37 +105,38 @@ namespace EzioLearning.Wasm.Pages.Auth
 
         private async Task OnValidSubmitRegisterForm()
         {
+            SubmitButtonText = "Đang xử lý...";
+            DisableSubmitButton = true;
             var data = await AuthService.Register(RegisterModel, File);
 
-            if (data!.Errors.Any())
-            {
-                foreach (var dataError in data.Errors)
-                {
-                    if (dataError.Value.Any())
-                    {
-                        foreach (var error in dataError.Value)
-                        {
-                            SnackBar.Add(error, Severity.Warning, option =>
-                            {
-                                option.ActionColor = Color.Warning;
-                            });
-                        }
-                    }
-                }
-            }
-
-            switch (data.Status)
+            
+            switch (data!.Status)
             {
                 case HttpStatusCode.BadRequest:
 
+                    DisableSubmitButton = false;
+                    SubmitButtonText = "Đăng ký";
+
+                    StateHasChanged();
+
+                    SnackBarService.ShowErrorFromResponse(data);
                     break;
+
                 case HttpStatusCode.OK:
 
+                    SubmitButtonText = "Đăng ký thành công!";
+                    StateHasChanged();
+
                     await TokenService.SaveFromResponse(data);
+                    SnackBar.Add("Đăng ký tài khoản thành công!", Severity.Success, option =>
+                    {
+                        option.ActionColor = Color.Success;
+                        option.CloseAfterNavigation = true;
+                    });
+                    await Task.Delay(2000);
+                    NavigationManager.NavigateTo(RouteConstants.Home,forceLoad:true);
                     break;
             }
-
-            Logger.LogInformation(data.Message);
         }
     }
 }

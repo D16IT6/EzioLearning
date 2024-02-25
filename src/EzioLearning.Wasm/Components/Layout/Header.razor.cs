@@ -32,6 +32,15 @@ namespace EzioLearning.Wasm.Components.Layout
             }
         }
 
+        private string _headerPage = "header-page";
+        protected override void OnInitialized()
+        {
+            if (NavigationManager.Uri.Equals(NavigationManager.BaseUri))
+            {
+                _headerPage = "";
+            }
+        }
+
         private async Task Logout()
         {
             var data = await AuthService!.Logout();

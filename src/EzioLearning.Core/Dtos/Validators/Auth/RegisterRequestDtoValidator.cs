@@ -53,7 +53,8 @@ namespace EzioLearning.Core.Dtos.Validators.Auth
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Mật khẩu không được để trống")
-                .MinimumLength(8).WithMessage("Mật khẩu ít nhất 8 ký tự");
+                .MinimumLength(8).WithMessage("Mật khẩu ít nhất 8 ký tự")
+                .MaximumLength(32).WithMessage("Mật khẩu không được quá 32 ký tự");
 
             RuleFor(x => x.ConfirmPassword)
                 .Equal(x => x.Password).WithMessage("Mật khẩu xác thực cần trùng khớp");

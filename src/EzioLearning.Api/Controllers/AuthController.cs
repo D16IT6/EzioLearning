@@ -16,6 +16,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Web;
+using EzioLearning.Api.Models.Auth;
+using System;
 
 namespace EzioLearning.Api.Controllers
 {
@@ -26,14 +28,117 @@ namespace EzioLearning.Api.Controllers
         SignInManager<AppUser> signInManager,
         JwtService jwtService,
         JwtConfiguration jwtConfiguration,
-        CacheService cacheService, FileService fileService, IMapper mapper)
+        CacheService cacheService,
+        FileService fileService,
+        IMapper mapper,
+        MailService mailService)
         : ControllerBase
     {
         private static readonly string PrefixCache = CacheConstant.AccessToken;
         private static readonly string ExternalLoginCallback = ExternalLoginConstants.CallBackPath;
         private static readonly string FolderPath = "Uploads/Images/Users/";
 
+        #region Password Handler
 
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
+        {
+            var errors = new Dictionary<string, string[]>();
+
+            var user = await userManager.FindByEmailAsync(model.Email!);
+            if (user == null)
+            {
+                errors.Add("Email", ["Email không tồn tại trong hệ thống"]);
+                return BadRequest(new ResponseBase()
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Errors = errors,
+                });
+            }
+
+            var verifyCode = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (string.IsNullOrEmpty(verifyCode))
+            {
+                errors.Add("VerifyCode", ["Không thể tạo VerifyCode, vui lòng thử lại"]);
+                return BadRequest(new ResponseBase()
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Errors = errors,
+                });
+            }
+
+            var uriBuilder = new UriBuilder(model.ClientConfirmUrl!);
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+            query[nameof(verifyCode)] = verifyCode;
+            query[nameof(user.Email)] = user.Email;
+
+            uriBuilder.Query = query.ToString();
+
+            var bodyBuilder = new StringBuilder();
+            bodyBuilder.AppendLine($"<h2>Xin Chào {user.FullName}!</h2>");
+            bodyBuilder.AppendLine($"<p>Gần đây bạn đã gửi yêu cầu khôi phục mật khẩu từ chúng tôi</p>");
+            bodyBuilder.AppendLine($"<p>Nếu bạn là người yêu cầu, hãy bấm vào " +
+                                   $"<a href=\"{uriBuilder.ToString()}\">đây</a>" +
+                                   $" để khôi phục mật khẩu. Link có tác dụng trong 2 giờ</p>");
+            bodyBuilder.AppendLine($"<p>Nếu không, xin hãy bỏ qua thư này!</p>");
+            bodyBuilder.AppendLine("<h3>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</h3>");
+
+            var mailContent = new MailContent
+            {
+                Subject = "Thư xác thực khôi phục mật khẩu",
+                HtmlBody = bodyBuilder.ToString(),
+                To = user.Email
+            };
+
+            await mailService.SendMail(mailContent);
+            return Ok(new ResponseBase()
+            {
+                Message = "Gửi email khôi phục thành công",
+                Status = HttpStatusCode.OK
+            });
+        }
+
+        [HttpPost(nameof(ConfirmPassword))]
+
+        public async Task<IActionResult> ConfirmPassword(ConfirmPasswordDto model)
+        {
+            var errors = new Dictionary<string, string[]>();
+            if (string.IsNullOrEmpty(model.VerifyCode))
+            {
+                errors.Add(nameof(model.VerifyCode), ["VerifyCode lỗi, không thể xác thực"]);
+            }
+
+            var user = await userManager.FindByEmailAsync(model.Email!);
+            if (user == null)
+            {
+                errors.Add(nameof(model.Email), ["Email không tồn tại trên hệ thống"]);
+            }
+
+            var confirmPasswordResult =
+                await userManager.ResetPasswordAsync(user!, model.VerifyCode!, model.ConfirmPassword!);
+
+            errors.Add("ResetPassword", confirmPasswordResult.Errors.Select(x => x.Description).ToArray());
+
+            if (errors.Any())
+            {
+                return Ok(new ResponseBase()
+                {
+                    Message = "Khôi phục mật khẩu thành công",
+                    Status = HttpStatusCode.OK,
+                });
+            }
+
+            return BadRequest(new ResponseBase()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Errors = errors
+            });
+
+        }
+
+        #endregion
         #region Register
 
         [HttpPost("Register")]
@@ -70,7 +175,7 @@ namespace EzioLearning.Api.Controllers
 
             var result = await userManager.CreateAsync(newUser, model.Password!);
 
-            
+
             if (result.Succeeded)
             {
                 var addToRoleResult = await userManager.AddToRoleAsync(newUser, RoleConstants.User);
@@ -104,11 +209,11 @@ namespace EzioLearning.Api.Controllers
                     }
 
                 }
-                return Ok(new ResponseBase()
+                return Ok(new ResponseBaseWithData<TokenResponse>()
                 {
                     Status = HttpStatusCode.OK,
-                    Message = $"Tạo tài khoản mới thành công nhưng chưa liên kết được tới ${model.ProviderName}. Hãy dùng tính năng đăng nhập để xác thực lại!",
-                    Errors = errors
+                    Message = $"Tạo tài khoản mới thành công!",
+                    Data = await GenerateAndCacheToken(newUser)
                 });
             }
 
@@ -139,7 +244,7 @@ namespace EzioLearning.Api.Controllers
                 });
 
             var signInResult = await signInManager
-                .CheckPasswordSignInAsync(user, model.PassWord!, true);
+                .CheckPasswordSignInAsync(user, model.Password!, true);
 
 
             if (signInResult.IsLockedOut)

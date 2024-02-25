@@ -9,5 +9,8 @@ namespace EzioLearning.Wasm.Services
         public Task<ResponseBase?> Login(LoginRequestDto loginRequestDto);
         public Task<ResponseBase?> Register(RegisterRequestClientDto registerRequestClientDto,IBrowserFile? avatar = null);
         public Task<ResponseBase?> Logout();
+
+        public Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto);
+        public Task<ResponseBase?> ConfirmPassword(ConfirmPasswordDto confirmPasswordDto);
     }
 }

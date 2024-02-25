@@ -5,13 +5,18 @@ using EzioLearning.Core.Models.Token;
 using EzioLearning.Wasm.Providers;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using System.IO;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace EzioLearning.Wasm.Services
 {
-    public class AuthService(HttpClient httpClient, ITokenService tokenService, AuthenticationStateProvider stateProvider) : IAuthService
+    public class AuthService(
+        HttpClient httpClient,
+        ITokenService tokenService,
+        AuthenticationStateProvider stateProvider
+        ) : IAuthService
     {
         private readonly ApiAuthenticationStateProvider _apiAuthenticationStateProvider =
             (ApiAuthenticationStateProvider)stateProvider;
@@ -37,7 +42,9 @@ namespace EzioLearning.Wasm.Services
 
             if (avatar != null)
             {
-                var fileContent = new StreamContent(avatar.OpenReadStream());
+                await using FileStream fs = new(Path.GetRandomFileName(), FileMode.Create);
+
+                var fileContent = new StreamContent(avatar.OpenReadStream(avatar.Size));
 
                 multipartContent.Add(fileContent, $"{nameof(model.Avatar)}", avatar.Name);
             }
@@ -54,10 +61,18 @@ namespace EzioLearning.Wasm.Services
             multipartContent.Add(new StringContent(model.DateOfBirth.ToString("yyyy-MM-dd")), nameof(model.DateOfBirth));
 
 
-            multipartContent.Add(new StringContent(model.LoginProvider!), nameof(model.LoginProvider));
-            multipartContent.Add(new StringContent(model.ProviderName!), nameof(model.ProviderName));
-            multipartContent.Add(new StringContent(model.ProviderKey!), nameof(model.ProviderKey));
-
+            if (!string.IsNullOrEmpty(model.LoginProvider))
+            {
+                multipartContent.Add(new StringContent(model.LoginProvider!), nameof(model.LoginProvider));
+            }
+            if (!string.IsNullOrEmpty(model.ProviderKey))
+            {
+                multipartContent.Add(new StringContent(model.ProviderKey!), nameof(model.ProviderKey));
+            }
+            if (!string.IsNullOrEmpty(model.ProviderName))
+            {
+                multipartContent.Add(new StringContent(model.ProviderName!), nameof(model.ProviderName));
+            }
 
             var response = await httpClient.PostAsync("api/Auth/Register", multipartContent);
 
@@ -83,6 +98,30 @@ namespace EzioLearning.Wasm.Services
             _apiAuthenticationStateProvider.MarkUserAsLoggedOut();
 
             return data;
+        }
+
+        public async Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            var data = await httpClient.PostAsJsonAsync("api/Auth/ForgotPassword", forgotPasswordDto,
+                JsonCommonOptions.DefaultSerializer);
+
+            await using var responseStream = await data.Content.ReadAsStreamAsync();
+            var responseBase =
+                await JsonSerializer.DeserializeAsync<ResponseBase>(responseStream, JsonCommonOptions.DefaultSerializer);
+
+            return responseBase;
+        }
+
+        public async Task<ResponseBase?> ConfirmPassword(ConfirmPasswordDto confirmPasswordDto)
+        {
+            var data = await httpClient.PostAsJsonAsync("api/Auth/ConfirmPassword", confirmPasswordDto,
+                JsonCommonOptions.DefaultSerializer);
+
+            await using var responseStream = await data.Content.ReadAsStreamAsync();
+            var responseBase =
+                await JsonSerializer.DeserializeAsync<ResponseBase>(responseStream, JsonCommonOptions.DefaultSerializer);
+
+            return responseBase;
         }
     }
 }

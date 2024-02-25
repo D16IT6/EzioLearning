@@ -1,4 +1,5 @@
 ﻿@using EzioLearning.Wasm.Components.Auth
+@using EzioLearning.Core.Dtos.Validators.Auth
 @attribute [Route(RouteConstants.Login)]
 @layout EmptyLayout
 <div class="row">
@@ -24,10 +25,10 @@
                               Enhance="true"
                               Model="LoginRequest"
                               OnValidSubmit="LoginSubmit">
-                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <FluentValidationValidator Validator="new LoginRequestDtoValidator()" />
                         <div class="input-block">
                             <label class="form-control-label">Tài khoản</label>
-                            <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Enter your email address"></InputText>
+                            <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Tên đăng nhập của bạn"></InputText>
 
                             <ValidationMessage For="() => LoginRequest.UserName" class="text-danger"></ValidationMessage>
                         </div>
@@ -35,23 +36,15 @@
 
                             <label class="form-control-label">Mật khẩu</label>
                             <div class="pass-group">
-                                <InputText type="password" class="form-control pass-input" placeholder="Enter your password" @bind-Value="LoginRequest.PassWord"></InputText>
+                                <InputText type="password" class="form-control pass-input" placeholder="Mật khẩu của bạn" @bind-Value="LoginRequest.Password"></InputText>
 
                                 <span class="feather-eye toggle-password"></span>
                             </div>
-                            <ValidationMessage For="() => LoginRequest.PassWord" class="text-danger"></ValidationMessage>
+                            <ValidationMessage For="() => LoginRequest.Password" class="text-danger"></ValidationMessage>
 
                         </div>
-                        @* <div class="forgot">
-                        <span><a class="forgot-link" href="forgot-password.html">Quên mật khẩu ?</a></span>
-                        </div> *@
-                        @*   <div class="remember-me">
-                        <label class="custom_check mr-2 mb-0 d-inline-flex remember-me">
-                        Remember me
-                        <input type="checkbox" name="radio">
-                        <span class="checkmark"></span>
-                        </label>
-                        </div> *@
+
+                        <ForgotPasswordLink />
                         <div class="d-grid">
                             <button class="btn btn-primary btn-start" type="submit">Đăng nhập</button>
                         </div>

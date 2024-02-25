@@ -12,7 +12,7 @@ namespace EzioLearning.Api.Services
 			return ImageExtensions.Contains(extension);
 		}
 
-		public string GenerateActuallyFilePath(string path)
+        private string GenerateActuallyFilePath(string path)
 		{
 			var existCount = 0;
 			var pathBuilder = new StringBuilder(path);
@@ -37,7 +37,7 @@ namespace EzioLearning.Api.Services
 
         public async Task<string> SaveFile(IFormFile file,string folderPath,string outputFileNameWithoutExtension)
         {
-            var tempFilePath = Path.Combine(folderPath, outputFileNameWithoutExtension + Path.GetExtension(file.Name));
+            var tempFilePath = Path.Combine(folderPath, outputFileNameWithoutExtension + Path.GetExtension(file.FileName));
 
             var actuallyFilePath = GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
 
