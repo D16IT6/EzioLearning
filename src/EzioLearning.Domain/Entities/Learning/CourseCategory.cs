@@ -1,22 +1,19 @@
-﻿using EzioLearning.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using EzioLearning.Domain.Common;
 
-namespace EzioLearning.Domain.Entities.Learning
+namespace EzioLearning.Domain.Entities.Learning;
+
+[Table("CourseCategories", Schema = "Learning")]
+public class CourseCategory : AuditableEntity
 {
-    [Table(name: "CourseCategories", Schema = "Learning")]
+    public Guid Id { get; set; }
+    public required string Name { get; set; }
+    public string? Image { get; set; }
+    public bool IsActive { get; set; }
 
-    public class CourseCategory : AuditableEntity
-    {
-        public Guid Id { get; set; }
-        public required string Name { get; set; }
-        public string? Image { get; set; }
-        public bool IsActive { get; set; }
+    [ForeignKey(nameof(Parent))] public Guid? ParentId { get; set; }
 
-        [ForeignKey(nameof(Parent))]
-        public Guid? ParentId { get; set; }
-        public CourseCategory? Parent { get; set; }
+    public CourseCategory? Parent { get; set; }
 
-        public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
-
-    }
+    public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
 }

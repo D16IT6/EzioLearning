@@ -13,10 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dtos\Validators\Custom\" />
+    <ProjectReference Include="..\EzioLearning.Share.Dto\EzioLearning.Share.csproj" />
   </ItemGroup>
 
 </Project>

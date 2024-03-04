@@ -1,24 +1,20 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace EzioLearning.Wasm.Components.Auth
+namespace EzioLearning.Wasm.Components.Auth;
+
+public partial class LoginSlide
 {
-    public partial class LoginSlide
+    [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
+    private IJSObjectReference JsObjectReference { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
-        private IJSObjectReference JsObjectReference { get; set; } = default!;
+        if (firstRender)
+            JsObjectReference =
+                await JsRunTime.InvokeAsync<IJSObjectReference>
+                    ("import", $"/Components/Auth/{nameof(LoginSlide)}.razor.js");
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                JsObjectReference =
-                    await JsRunTime.InvokeAsync<IJSObjectReference>
-                        ("import", $"/Components/Auth/{nameof(LoginSlide)}.razor.js");
-            }
-
-            await JsObjectReference.InvokeVoidAsync("loadComponents");
-
-        }
+        await JsObjectReference.InvokeVoidAsync("loadComponents");
     }
 }

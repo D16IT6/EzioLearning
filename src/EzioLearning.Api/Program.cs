@@ -1,19 +1,18 @@
-namespace EzioLearning.Api
+namespace EzioLearning.Api;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
-            builder.ConfigureBuilder();
+        builder.ConfigureBuilder();
 
 
-            var app = builder.Build();
+        var app = builder.Build();
 
-            app.Configure();
+        app.Configure();
 
-            app.Run();
-        }
+        app.Run();
     }
 }

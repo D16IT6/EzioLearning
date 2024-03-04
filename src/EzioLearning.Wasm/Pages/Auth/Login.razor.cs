@@ -1,47 +1,43 @@
-﻿using System.Net;
-using EzioLearning.Core.Dtos.Auth;
-using EzioLearning.Wasm.Providers;
+﻿using EzioLearning.Share.Dto.Auth;
+using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services;
+using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Size = MudBlazor.Size;
+using System.Net;
 
-namespace EzioLearning.Wasm.Pages.Auth
+namespace EzioLearning.Wasm.Pages.Auth;
+
+public partial class Login
 {
-    public partial class Login
+    [SupplyParameterFromForm] public LoginRequestDto LoginRequest { get; set; } = new();
+
+    [Inject] private IAuthService AuthService { get; set; } = default!;
+    [Inject] private ILogger<Login> Logger { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ISnackbar SnackBar { get; set; } = default!;
+    [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+
+    public async Task LoginSubmit()
     {
-        [SupplyParameterFromForm] public LoginRequestDto LoginRequest { get; set; } = new();
+        var result = await AuthService.Login(LoginRequest);
+        Logger.LogInformation(result!.Message);
 
-        [Inject] private IAuthService AuthService { get; set; } = default!;
-        [Inject] private ILogger<Login> Logger { get; set; } = default!;
-        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private ISnackbar SnackBar { get; set; } = default!;
-        [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
-
-        public async Task LoginSubmit()
+        if (result.Status == HttpStatusCode.OK)
         {
-            var result = await AuthService.Login(LoginRequest);
-            Logger.LogInformation(result!.Message);
-
-            if (result.Status == HttpStatusCode.OK)
+            SnackBar.Add(result.Message, Severity.Success, configure =>
             {
-                SnackBar.Add(result.Message, Severity.Success, (configure) =>
-                {
-                    configure.ActionColor = Color.Success;
-                    configure.CloseAfterNavigation = true;
-                    configure.Icon = Icons.Material.Filled.Login;
-                    configure.IconColor = Color.Success;
-                    configure.IconSize = Size.Large;
-                });
+                configure.ActionColor = Color.Success;
+                configure.CloseAfterNavigation = true;
+            });
 
-                await Task.Delay(2000);
+            await Task.Delay(2000);
 
-                NavigationManager.NavigateTo(RouteConstants.Home, true);
-            }
-            else
-            {
-                SnackBarService.ShowErrorFromResponse(result);
-            }
+            NavigationManager.NavigateTo(RouteConstants.Home, true);
+        }
+        else
+        {
+            SnackBarService.ShowErrorFromResponse(result);
         }
     }
 }

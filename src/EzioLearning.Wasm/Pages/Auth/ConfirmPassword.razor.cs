@@ -1,59 +1,51 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EzioLearning.Core.Dtos.Auth;
+﻿using EzioLearning.Share.Dto.Auth;
+using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services;
-using EzioLearning.Wasm.Providers;
+using EzioLearning.Wasm.Services.Interface;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 
+namespace EzioLearning.Wasm.Pages.Auth;
 
-namespace EzioLearning.Wasm.Pages.Auth
+public partial class ConfirmPassword
 {
-    public partial class ConfirmPassword
+    [SupplyParameterFromForm] private ConfirmPasswordDto ConfirmPasswordDto { get; } = new();
+
+    [Inject] private IAuthService AuthService { get; set; } = default!;
+    [Inject] private ISnackbar SnackBar { get; set; } = default!;
+    [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    [SupplyParameterFromQuery] private string VerifyCode { get; } = string.Empty;
+
+    [SupplyParameterFromQuery] private string Email { get; } = string.Empty;
+
+    protected override void OnInitialized()
     {
-        [SupplyParameterFromForm]
-        private ConfirmPasswordDto ConfirmPasswordDto { get; set; } = new();
+        ConfirmPasswordDto.VerifyCode = VerifyCode;
+        ConfirmPasswordDto.Email = Email;
+    }
 
-        [Inject] private IAuthService AuthService { get; set; } = default!;
-        [Inject] private ISnackbar SnackBar { get; set; } = default!;
-        [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
-        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    public async Task OnConfirmPasswordSubmit()
+    {
+        var data = await AuthService.ConfirmPassword(ConfirmPasswordDto);
 
-        [SupplyParameterFromQuery]
-        private string VerifyCode { get; set; } = String.Empty;
-        [SupplyParameterFromQuery]
-        private string Email { get; set; } = String.Empty;
-
-        protected override void OnInitialized()
+        switch (data!.Status)
         {
-            ConfirmPasswordDto.VerifyCode = VerifyCode;
-            ConfirmPasswordDto.Email = Email;
-        }
+            case HttpStatusCode.BadRequest:
+                SnackBarService.ShowErrorFromResponse(data);
+                break;
+            case HttpStatusCode.OK:
+                SnackBar.Add(data.Message, Severity.Success, option =>
+                {
+                    option.ActionColor = Color.Success;
+                    option.CloseAfterNavigation = true;
+                });
+                await Task.Delay(3000);
 
-        public async Task OnConfirmPasswordSubmit()
-        {
-            var data = await AuthService.ConfirmPassword(ConfirmPasswordDto);
-
-            switch (data!.Status)
-            {
-                case HttpStatusCode.BadRequest:
-                    SnackBarService.ShowErrorFromResponse(data);
-                    break;
-                case HttpStatusCode.OK:
-                    SnackBar.Add(data.Message, Severity.Success, option =>
-                    {
-                        option.ActionColor = Color.Success;
-                        option.CloseAfterNavigation = true;
-                    });
-                    await Task.Delay(3000);
-
-                    NavigationManager.NavigateTo(RouteConstants.Login);
-                    break;
-            }
+                NavigationManager.NavigateTo(RouteConstants.Login);
+                break;
         }
     }
 }

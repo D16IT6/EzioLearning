@@ -1,5 +1,5 @@
 ﻿@using EzioLearning.Wasm.Components.Auth
-@using EzioLearning.Core.Dtos.Validators.Auth
+@using EzioLearning.Share.Validators.Auth
 @attribute [Route(RouteConstants.Login)]
 @layout EmptyLayout
 <div class="row">
@@ -25,7 +25,7 @@
                               Enhance="true"
                               Model="LoginRequest"
                               OnValidSubmit="LoginSubmit">
-                        <FluentValidationValidator Validator="new LoginRequestDtoValidator()" />
+                        <FluentValidationValidator Validator="new LoginRequestDtoValidator()"/>
                         <div class="input-block">
                             <label class="form-control-label">Tài khoản</label>
                             <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Tên đăng nhập của bạn"></InputText>
@@ -44,7 +44,7 @@
 
                         </div>
 
-                        <ForgotPasswordLink />
+                        <ForgotPasswordLink/>
                         <div class="d-grid">
                             <button class="btn btn-primary btn-start" type="submit">Đăng nhập</button>
                         </div>
@@ -53,7 +53,7 @@
             </div>
             <div class="google-bg text-center">
 
-                <span><a href="#">Hoặc đăng nhập bằng</a></span>
+                <span>Hoặc đăng nhập bằng</span>
                 <ExternalProvider></ExternalProvider>
 
                 <p class="mb-0">Người mới? <a href="@RouteConstants.Register">Tạo tài khoản</a></p>

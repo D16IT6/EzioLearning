@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using EzioLearning.Core.Dtos.Learning.CourseCategory;
+﻿using EzioLearning.Share.Dto.Learning.CourseCategory;
+using Microsoft.AspNetCore.Components;
 
+namespace EzioLearning.Wasm.Components.Home;
 
-namespace EzioLearning.Wasm.Components.Home
+public partial class HomeTopCategoryItem
 {
-    public partial class HomeTopCategoryItem
-    {
-        [CascadingParameter] private TopCourseCategoryDto TopCourseCategory { get; set; } = default!;
-
-    }
+    [CascadingParameter] private TopCourseCategoryDto TopCourseCategory { get; set; } = default!;
 }

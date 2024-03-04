@@ -1,13 +1,11 @@
 ﻿using BlazorAnimate;
 using Microsoft.AspNetCore.Components;
 
-namespace EzioLearning.Wasm.Components.Layout
+namespace EzioLearning.Wasm.Components.Layout;
+
+public partial class Footer
 {
-    public partial class Footer
-    {
-        [CascadingParameter]
-        private IAnimation? AnimationType { get; set; }
-        [CascadingParameter]
-        private TimeSpan AnimationDuration { get; set; }
-    }
+    [CascadingParameter] private IAnimation? AnimationType { get; set; }
+
+    [CascadingParameter] private TimeSpan AnimationDuration { get; set; }
 }

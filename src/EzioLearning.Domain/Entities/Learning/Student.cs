@@ -2,21 +2,20 @@
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 
-namespace EzioLearning.Domain.Entities.Learning
+namespace EzioLearning.Domain.Entities.Learning;
+
+[Table("Students", Schema = "Learning")]
+public class Student : AuditableTimeOnlyEntity
 {
-    [Table("Students", Schema = "Learning")]
-    public class Student : AuditableTimeOnlyEntity
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        public double Price { get; set; }
+    public double Price { get; set; }
 
-        [ForeignKey(nameof(Course))]
-        public Guid CourseId { get; set; }
-        public Course? Course { get; set; }
+    [ForeignKey(nameof(Course))] public Guid CourseId { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public Guid UserId { get; set; }
-        public AppUser? User { get; set; }
-    }
+    public Course? Course { get; set; }
+
+    [ForeignKey(nameof(User))] public Guid UserId { get; set; }
+
+    public AppUser? User { get; set; }
 }

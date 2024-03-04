@@ -1,50 +1,56 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="HomeTopCategory.razor.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="HomeTopCategory.razor.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Components\Home\HomeTopCategory.razor.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Components\Home\HomeTopCategory.razor.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazor.Bootstrap" Version="1.11.1" />
-    <PackageReference Include="BlazorAnimate" Version="3.0.0" />
-    <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
-    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="DataJuggler.Blazor.FileUpload" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="MudBlazor" Version="6.16.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
-    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Blazor.Bootstrap" Version="1.11.1" />
+		<PackageReference Include="BlazorAnimate" Version="3.0.0" />
+		<PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="DataJuggler.Blazor.FileUpload" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="MudBlazor" Version="6.16.0" />
+		<PackageReference Include="Serilog" Version="3.1.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+		<PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EzioLearning.Core\EzioLearning.Core.csproj" />
-    <ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
+		<ProjectReference Include="..\EzioLearning.Share.Dto\EzioLearning.Share.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Pages\Auth\Login.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Update="Pages\Auth\Login.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Components\Account\" />
+	</ItemGroup>
 
 </Project>

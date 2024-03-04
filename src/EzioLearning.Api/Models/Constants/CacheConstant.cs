@@ -1,7 +1,6 @@
-﻿namespace EzioLearning.Api.Models.Constants
+﻿namespace EzioLearning.Api.Models.Constants;
+
+public static class CacheConstant
 {
-    public static class CacheConstant
-    {
-        public static string AccessToken = nameof(AccessToken);
-    }
+    public static string AccessToken = nameof(AccessToken);
 }

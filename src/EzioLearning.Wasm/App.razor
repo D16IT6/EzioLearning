@@ -1,12 +1,19 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(GuestLayout)" />
-        @* <FocusOnNavigate RouteData="@routeData" Selector="h1" /> *@
-    </Found>
-    <NotFound>
-        <PageTitle>Không tìm thấy!</PageTitle>
-        <LayoutView Layout="@typeof(EmptyLayout)">
-            <EzioLearning.Wasm.Components.Error.NotFound />
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(GuestLayout)">
+
+                <NotAuthorized>
+                    <EzioLearning.Wasm.Components.Error.UnAuthorize/>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        </Found>
+        <NotFound>
+            <PageTitle>Không tìm thấy!</PageTitle>
+            <LayoutView Layout="@typeof(EmptyLayout)">
+                <EzioLearning.Wasm.Components.Error.NotFound/>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

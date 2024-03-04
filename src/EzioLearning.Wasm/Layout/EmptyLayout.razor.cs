@@ -1,7 +1,5 @@
-﻿
-namespace EzioLearning.Wasm.Layout
+﻿namespace EzioLearning.Wasm.Layout;
+
+public partial class EmptyLayout
 {
-    public partial class EmptyLayout
-    {
-    }
 }

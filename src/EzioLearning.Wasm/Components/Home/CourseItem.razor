@@ -1,11 +1,10 @@
-﻿
-<div class="product @CustomClass">
+﻿<div class="product @CustomClass">
     <div class="product-img">
         <a href="course-details.html">
             <img class="img-fluid" alt="" src="@CourseViewDto.Poster">
         </a>
         @{
-            string promotionOrFreeClass = CourseViewDto.Price == 0 ? "combo" : "";
+            var promotionOrFreeClass = CourseViewDto.Price == 0 ? "combo" : "";
         }
         <div class="price @promotionOrFreeClass">
             @if (CourseViewDto.Price > 0)
@@ -32,17 +31,25 @@
     <div class="product-content">
         <div class="course-group d-flex">
             <div class="course-group-img d-flex">
-                <a href="instructor-profile.html"><img src="@CourseViewDto.TeacherAvatar" alt="" class="img-fluid"></a>
+                <a href="instructor-profile.html">
+                    <img src="@CourseViewDto.TeacherAvatar" alt="" class="img-fluid">
+                </a>
                 <div class="course-name">
-                    <h4><a href="instructor-profile.html">@CourseViewDto.TeacherName</a></h4>
+                    <h4>
+                        <a href="instructor-profile.html">@CourseViewDto.TeacherName</a>
+                    </h4>
                     <p>Instructor</p>
                 </div>
             </div>
             <div class="course-share d-flex align-items-center justify-content-center">
-                <a href="#"><i class="fa-regular fa-heart"></i></a>
+                <a href="#">
+                    <i class="fa-regular fa-heart"></i>
+                </a>
             </div>
         </div>
-        <h3 class="title instructor-text"><a href="course-details.html">@CourseViewDto.Name</a></h3>
+        <h3 class="title instructor-text">
+            <a href="course-details.html">@CourseViewDto.Name</a>
+        </h3>
         <div class="course-info d-flex align-items-center">
             <div class="rating-img d-flex align-items-center">
                 <img src="assets/img/icon/icon-01.svg" alt="">

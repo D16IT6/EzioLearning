@@ -18,8 +18,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="MimeKit" Version="4.3.0" />
 		<PackageReference Include="SlugGenerator" Version="2.0.2" />
@@ -33,13 +33,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="wwwroot\Uploads\Images\CourseCategories\default-course-category.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+		<Content Update="wwwroot\Uploads\Images\CourseCategories\default-course-category.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\Uploads\Images\Users\" />
+		<Folder Include="wwwroot\Uploads\Images\Users\" />
 	</ItemGroup>
 
 </Project>

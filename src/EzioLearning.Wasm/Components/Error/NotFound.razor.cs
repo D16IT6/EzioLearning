@@ -1,7 +1,5 @@
-﻿namespace EzioLearning.Wasm.Components.Error
+﻿namespace EzioLearning.Wasm.Components.Error;
+
+public partial class NotFound
 {
-    public partial class NotFound
-    {
-        
-    }
 }

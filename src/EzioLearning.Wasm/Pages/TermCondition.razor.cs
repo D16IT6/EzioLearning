@@ -1,18 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace EzioLearning.Wasm.Pages;
 
-
-namespace EzioLearning.Wasm.Pages
+public partial class TermCondition
 {
-    public partial class TermCondition
-    {
-        public TermCondition()
-        {
-
-        }
-    }
 }

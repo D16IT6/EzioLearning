@@ -1,55 +1,50 @@
 ﻿using EzioLearning.Domain.Common;
-using EzioLearning.Wasm.Providers;
-using EzioLearning.Wasm.Services;
+using EzioLearning.Wasm.Common;
+using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace EzioLearning.Wasm.Components.Layout
+namespace EzioLearning.Wasm.Components.Layout;
+
+public partial class Header
 {
-    public partial class Header
+    private string _headerPage = "header-page";
+    private string? _imageUrl;
+
+    [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; } = default;
+    [Inject] private IAuthService? AuthService { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+
+    protected override async Task OnInitializedAsync()
     {
-        private string? _imageUrl;
+        var authenticationState = await AuthenticationStateTask!;
+        var isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
 
-        [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
+        if (isAuthenticated)
+            _imageUrl =
+                ApiConstants.BaseUrl +
+                authenticationState.User.Claims
+                    .FirstOrDefault(x => x.Type == CustomClaimTypes.Avatar)?.Value;
+    }
 
-        [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; } = default;
-        [Inject] private IAuthService? AuthService { get; set; }
-        [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (NavigationManager.Uri.Equals(NavigationManager.BaseUri)) _headerPage = string.Empty;
+        base.OnAfterRender(firstRender);
+    }
 
-
-        protected override async Task OnInitializedAsync()
+    private async Task Logout()
+    {
+        var data = await AuthService!.Logout();
+        if (data != null)
         {
-            var authenticationState = await AuthenticationStateTask!;
-            var isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
-
-            if (isAuthenticated)
-            {
-                _imageUrl = 
-                    ApiConstants.BaseUrl +
-                    authenticationState.User.Claims
-                        .FirstOrDefault(x => x.Type == CustomClaimTypes.Avatar)?.Value;
-            }
-        }
-
-        private string _headerPage = "header-page";
-        protected override void OnInitialized()
-        {
-            if (NavigationManager.Uri.Equals(NavigationManager.BaseUri))
-            {
-                _headerPage = "";
-            }
-        }
-
-        private async Task Logout()
-        {
-            var data = await AuthService!.Logout();
-            if (data != null)
-            {
-                Snackbar.Add("Đăng xuất thành công", Severity.Info);
-                await Task.Delay(1000);
-                NavigationManager.NavigateTo(NavigationManager.Uri,true);
-            }
+            Snackbar.Add("Đăng xuất thành công", Severity.Info);
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
     }
 }

@@ -1,9 +1,5 @@
-﻿
-namespace EzioLearning.Wasm.Layout
+﻿namespace EzioLearning.Wasm.Layout;
+
+public partial class GuestLayout
 {
-    public partial class GuestLayout
-    {
-
-
-    }
 }

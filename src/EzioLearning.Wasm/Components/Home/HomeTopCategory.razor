@@ -1,5 +1,4 @@
 ﻿<!-- Top Categories -->
-@using BlazorAnimate
 <section class="section how-it-works">
     <div class="container">
         <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
@@ -17,12 +16,12 @@
         </Animate>
 
         <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="owl-carousel mentoring-course owl-theme">
-                @foreach (var item in TopCourseCategories)
-                {
-                    <CascadingValue Value="@item">
-                        <HomeTopCategoryItem></HomeTopCategoryItem>
-                    </CascadingValue>
-                }
+            @foreach (var item in TopCourseCategories)
+            {
+                <CascadingValue Value="@item">
+                    <HomeTopCategoryItem></HomeTopCategoryItem>
+                </CascadingValue>
+            }
         </Animate>
     </div>
 </section>

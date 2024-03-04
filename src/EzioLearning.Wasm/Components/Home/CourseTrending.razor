@@ -1,7 +1,7 @@
 ﻿<section class="section trend-course">
     <div class="container">
 
-        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-header'>
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
             <div class="section-sub-head">
                 <span>What’s New</span>
                 <h2>TRENDING COURSES</h2>
@@ -11,7 +11,7 @@
             </div>
         </Animate>
 
-        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-text'>
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-text">
             <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
         </Animate>
 
@@ -25,13 +25,12 @@
                         <CourseItem></CourseItem>
                     </CascadingValue>
                 </div>
-
             }
         </Animate>
 
         <!-- Feature Instructors -->
         <div class="feature-instructors">
-            <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-header'>
+            <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
                 <div class="section-sub-head feature-head text-center">
                     <h2>Featured Instructor</h2>
                     <div class="section-text">
@@ -49,7 +48,9 @@
                             </a>
                         </div>
                         <div class="instructors-content text-center">
-                            <h5><a href="instructor-profile.html">@instructor.Name</a></h5>
+                            <h5>
+                                <a href="instructor-profile.html">@instructor.Name</a>
+                            </h5>
                             <p>Web Developer</p>
                             <div class="student-count d-flex justify-content-center">
                                 <i class="fa-solid fa-user-group"></i>

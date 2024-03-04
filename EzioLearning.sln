@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Infrastructure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Wasm", "src\EzioLearning.Wasm\EzioLearning.Wasm.csproj", "{6CC4BAF8-F3CB-41A9-B0C3-B6BD30834174}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{63DBBDAE-65A4-4124-B5E7-B0203CC8A1FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.Share", "src\EzioLearning.Share.Dto\EzioLearning.Share.csproj", "{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,10 @@ Global
 		{6CC4BAF8-F3CB-41A9-B0C3-B6BD30834174}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CC4BAF8-F3CB-41A9-B0C3-B6BD30834174}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CC4BAF8-F3CB-41A9-B0C3-B6BD30834174}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +71,8 @@ Global
 		{42F29C93-6AB2-4C15-9263-C0E8661FFDDC} = {C19BA70C-A1BE-4D73-A36E-7C9B07D79784}
 		{6E62BCB7-12D8-4342-A10F-B3EC502DF49D} = {D9436CBC-24E3-4007-8C2C-201FAFB707F7}
 		{6CC4BAF8-F3CB-41A9-B0C3-B6BD30834174} = {CBF0D4F2-F705-445E-906E-9D7773A06687}
+		{63DBBDAE-65A4-4124-B5E7-B0203CC8A1FA} = {1B741587-2984-4E58-A138-8FCAFB095D26}
+		{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523} = {63DBBDAE-65A4-4124-B5E7-B0203CC8A1FA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3137E8CF-2562-48D0-A542-13E239491321}

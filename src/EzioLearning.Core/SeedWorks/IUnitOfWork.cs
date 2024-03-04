@@ -1,8 +1,6 @@
-﻿
-namespace EzioLearning.Core.SeedWorks
+﻿namespace EzioLearning.Core.SeedWorks;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        public Task<int> CompleteAsync();
-    }
+    public Task<int> CompleteAsync();
 }

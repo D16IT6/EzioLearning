@@ -1,7 +1,7 @@
 ﻿<!-- Feature Course -->
 <section class="section new-course">
     <div class="container">
-        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-header'>
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
             <div class="section-sub-head">
                 <span>What’s New</span>
                 <h2>Featured Courses</h2>
@@ -10,12 +10,12 @@
                 <a href="course-list.html" class="btn btn-primary">All Courses</a>
             </div>
         </Animate>
-        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class='section-text'>
+        <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-text">
             <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
         </Animate>
         <div class="course-feature">
             <div class="row">
-                @foreach (var item in CourseViewDtos)
+                @foreach (var item in CourseViewDto)
                 {
                     <div class="col-lg-4 col-md-6 d-flex">
                         <div class="course-box d-flex">

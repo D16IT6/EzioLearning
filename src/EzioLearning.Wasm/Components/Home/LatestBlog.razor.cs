@@ -1,10 +1,5 @@
-﻿namespace EzioLearning.Wasm.Components.Home
-{
-    public partial class LatestBlog
-    {
-        public LatestBlog()
-        {
+﻿namespace EzioLearning.Wasm.Components.Home;
 
-        }
-    }
+public partial class LatestBlog
+{
 }
