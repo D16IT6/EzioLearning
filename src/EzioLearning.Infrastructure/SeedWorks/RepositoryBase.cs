@@ -17,7 +17,7 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
 
     public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await DbSet.ToListAsync();
+        return await DbSet.AsNoTracking().ToListAsync();
     }
 
     public virtual IEnumerable<T> Find(Expression<Func<T, bool>> expression)

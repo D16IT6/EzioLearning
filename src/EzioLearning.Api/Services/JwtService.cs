@@ -14,7 +14,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
 {
     public readonly SymmetricSecurityKey SecurityKey = new(Encoding.Unicode.GetBytes(jwtConfiguration.PrivateKey));
 
-    public JwtSecurityToken GenerateAccessToken(AppUser user, IList<string> roleList)
+    public JwtSecurityToken GenerateAccessToken(AppUser user, IList<string> roleList, List<AppPermission> permissions)
     {
         var credentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
 
@@ -25,11 +25,17 @@ public class JwtService(JwtConfiguration jwtConfiguration)
             new(ClaimTypes.Name, user.FirstName! + " " + user.LastName!),
             new(ClaimTypes.NameIdentifier, user.UserName!),
             new(ClaimTypes.Email, user.Email!),
-            new(CustomClaimTypes.Avatar, user.Avatar!)
+            new(CustomClaimTypes.Avatar, user.Avatar!),
+
         };
         foreach (var role in roleList)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim(CustomClaimTypes.Permissions, permission.Name));
         }
 
         var tempExpiredAccessTokenTime = DateTime.Now.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);

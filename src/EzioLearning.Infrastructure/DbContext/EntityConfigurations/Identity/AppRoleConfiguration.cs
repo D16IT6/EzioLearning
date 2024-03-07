@@ -13,5 +13,6 @@ internal class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
         builder.Property(x => x.DisplayName).IsRequired().HasMaxLength(16).IsUnicode();
 
         builder.Property(x => x.NormalizedName).IsRequired().HasMaxLength(16).IsUnicode();
+
     }
 }

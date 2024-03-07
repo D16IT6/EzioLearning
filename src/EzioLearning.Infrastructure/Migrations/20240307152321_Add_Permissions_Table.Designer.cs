@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EzioLearning.Infrastructure.Migrations
 {
     [DbContext(typeof(EzioLearningDbContext))]
-    [Migration("20240221124153_InitDatabase")]
-    partial class InitDatabase
+    [Migration("20240307152321_Add_Permissions_Table")]
+    partial class Add_Permissions_Table
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,29 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.HasIndex("CoursesId");
 
                     b.ToTable("CourseInCategories", "Learning");
+                });
+
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Identity.AppPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppPermissions", "Auth");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Identity.AppRole", b =>
@@ -87,6 +110,7 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Avatar")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -114,14 +138,13 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(50)");
@@ -236,6 +259,8 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Courses", "Learning");
                 });
@@ -538,6 +563,21 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.ToTable("AppUserTokens", "Auth");
                 });
 
+            modelBuilder.Entity("UserPermissions", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("UserPermissions", "Auth");
+                });
+
             modelBuilder.Entity("CourseCourseCategory", b =>
                 {
                     b.HasOne("EzioLearning.Domain.Entities.Learning.CourseCategory", null)
@@ -551,6 +591,15 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasForeignKey("CoursesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.Course", b =>
+                {
+                    b.HasOne("EzioLearning.Domain.Entities.Identity.AppUser", "User")
+                        .WithMany("Courses")
+                        .HasForeignKey("CreatedBy");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseCategory", b =>
@@ -665,8 +714,25 @@ namespace EzioLearning.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("UserPermissions", b =>
+                {
+                    b.HasOne("EzioLearning.Domain.Entities.Identity.AppPermission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EzioLearning.Domain.Entities.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EzioLearning.Domain.Entities.Identity.AppUser", b =>
                 {
+                    b.Navigation("Courses");
+
                     b.Navigation("Students");
                 });
 

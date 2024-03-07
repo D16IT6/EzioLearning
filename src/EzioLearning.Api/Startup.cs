@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using EzioLearning.Api.Authorization;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Models.Auth;
 using EzioLearning.Api.Services;
@@ -17,6 +18,7 @@ using EzioLearning.Share.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -82,6 +84,7 @@ internal static class Startup
         services.AddSingleton<CacheService>();
         services.AddTransient<JwtService>();
         services.AddTransient<FileService>();
+        services.AddTransient<PermissionService>();
 
         services.AddSingleton(_ =>
         {
@@ -213,12 +216,15 @@ internal static class Startup
         services.AddAuthorization();
     }
 
-    private static void ConfigureAuthorization(this IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureAuthorization(this IServiceCollection services, IConfiguration _)
     {
         services.AddAuthorization(config =>
         {
             config.AddPolicy("AdminOnly", policy => { policy.RequireRole(RoleConstants.Admin); });
         });
+        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     }
 
     private static void MigrateData(this WebApplication app)
@@ -242,7 +248,6 @@ internal static class Startup
 
 
         app.UseCors("CorsPolicy");
-        //app.UseCors("AllowSpecificOrigin");
 
         app.UseHttpsRedirection();
 

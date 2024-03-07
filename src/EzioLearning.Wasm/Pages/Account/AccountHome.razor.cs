@@ -27,7 +27,9 @@ public partial class AccountHome
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                Snackbar.Add("Lỗi", Severity.Error);
+                Snackbar.Add("Lỗi server, vui lòng thử lại", Severity.Error);
+                NavigationManager.NavigateTo(RouteConstants.Home,forceLoad:true);
+
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {

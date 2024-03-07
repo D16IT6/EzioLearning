@@ -1,6 +1,7 @@
 ﻿namespace EzioLearning.Domain.Common;
 
-public record CustomClaimTypes
+public abstract record CustomClaimTypes
 {
-    public static string Avatar = "https://talonezio.hehe/custom-claim/avatar-user";
+    public static readonly string Avatar = "https://talonezio.hehe/custom-claim/avatar-user";
+    public static readonly string Permissions = "https://talonezio.hehe/custom-claim/custom-permissions";
 }
