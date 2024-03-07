@@ -10,6 +10,7 @@ using EzioLearning.Api.Models.Constants;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Auth;
+using EzioLearning.Core.Repositories;
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Auth;
@@ -32,7 +33,7 @@ public class AuthController(
     CacheService cacheService,
     FileService fileService,
     IMapper mapper,
-    MailService mailService)
+    MailService mailService, PermissionService permissionService, IPermissionRepository permissionRepository)
     : ControllerBase
 {
     private static readonly string PrefixCache = CacheConstant.AccessToken;
@@ -98,6 +99,8 @@ public class AuthController(
 
                 foreach (var error in addToLoginResult.Errors) errors.Add(error.Code, [error.Description]);
             }
+
+            await permissionService.AddPermissionsForNewUser(newUser);
 
             return Ok(new ResponseBaseWithData<TokenResponse>
             {
@@ -468,9 +471,10 @@ public class AuthController(
 
     private async Task<TokenResponse> GenerateAndCacheToken(AppUser user)
     {
+        var permissions = await permissionRepository.GetByUserId(user.Id);
         var expiredTime = user.RefreshTokenExpiryTime;
         var roleList = await userManager.GetRolesAsync(user);
-        var jwtSecurityToken = jwtService.GenerateAccessToken(user, roleList.ToList());
+        var jwtSecurityToken = jwtService.GenerateAccessToken(user, roleList.ToList(), permissions.ToList());
 
         if (string.IsNullOrEmpty(user.RefreshToken) || expiredTime < DateTime.UtcNow)
         {

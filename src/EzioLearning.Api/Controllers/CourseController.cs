@@ -1,13 +1,16 @@
 ﻿using System.Net;
 using AutoMapper;
+using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Repositories;
 using EzioLearning.Core.SeedWorks;
+using EzioLearning.Core.SeedWorks.Constants;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +26,7 @@ public class CourseController(
     ICourseCategoryRepository courseCategoryRepository,
     UserManager<AppUser> userManager) : ControllerBase
 {
-    public static readonly string FolderPath = "Uploads/Images/Courses/";
+    private static readonly string FolderPath = "Uploads/Images/Courses/";
 
     [HttpGet("Count")]
     public async Task<IActionResult> CountCourse()
@@ -38,6 +41,8 @@ public class CourseController(
     }
 
     [HttpGet("Feature/{take:int?}")]
+    [Authorize(Permissions.Courses.View)]
+    [VerifyToken]
     public async Task<IActionResult> GetFeaturedCourses([FromRoute] int take = 12)
     {
         var data = await courseRepository.GetAllAsync();

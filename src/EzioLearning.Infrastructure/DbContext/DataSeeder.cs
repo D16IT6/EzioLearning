@@ -1,5 +1,9 @@
 ﻿using EzioLearning.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+using System.Reflection;
+using EzioLearning.Core.SeedWorks.Constants;
 
 namespace EzioLearning.Infrastructure.DbContext;
 
@@ -10,11 +14,64 @@ public class DataSeeder
         var roles = context.Roles;
 
         var adminGuid = Guid.Empty;
-        if (!roles.Any()) adminGuid = await AddRole(context);
+        if (!(await roles.AnyAsync())) adminGuid = await AddRole(context);
+
+        await AddPermissions(context);
 
         var users = context.Users;
-        if (!users.Any()) await AddUser(context, adminGuid);
+        if (!(await users.AnyAsync())) await AddUser(context, adminGuid);
+
     }
+
+    private async Task AddPermissions(EzioLearningDbContext context)
+    {
+        var permissionRoleNames = GetPermissionNames(typeof(Permissions));
+
+        var permissions = await context.Permissions.ToListAsync();
+
+        foreach (var permission in permissionRoleNames.Select(permissionName => new AppPermission()
+        {
+            Name = permissionName,
+            DisplayName = GetPermissionDescription(permissionName),
+        }))
+        {
+            var first = permissions.FirstOrDefault(x => x.Name.Equals(permission.Name));
+            if (first is null)
+            {
+                context.Permissions.Add(permission);
+            }
+        }
+
+        await context.SaveChangesAsync();
+
+    }
+    private static List<string> GetPermissionNames(Type permissionsClass)
+    {
+        return (
+            from typeInfo in permissionsClass.GetTypeInfo().DeclaredNestedTypes
+            from field in typeInfo.GetTypeInfo().DeclaredFields
+            select $"{permissionsClass.Name}.{typeInfo.Name}.{field.Name}").ToList();
+    }
+    private static string GetPermissionDescription(string permissionString)
+    {
+        var parts = permissionString.Split('.');
+        if (parts.Length != 3)
+        {
+            throw new ArgumentException("Invalid permission string format");
+        }
+        var permissionName = parts[2];
+
+        var permissionsType = typeof(Permissions);
+        var nestedClassType = permissionsType.GetNestedType(parts[1]);
+        var field = nestedClassType?.GetField(permissionName);
+        if (field == null) return string.Empty;
+
+        var descriptionAttribute =
+            (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute))!;
+
+        return descriptionAttribute.Description;
+    }
+
 
     private static async Task<Guid> AddRole(EzioLearningDbContext context)
     {
@@ -31,16 +88,7 @@ public class DataSeeder
             Id = Guid.NewGuid(),
             Name = "Teacher",
             NormalizedName = "TEACHER",
-
             DisplayName = "Giảng viên"
-        };
-        var student = new AppRole
-        {
-            Id = Guid.NewGuid(),
-            Name = "Student",
-            NormalizedName = "STUDENT",
-
-            DisplayName = "Học viên"
         };
         var user = new AppRole
         {
@@ -50,7 +98,8 @@ public class DataSeeder
 
             DisplayName = "Người dùng"
         };
-        await context.Roles.AddRangeAsync(admin, teacher, student, user);
+        await context.Roles.AddRangeAsync(admin, teacher, user);
+
         await context.SaveChangesAsync();
         return admin.Id;
     }

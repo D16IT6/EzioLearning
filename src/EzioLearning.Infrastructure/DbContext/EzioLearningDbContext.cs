@@ -11,12 +11,13 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
 {
     #region Tables
 
-    public DbSet<Course>? Courses { get; set; }
-    public DbSet<CourseCategory>? CourseCategories { get; set; }
-    public DbSet<CourseRating>? CourseRatings { get; set; }
-    public DbSet<CourseLesson>? CourseLessons { get; set; }
-    public DbSet<LessonComment>? LessonComments { get; set; }
-    public DbSet<Student>? Students { get; set; }
+    public DbSet<Course> Courses { get; set; }
+    public DbSet<CourseCategory> CourseCategories { get; set; }
+    public DbSet<CourseRating> CourseRatings { get; set; }
+    public DbSet<CourseLesson> CourseLessons { get; set; }
+    public DbSet<LessonComment> LessonComments { get; set; }
+    public DbSet<Student> Students { get; set; }
+    public DbSet<AppPermission> Permissions { get; set; }
 
     #endregion
 
@@ -62,10 +63,10 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
             AuditablePropertyConstants.ModifiedDate,
             DateTime.Now
         );
-
-
+        
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
+
 
     private void UpdateAuditableProperty(EntityState state, string propertyName, object value)
     {

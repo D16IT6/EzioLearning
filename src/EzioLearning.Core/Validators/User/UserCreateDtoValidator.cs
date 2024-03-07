@@ -69,7 +69,7 @@ public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
         var actuallyRoleListIds = roleManager.Roles.Select(x => x.Id).ToList();
         RuleFor(x => x.RoleIds)
             .NotEmpty().WithMessage("Quyền không được để trống")
-            .Must(roleList => roleList.Except(actuallyRoleListIds).Any())
+            .Must(roleList => !roleList.Except(actuallyRoleListIds).Any())
             .WithMessage("Có role không tồn tại trong hệ thống, vui lòng xem lại");
     }
 }

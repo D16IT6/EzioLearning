@@ -23,6 +23,9 @@ public class AppUser : IdentityUser<Guid>
     public ICollection<Student> Students { get; set; } = new List<Student>();
 
     public ICollection<Course> Courses { get; set; } = new List<Course>();
+    public ICollection<AppPermission> Permissions { get; set; } = new List<AppPermission>();
+
+
 
     public string? CacheKey { get; set; }
     public DateTime CreatedDate { get; set; }
