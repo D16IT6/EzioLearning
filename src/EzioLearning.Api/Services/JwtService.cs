@@ -5,7 +5,6 @@ using System.Text;
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Models.Token;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EzioLearning.Api.Services;
@@ -22,23 +21,25 @@ public class JwtService(JwtConfiguration jwtConfiguration)
         {
             new(ClaimTypes.Sid, Guid.NewGuid().ToString()),
             new(ClaimTypes.PrimarySid, user.Id.ToString()),
-            new(ClaimTypes.Name, user.FirstName! + " " + user.LastName!),
+            new(ClaimTypes.Name, user.FirstName + " " + user.LastName),
             new(ClaimTypes.NameIdentifier, user.UserName!),
             new(ClaimTypes.Email, user.Email!),
-            new(CustomClaimTypes.Avatar, user.Avatar!),
+            new(CustomClaimTypes.Avatar, user.Avatar),
 
         };
-        foreach (var role in roleList)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        claims.AddRange(roleList
+            .Select(role => new Claim(
+                ClaimTypes.Role,
+                role))
+        );
 
-        foreach (var permission in permissions)
-        {
-            claims.Add(new Claim(CustomClaimTypes.Permissions, permission.Name));
-        }
+        claims.AddRange(permissions
+            .Select(permission => new Claim(
+                CustomClaimTypes.Permissions,
+                permission.Name))
+        );
 
-        var tempExpiredAccessTokenTime = DateTime.Now.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
+        var tempExpiredAccessTokenTime = DateTime.UtcNow.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
         //var tempExpiredAccessTokenTime = DateTime.UtcNow.AddSeconds(30);//Test token
 
         var naturalExpiredTokenTime =
@@ -57,7 +58,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
         return jwtToken;
     }
 
-    public string GenerateRefreshToken(AppUser? _)
+    public static string GenerateRefreshToken(AppUser? _)
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();

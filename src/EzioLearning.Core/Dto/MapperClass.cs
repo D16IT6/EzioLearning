@@ -1,5 +1,3 @@
 ﻿namespace EzioLearning.Core.Dto;
 
-public class MapperClass
-{
-}
+public class MapperClass;

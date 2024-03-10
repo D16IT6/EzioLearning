@@ -1,4 +1,5 @@
 ﻿using EzioLearning.Share.Models.Response;
+using EzioLearning.Wasm.Services.Interface;
 using MudBlazor;
 
 namespace EzioLearning.Wasm.Services.Implement;

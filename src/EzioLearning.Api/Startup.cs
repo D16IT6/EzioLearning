@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using EzioLearning.Api.Authorization;
 using EzioLearning.Api.Filters;
+using EzioLearning.Api.Middleware;
 using EzioLearning.Api.Models.Auth;
 using EzioLearning.Api.Services;
 using EzioLearning.Core.Dto;
@@ -77,6 +78,14 @@ internal static class Startup
         services.AddMemoryCache();
 
         services.ConfigureLocalService(configuration);
+
+        services.ConfigureCustomMiddleware();
+    }
+
+    private static void ConfigureCustomMiddleware(this IServiceCollection services)
+    {
+        services.AddScoped<Custom401ResponseMiddleware>();
+        services.AddScoped<Custom403ResponseMiddleware>();
     }
 
     private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
@@ -254,10 +263,14 @@ internal static class Startup
         app.UseStaticFiles();
 
         app.UseAuthentication();
+        app.UseMiddleware<Custom401ResponseMiddleware>();
+        app.UseMiddleware<Custom403ResponseMiddleware>();
 
         app.UseAuthorization();
 
+
         app.MapControllers();
+
 
         app.MigrateData();
     }

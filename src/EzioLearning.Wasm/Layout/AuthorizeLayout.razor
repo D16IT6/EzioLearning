@@ -1,0 +1,12 @@
+﻿@inherits LayoutComponentBase
+@layout GuestLayout
+
+<AuthorizeView>
+    <Authorized>
+        @Body
+    </Authorized>
+    <NotAuthorized>
+        <EzioLearning.Wasm.Components.Error.UnAuthorize/>
+
+    </NotAuthorized>
+</AuthorizeView>

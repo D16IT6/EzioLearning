@@ -19,7 +19,6 @@ using EzioLearning.Share.Models.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RequestNewTokenDto = EzioLearning.Core.Dto.Auth.RequestNewTokenDto;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -262,7 +261,9 @@ public class AuthController(
                 {
                     AccessToken = memoryToken,
                     RefreshToken = user.RefreshToken
-                }
+                },
+                Message = "Đăng nhập thành công",
+                Status = HttpStatusCode.OK
             });
 
         var jwtToken = await GenerateAndCacheToken(user);
@@ -478,7 +479,7 @@ public class AuthController(
 
         if (string.IsNullOrEmpty(user.RefreshToken) || expiredTime < DateTime.UtcNow)
         {
-            user.RefreshToken = jwtService.GenerateRefreshToken(user);
+            user.RefreshToken = JwtService.GenerateRefreshToken(user);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(jwtConfiguration.ExpiredRefreshTokenAfterDays);
             await userManager.UpdateAsync(user);
         }

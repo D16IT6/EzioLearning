@@ -1,8 +1,8 @@
 ﻿using EzioLearning.Share.Models.Response;
 
-namespace EzioLearning.Wasm.Services;
+namespace EzioLearning.Wasm.Services.Interface;
 
-public interface ISnackBarService
+public interface ISnackBarService: IServiceBase
 {
     void ShowErrorFromResponse(ResponseBase response);
 }

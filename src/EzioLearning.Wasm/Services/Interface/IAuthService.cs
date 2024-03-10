@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace EzioLearning.Wasm.Services.Interface;
 
-public interface IAuthService
+public interface IAuthService: IServiceBase
 {
     public Task<ResponseBase?> Login(LoginRequestDto loginRequestDto);
     public Task<ResponseBase?> Register(RegisterRequestClientDto registerRequestClientDto, IBrowserFile? avatar = null);

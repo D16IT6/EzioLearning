@@ -1,10 +1,10 @@
-﻿using EzioLearning.Share.Models.Response;
+﻿using System.Security.Claims;
+using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
-using System.Security.Claims;
 
-namespace EzioLearning.Wasm.Services;
+namespace EzioLearning.Wasm.Services.Interface;
 
-public interface ITokenService
+public interface ITokenService : IServiceBase
 {
     Task SaveFromResponse(ResponseBase response);
     Task SaveToken(TokenResponse token);

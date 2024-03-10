@@ -41,8 +41,8 @@ public class CourseController(
     }
 
     [HttpGet("Feature/{take:int?}")]
-    [Authorize(Permissions.Courses.View)]
-    [VerifyToken]
+    //[Authorize(Permissions.Courses.View)]
+    //[VerifyToken]
     public async Task<IActionResult> GetFeaturedCourses([FromRoute] int take = 12)
     {
         var data = await courseRepository.GetAllAsync();

@@ -1,9 +1,11 @@
-﻿using EzioLearning.Domain.Common;
+﻿using System.Text.Json;
+using EzioLearning.Domain.Common;
+using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EzioLearning.Api.Authorization
 {
-    public class PermissionAuthorizationHandler
+    public class PermissionAuthorizationHandler(IHttpContextAccessor accessor)
         : AuthorizationHandler<PermissionRequirement>
     {
 
@@ -32,6 +34,20 @@ namespace EzioLearning.Api.Authorization
                 context.Succeed(requirement);
             }
             return Task.CompletedTask;
+            //// Custom response -> Custom Middleware
+            //var httpContext = accessor.HttpContext;
+            //httpContext!.Response.StatusCode = StatusCodes.Status403Forbidden;
+            //httpContext.Response.ContentType = "application/json";
+
+            //var response = new ResponseBase
+            //{
+            //    Errors = new Dictionary<string, string[]>
+            //    {
+            //        { "UnAuthorize", ["Bạn không có quyền truy cập chức năng này"] }
+            //    }
+            //};
+            //var jsonResponse = JsonSerializer.Serialize(response);
+            //return httpContext.Response.WriteAsync(jsonResponse);
 
         }
     }

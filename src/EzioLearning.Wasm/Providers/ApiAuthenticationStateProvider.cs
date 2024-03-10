@@ -1,14 +1,15 @@
-﻿using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Share.Models.Response;
-using EzioLearning.Share.Models.Token;
-using EzioLearning.Wasm.Common;
-using EzioLearning.Wasm.Services;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
+using EzioLearning.Share.Dto.Auth;
+using EzioLearning.Share.Models.Response;
+using EzioLearning.Share.Models.Token;
+using EzioLearning.Wasm.Common;
+using EzioLearning.Wasm.Services.Interface;
+using Microsoft.AspNetCore.Components.Authorization;
+
 namespace EzioLearning.Wasm.Providers;
 
 public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService tokenService)
@@ -23,23 +24,25 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
 
         try
         {
-            if (!await tokenService.IsTokenExpired(token.AccessToken))
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
-                    await tokenService.ParseClaimsFromJwt(token.AccessToken),
-                    ApiConstants.ApiAuthenticationType)));
-
-            if (await GenerateNewToken(token)
-                is not ResponseBaseWithData<TokenResponse> response)
-                return emptyAuthenticationState;
-
-            token.AccessToken = response.Data!.AccessToken ?? string.Empty;
-
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
+            var validatedAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
                 await tokenService.ParseClaimsFromJwt(token.AccessToken),
                 ApiConstants.ApiAuthenticationType)));
+
+            if (await tokenService.IsTokenExpired(token.AccessToken))
+            {
+                if (await GenerateNewToken(token)
+                    is not ResponseBaseWithData<TokenResponse> response)
+                    return emptyAuthenticationState;
+
+                token.AccessToken = response.Data?.AccessToken ?? string.Empty;
+
+                validatedAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
+                    await tokenService.ParseClaimsFromJwt(token.AccessToken),
+                    ApiConstants.ApiAuthenticationType)));
+            }
+            httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            return validatedAuthenticationState;
         }
         catch
         {

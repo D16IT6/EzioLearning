@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Wasm", "src\Ez
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{63DBBDAE-65A4-4124-B5E7-B0203CC8A1FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.Share", "src\EzioLearning.Share.Dto\EzioLearning.Share.csproj", "{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Share", "src\EzioLearning.Share.Dto\EzioLearning.Share.csproj", "{B9ECFB89-1FC4-4F39-BC17-0E52BFAA0523}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

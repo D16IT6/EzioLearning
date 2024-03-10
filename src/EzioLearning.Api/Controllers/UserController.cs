@@ -100,12 +100,4 @@ public class UserController(IMapper mapper, UserManager<AppUser> userManager, Fi
         });
     }
 
-    [HttpGet(nameof(GetInfo) + "/{id}")]
-    [Authorize("AdminOnly")]
-    public async Task<IActionResult> GetInfo([FromRoute] Guid id)
-    {
-        var user = await userManager.FindByIdAsync(id.ToString());
-
-        return Ok(user);
-    }
 }

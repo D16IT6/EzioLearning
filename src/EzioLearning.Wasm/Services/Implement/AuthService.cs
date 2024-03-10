@@ -30,11 +30,10 @@ public class AuthService(
             await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream,
                 JsonCommonOptions.DefaultSerializer);
 
-        if (data!.Status == HttpStatusCode.OK)
-        {
-            await tokenService.SaveFromResponse(data);
-            _apiAuthenticationStateProvider.MarkUserAsAuthenticated(loginRequestDto.UserName!);
-        }
+        if (data!.Status != HttpStatusCode.OK) return data;
+
+        await tokenService.SaveFromResponse(data);
+        _apiAuthenticationStateProvider.MarkUserAsAuthenticated(loginRequestDto.UserName!);
 
         return data;
     }

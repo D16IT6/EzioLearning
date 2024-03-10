@@ -4,6 +4,7 @@ using EzioLearning.Share.Models.Token;
 using EzioLearning.Wasm.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using EzioLearning.Wasm.Services.Interface;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
@@ -56,13 +57,11 @@ public class TokenService(ILocalStorageService localStorageService) : ITokenServ
 
         var jwtHandler = new JwtSecurityTokenHandler();
 
-        if (jwtHandler.CanReadToken(accessToken))
-        {
-            var jwtToken = jwtHandler.ReadJwtToken(accessToken);
-            var expiration = jwtToken.ValidTo;
-            return expiration < DateTime.UtcNow;
-        }
+        if (!jwtHandler.CanReadToken(accessToken)) return true;
 
-        return true;
+        var jwtToken = jwtHandler.ReadJwtToken(accessToken);
+        var expiration = jwtToken.ValidTo;
+        var utcNow = DateTime.UtcNow;
+        return expiration < DateTime.UtcNow;
     }
 }

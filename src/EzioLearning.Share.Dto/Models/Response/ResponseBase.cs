@@ -7,7 +7,7 @@ public class ResponseBase
 {
     public string Type { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
-    public HttpStatusCode Status { get; init; }
+    public HttpStatusCode Status { get; init; } = HttpStatusCode.OK;
     public string? Message { get; init; }
 
     public bool IsSuccess

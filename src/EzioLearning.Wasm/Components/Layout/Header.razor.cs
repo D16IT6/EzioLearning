@@ -3,13 +3,14 @@ using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
 
 namespace EzioLearning.Wasm.Components.Layout;
 
 public partial class Header
 {
-    private string _headerPage = "header-page";
+    private string _headerPage = "";
     private string? _imageUrl;
 
     [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
@@ -31,10 +32,25 @@ public partial class Header
                     .FirstOrDefault(x => x.Type == CustomClaimTypes.Avatar)?.Value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (NavigationManager.Uri.Equals(NavigationManager.BaseUri)) _headerPage = string.Empty;
-        base.OnAfterRender(firstRender);
+        UpdateHeaderClass();
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? _, LocationChangedEventArgs e)
+    {
+        UpdateHeaderClass();
+    }
+    private void UpdateHeaderClass()
+    {
+        _headerPage = NavigationManager.Uri.Equals(NavigationManager.BaseUri) ? "" : "header-page";
+        StateHasChanged();
     }
 
     private async Task Logout()
@@ -44,7 +60,7 @@ public partial class Header
         {
             Snackbar.Add("Đăng xuất thành công", Severity.Info);
             await Task.Delay(1000);
-            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+            NavigationManager.NavigateTo(RouteConstants.Login, true);
         }
     }
 }
