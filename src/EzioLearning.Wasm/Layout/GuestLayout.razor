@@ -2,19 +2,21 @@
 @inherits LayoutComponentBase
 
 
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 
 <div class="main-wrapper">
-    <!-- Header -->
-    <Header></Header>
-    <!-- /Header -->
-    @Body
+    <CascadingValue Value="ImageUrl">
+        <!-- Header -->
+        <Header></Header>
+        <!-- /Header -->
+        @Body
 
-    <!-- Footer -->
-    <Footer></Footer>
-    <!-- /Footer -->
+        <!-- Footer -->
+        <Footer></Footer>
+        <!-- /Footer -->
+    </CascadingValue>
 
 </div>

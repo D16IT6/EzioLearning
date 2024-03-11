@@ -5,18 +5,18 @@ namespace EzioLearning.Share.Dto.Account
 {
     public class AccountInfoDto
     {
-        public string? UserName { get; init; }
-        public string? FirstName { get; init; }
-        public string? FullName { get; init; }
-        public string? LastName { get; init; }
-        public string? Email { get; init; }
-        public string? PhoneNumber { get; init; }
+        public string? UserName { get; set; }
+        public string? FirstName { get; set; }
+        public string? FullName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
 
-        public DateOnly DateOfBirth { get; init; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
+        public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
 
         public string[] Roles { get; set; } = [];
 
-        public string? Avatar { get; init; }
+        public string? Avatar { get; set; }
 
         public class AccountInfoDtoProfile : Profile
         {

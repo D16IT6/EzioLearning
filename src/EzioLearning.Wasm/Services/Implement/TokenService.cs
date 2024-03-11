@@ -3,12 +3,15 @@ using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
 using EzioLearning.Wasm.Common;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
+using System.Text.Json;
 using EzioLearning.Wasm.Services.Interface;
+using System.Net.Http.Headers;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
-public class TokenService(ILocalStorageService localStorageService) : ITokenService
+public class TokenService(ILocalStorageService localStorageService,HttpClient httpClient) : ITokenService
 {
     public async Task SaveFromResponse(ResponseBase response)
     {
@@ -49,6 +52,17 @@ public class TokenService(ILocalStorageService localStorageService) : ITokenServ
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+    }
+
+    public async Task<bool> IsLiveToken()
+    {
+        var accessToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await httpClient.PostAsync("/api/Auth/TestToken", null);
+
+        return response.IsSuccessStatusCode;
+
     }
 
     public async Task<bool> IsTokenExpired(string? accessToken)

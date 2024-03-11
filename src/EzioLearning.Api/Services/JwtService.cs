@@ -58,7 +58,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
         return jwtToken;
     }
 
-    public static string GenerateRefreshToken(AppUser? _)
+    public string GenerateRefreshToken(AppUser? _)
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();

@@ -11,10 +11,8 @@ namespace EzioLearning.Wasm.Pages.Auth;
 
 public partial class Register
 {
-    private const long UploadLimit = 10 * 1024 * 1024;
-    private const string FileTooLargeMessage = "File quá lớn, không được phép!";
-    private const string FileNowAllowExtensionMessage = "Không cho phép file định dạng này!";
-    private string[] AcceptTypes { get; } = [".png", ".bmp", ".jpg", ".jpeg"];
+
+    private string[] AcceptTypes => FileConstants.AcceptTypes;
 
     [SupplyParameterFromQuery] private string? Email { get; } = string.Empty;
 
@@ -29,8 +27,6 @@ public partial class Register
     [SupplyParameterFromForm] public RegisterRequestClientDto RegisterModel { get; set; } = new();
 
     private bool DisabledEmail { get; set; }
-
-    [Inject] private ILogger<Register> Logger { get; set; } = default!;
 
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
@@ -77,15 +73,15 @@ public partial class Register
         if (File != null)
         {
             var fileExtension = Path.GetExtension(File.Name);
-            if (File.Size > UploadLimit)
+            if (File.Size > FileConstants.UploadLimit)
             {
-                SnackBar.Add(FileTooLargeMessage, Severity.Error, config => { config.ActionColor = Color.Warning; });
+                SnackBar.Add(FileConstants.FileTooLargeMessage, Severity.Error, config => { config.ActionColor = Color.Warning; });
                 return;
             }
 
             if (!AcceptTypes.Contains(fileExtension))
             {
-                SnackBar.Add(FileNowAllowExtensionMessage, Severity.Error,
+                SnackBar.Add(FileConstants.FileNowAllowExtensionMessage, Severity.Error,
                     config => { config.ActionColor = Color.Warning; });
                 RegisterModel.Avatar = null;
                 return;

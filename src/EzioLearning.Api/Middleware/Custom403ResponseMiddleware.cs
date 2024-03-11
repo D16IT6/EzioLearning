@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using EzioLearning.Api.Utils;
 using EzioLearning.Share.Models.Response;
 
 namespace EzioLearning.Api.Middleware
@@ -22,7 +23,9 @@ namespace EzioLearning.Api.Middleware
                     Errors = new Dictionary<string, string[]>
                     {
                         { "UnAuthorize", [message] }
-                    }
+                    },
+                    Type = HttpResponseType.Forbidden
+
                 };
                 var jsonResponse = JsonSerializer.Serialize(response);
                 await context.Response.WriteAsync(jsonResponse);

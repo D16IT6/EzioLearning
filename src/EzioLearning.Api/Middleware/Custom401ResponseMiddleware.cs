@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using EzioLearning.Api.Utils;
 using EzioLearning.Share.Models.Response;
 
 namespace EzioLearning.Api.Middleware
@@ -20,7 +21,8 @@ namespace EzioLearning.Api.Middleware
                     {
                         { "UnAuthorized", ["Bạn chưa xác thực"] }
                     },
-                    Status = HttpStatusCode.Unauthorized
+                    Status = HttpStatusCode.Unauthorized,
+                    Type = HttpResponseType.Unauthorized
                 };
 
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using EzioLearning.Api.Models.Constants;
 using EzioLearning.Api.Services;
+using EzioLearning.Api.Utils;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -23,7 +23,11 @@ public class VerifyTokenAttribute : ActionFilterAttribute
             context.Result = new BadRequestObjectResult(new ResponseBase
             {
                 Message = "Token giả mạo!",
-                Status = HttpStatusCode.BadRequest
+                Status = HttpStatusCode.BadRequest,
+                Errors = new Dictionary<string, string[]>()
+                {
+                    {"Token",["Token giả mạo"]}
+                }
             });
         base.OnActionExecuting(context);
     }

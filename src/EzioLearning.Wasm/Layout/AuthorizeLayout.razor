@@ -1,12 +1,20 @@
 ﻿@inherits LayoutComponentBase
 @layout GuestLayout
 
-<AuthorizeView>
-    <Authorized>
-        @Body
-    </Authorized>
-    <NotAuthorized>
-        <EzioLearning.Wasm.Components.Error.UnAuthorize/>
+<CascadingValue Value="ImageUrl">
+    <AuthorizeView>
+        <Authorized>
+            @Body
+        </Authorized>
+        <NotAuthorized>
+            <EzioLearning.Wasm.Components.Error.UnAuthorize/>
 
-    </NotAuthorized>
-</AuthorizeView>
+        </NotAuthorized>
+    </AuthorizeView>
+
+</CascadingValue>
+@code
+{
+    [CascadingParameter] public string? ImageUrl { get; set; }
+
+}
