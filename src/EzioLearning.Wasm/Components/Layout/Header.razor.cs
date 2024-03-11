@@ -2,7 +2,6 @@
 using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
 
