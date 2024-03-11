@@ -12,4 +12,6 @@ public interface ITokenService : IServiceBase
     Task<bool> IsTokenExpired(string? accessToken = null);
     Task<IEnumerable<Claim>> ParseClaimsFromJwt(string? accessToken = null);
     Task<TokenResponse> GetTokenFromLocalStorage();
+
+    Task<bool> IsLiveToken();
 }

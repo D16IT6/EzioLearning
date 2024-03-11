@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Api.Models.Constants;
+﻿namespace EzioLearning.Api.Utils;
 
 public static class CacheConstant
 {

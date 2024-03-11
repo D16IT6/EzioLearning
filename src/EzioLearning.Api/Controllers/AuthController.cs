@@ -6,7 +6,6 @@ using System.Web;
 using AutoMapper;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Models.Auth;
-using EzioLearning.Api.Models.Constants;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Auth;
@@ -298,7 +297,7 @@ public class AuthController(
         });
     }
 
-    [HttpPost("RefreshToken")]
+    [HttpPost(nameof(RefreshToken))]
     //[Authorize]
     public async Task<IActionResult> RefreshToken([FromBody] RequestNewTokenDto model)
     {
@@ -308,18 +307,73 @@ public class AuthController(
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Fake request!"
+                Message = "Yêu cầu không hợp lệ!"
             });
 
         var jwtToken = await GenerateAndCacheToken(user);
 
+        //change refresh token
+        user.RefreshToken = jwtService.GenerateRefreshToken(user);
+        var result = await userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            return Ok(new ResponseBaseWithData<TokenResponse>
+            {
+                Data = jwtToken,
+                Message = "Refresh token thành công",
+                Status = HttpStatusCode.OK
+            });
+
+        }
+        return BadRequest(new ResponseBase
+        {
+            Message = "Có lỗi trong quá trình xử lý, vui lòng thử lại",
+            Status = HttpStatusCode.BadRequest,
+            Errors = (Dictionary<string, string[]>)result.Errors
+                .Select(x =>
+                    new KeyValuePair<string, string[]>(
+                        x.Code, [x.Description]
+                    )
+                )
+        });
+    }
+
+    [HttpPost(nameof(NewToken))]
+    //[Authorize]
+    public async Task<IActionResult> NewToken([FromBody] RequestNewTokenDto model)
+    {
+        var user = await userManager.FindByNameAsync(model.UserName);
+
+        if (user == null || user.RefreshToken != model.RefreshToken)
+            return BadRequest(new ResponseBase
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = "Yêu cầu không hợp lệ!",
+            });
+
+        var jwtToken = await GenerateAndCacheToken(user);
         return Ok(new ResponseBaseWithData<TokenResponse>
         {
             Data = jwtToken,
             Message = "Refresh token thành công",
             Status = HttpStatusCode.OK
         });
+
     }
+
+    [HttpPost(nameof(TestToken))]
+    [Authorize]
+    [VerifyToken]
+    public Task<IActionResult> TestToken()
+    {
+        return Task.FromResult<IActionResult>(Ok(new ResponseBase()
+        {
+            Message = "Token còn hoạt động",
+            Status = HttpStatusCode.OK
+        }));
+    }
+
 
     #endregion
 
@@ -479,7 +533,7 @@ public class AuthController(
 
         if (string.IsNullOrEmpty(user.RefreshToken) || expiredTime < DateTime.UtcNow)
         {
-            user.RefreshToken = JwtService.GenerateRefreshToken(user);
+            user.RefreshToken = jwtService.GenerateRefreshToken(user);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(jwtConfiguration.ExpiredRefreshTokenAfterDays);
             await userManager.UpdateAsync(user);
         }

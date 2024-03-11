@@ -24,7 +24,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
             new(ClaimTypes.Name, user.FirstName + " " + user.LastName),
             new(ClaimTypes.NameIdentifier, user.UserName!),
             new(ClaimTypes.Email, user.Email!),
-            new(CustomClaimTypes.Avatar, user.Avatar),
+            //new(CustomClaimTypes.Avatar, user.Avatar),
 
         };
         claims.AddRange(roleList
@@ -58,7 +58,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
         return jwtToken;
     }
 
-    public static string GenerateRefreshToken(AppUser? _)
+    public string GenerateRefreshToken(AppUser? _)
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();

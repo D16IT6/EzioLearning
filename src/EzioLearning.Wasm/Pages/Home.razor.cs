@@ -22,7 +22,6 @@ public partial class Home
     private List<CourseViewDto> TrendingCourses { get; set; } = new();
     private List<InstructorViewDto> FeatureInstructors { get; set; } = new();
 
-    [Inject] private ILogger<Index> Logger { get; set; } = default!;
     private IAnimation? AnimationType { get; set; }
     private TimeSpan AnimationDuration { get; set; }
 
@@ -105,9 +104,8 @@ public partial class Home
             await HttpClient.GetFromJsonAsync<ResponseBaseWithData<int>>("api/Course/Count",
                 JsonCommonOptions.DefaultSerializer);
 
-        var response2 =
-            await HttpClient.GetFromJsonAsync<ResponseBaseWithData<int>>("api/Course/Count",
-                JsonCommonOptions.DefaultSerializer);
+        await HttpClient.GetFromJsonAsync<ResponseBaseWithData<int>>("api/Course/Count",
+            JsonCommonOptions.DefaultSerializer);
         var count = response!.Data;
 
 

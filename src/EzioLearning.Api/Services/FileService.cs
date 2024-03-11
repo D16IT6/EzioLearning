@@ -40,10 +40,12 @@ public class FileService
     {
         var tempFilePath = Path.Combine(folderPath, outputFileNameWithoutExtension + Path.GetExtension(file.FileName));
 
-        var actuallyFilePath =
-            GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
+        //var actuallyFilePath = GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
 
-        await using var fileStream = new FileStream(actuallyFilePath, FileMode.OpenOrCreate);
+        var actuallyFilePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath);
+        if (File.Exists(actuallyFilePath)) File.Delete(actuallyFilePath);
+
+        await using var fileStream = new FileStream(actuallyFilePath, FileMode.CreateNew);
 
         await file.CopyToAsync(fileStream);
 

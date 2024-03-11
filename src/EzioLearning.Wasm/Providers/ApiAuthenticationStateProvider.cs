@@ -18,38 +18,39 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var emptyAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+
         var token = await tokenService.GetTokenFromLocalStorage();
 
-        if (string.IsNullOrWhiteSpace(token.AccessToken)) return emptyAuthenticationState;
+        if (string.IsNullOrWhiteSpace(token.AccessToken))
+            return emptyAuthenticationState;
 
         try
         {
-            var validatedAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
-                await tokenService.ParseClaimsFromJwt(token.AccessToken),
-                ApiConstants.ApiAuthenticationType)));
-
-            if (await tokenService.IsTokenExpired(token.AccessToken))
+            var isLive = await tokenService.IsLiveToken();
+            if (!isLive)
             {
-                if (await GenerateNewToken(token)
-                    is not ResponseBaseWithData<TokenResponse> response)
+                if (await GenerateNewToken(token) is not ResponseBaseWithData<TokenResponse> newTokenResponse
+                    || string.IsNullOrWhiteSpace(newTokenResponse.Data?.AccessToken))
                     return emptyAuthenticationState;
 
-                token.AccessToken = response.Data?.AccessToken ?? string.Empty;
+                token.AccessToken = newTokenResponse.Data.AccessToken;
 
-                validatedAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(
-                    await tokenService.ParseClaimsFromJwt(token.AccessToken),
-                    ApiConstants.ApiAuthenticationType)));
             }
-            httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token.AccessToken);
-            return validatedAuthenticationState;
+
+            var claims = await tokenService.ParseClaimsFromJwt(token.AccessToken);
+            var identity = new ClaimsIdentity(claims, ApiConstants.ApiAuthenticationType);
+            var authenticatedState = new AuthenticationState(new ClaimsPrincipal(identity));
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
+            return authenticatedState;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Error occurred while validating authentication state: {ex.Message}");
             return emptyAuthenticationState;
         }
     }
-
 
     private async Task<ResponseBase?> GenerateNewToken(TokenResponse token)
     {
@@ -66,7 +67,7 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
             RefreshToken = token.RefreshToken!
         };
 
-        var response = await httpClient.PostAsJsonAsync("api/Auth/RefreshToken", requestModel);
+        var response = await httpClient.PostAsJsonAsync("api/Auth/NewToken", requestModel);
 
         var stream = await response.Content.ReadAsStreamAsync();
         ResponseBase? data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream,
