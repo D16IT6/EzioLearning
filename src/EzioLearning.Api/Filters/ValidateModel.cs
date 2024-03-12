@@ -12,10 +12,11 @@ public class ValidateModelAttribute : ActionFilterAttribute
         if (!context.ModelState.IsValid) context.Result = new BadRequestObjectResult(
             new ResponseBase()
             {
+                Type = HttpResponseType.BadRequest,
                 Status = HttpStatusCode.BadRequest,
                 Errors = context.ModelState.ToDictionary(x => x.Key,
                     x => x.Value?.Errors
-                        .Select(x => x.ErrorMessage).ToArray())
+                        .Select(error => error.ErrorMessage).ToArray())!
             });
         base.OnActionExecuting(context);
     }

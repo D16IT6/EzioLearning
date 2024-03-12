@@ -1,14 +1,20 @@
-﻿@inherits LayoutComponentBase
+﻿@using EzioLearning.Share.Dto.Account
+@inherits LayoutComponentBase
 @layout GuestLayout
 
+<CascadingValue Value="AccountInfoMinimal">
+    <AuthorizeView>
+        <Authorized>
+            @Body
+        </Authorized>
+        <NotAuthorized>
+            <EzioLearning.Wasm.Components.Error.UnAuthorize />
 
-<AuthorizeView>
-    <Authorized>
-        @Body
-    </Authorized>
-    <NotAuthorized>
-        <EzioLearning.Wasm.Components.Error.UnAuthorize />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingValue>
 
-    </NotAuthorized>
-</AuthorizeView>
 
+@code {
+    [CascadingParameter] public AccountInfoMinimalDto AccountInfoMinimal { get; set; } = new();
+}

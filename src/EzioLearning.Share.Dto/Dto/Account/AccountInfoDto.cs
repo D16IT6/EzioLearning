@@ -7,7 +7,7 @@ namespace EzioLearning.Share.Dto.Account
     {
         public string? UserName { get; set; }
         public string? FirstName { get; set; }
-        public string? FullName { get; set; }
+        public string? FullName => FirstName + " " + LastName;
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
@@ -22,7 +22,7 @@ namespace EzioLearning.Share.Dto.Account
         {
             public AccountInfoDtoProfile()
             {
-                CreateMap<AppUser, AccountInfoDto>();
+                CreateMap<AppUser, AccountInfoDto>().ForMember(x => x.FullName, opt => opt.Ignore());
             }
         }
     }

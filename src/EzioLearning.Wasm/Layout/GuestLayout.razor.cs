@@ -1,15 +1,19 @@
-﻿using EzioLearning.Domain.Common;
-using EzioLearning.Wasm.Common;
+﻿using EzioLearning.Wasm.Common;
+using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net;
+using EzioLearning.Share.Dto.Account;
 
 namespace EzioLearning.Wasm.Layout;
 
 public partial class GuestLayout
 {
-    [CascadingParameter] public string? ImageUrl { get; set; }
+    [CascadingParameter] public AccountInfoMinimalDto AccountInfoMinimal { get; set; } = new();
     [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
 
+    [Inject] private IAccountService AccountService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -17,9 +21,18 @@ public partial class GuestLayout
         var isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
 
         if (isAuthenticated)
-            ImageUrl =
-                ApiConstants.BaseUrl +
-                authenticationState.User.Claims
-                    .FirstOrDefault(x => x.Type == CustomClaimTypes.Avatar)?.Value;
+        {
+            var response = await AccountService.GetMinimalInfo();
+            if (response.Status == HttpStatusCode.OK)
+            {
+                response.Data!.Avatar = ApiConstants.BaseUrl + response.Data.Avatar + $"?t={Guid.NewGuid()}";
+                
+                AccountInfoMinimal = response.Data;
+            }
+            else
+            {
+                SnackBarService.ShowErrorFromResponse(response);
+            }
+        }
     }
 }

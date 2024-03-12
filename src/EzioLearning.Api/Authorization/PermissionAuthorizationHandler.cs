@@ -1,11 +1,9 @@
-﻿using System.Text.Json;
-using EzioLearning.Domain.Common;
-using EzioLearning.Share.Models.Response;
+﻿using EzioLearning.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EzioLearning.Api.Authorization
 {
-    public class PermissionAuthorizationHandler(IHttpContextAccessor accessor)
+    public class PermissionAuthorizationHandler
         : AuthorizationHandler<PermissionRequirement>
     {
 

@@ -7,6 +7,7 @@ namespace EzioLearning.Wasm.Services.Interface
     public interface IAccountService: IServiceBase
     {
         Task<ResponseBaseWithData<AccountInfoDto>> GetInfo();
+        Task<ResponseBaseWithData<AccountInfoMinimalDto>> GetMinimalInfo();
         Task<ResponseBaseWithData<AccountInfoDto>?> UpdateInfo(AccountInfoDto accountInfo);
         Task<ResponseBaseWithData<AccountInfoDto>?> UpdateAvatar(IBrowserFile? avatar = null);
         Task<ResponseBaseWithData<string>?> GetAvatar();

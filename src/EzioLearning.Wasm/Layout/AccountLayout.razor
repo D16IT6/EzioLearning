@@ -1,0 +1,15 @@
+﻿@using EzioLearning.Wasm.Components.Account
+@inherits LayoutComponentBase
+@layout AuthorizeLayout
+<!--Dashboard -->
+<CascadingValue Value="AccountInfoMinimal">
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <AccountSidebar />
+                @Body
+            </div>
+        </div>
+    </div>
+</CascadingValue>
+<!-- /Dashboard -->

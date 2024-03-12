@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using EzioLearning.Share.Dto.Account;
 using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
@@ -10,33 +10,33 @@ namespace EzioLearning.Wasm.Components.Layout;
 public partial class Header
 {
     private string _headerPage = "";
-    public string? ImageUrl { get; set; }
+    [CascadingParameter] public AccountInfoMinimalDto AccountInfoMinimal { get; set; } = new();
 
     [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject] private IAuthService? AuthService { get; set; }
+    [Inject] private IAuthService AuthService { get; set; } = default!;
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private IAccountService AccountService { get; set; } = default!;
-    [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+    //[Inject] private IAccountService AccountService { get; set; } = default!;
+    //[Inject] private ISnackBarService SnackBarService { get; set; } = default!;
 
-    private AuthenticationState? AuthenticationState { get; set; }
-    [CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState = await AuthenticationStateTask;
-        if (AuthenticationState.User.Identity!.IsAuthenticated)
-        {
-            var response = await AccountService.GetAvatar();
-            if (response!.Status == HttpStatusCode.OK)
-            {
-                ImageUrl = ApiConstants.BaseUrl + response.Data;
-            }
-            else
-            {
-                SnackBarService.ShowErrorFromResponse(response);
-            }
-        }
-    }
+    //private AuthenticationState? AuthenticationState { get; set; }
+    //[CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    AuthenticationState = await AuthenticationStateTask;
+    //    //if (AuthenticationState.User.Identity!.IsAuthenticated)
+    //    //{
+    //    //    var response = await AccountService.GetAvatar();
+    //    //    if (response!.Status == HttpStatusCode.OK)
+    //    //    {
+    //    //        ImageUrl = ApiConstants.BaseUrl + response.Data;
+    //    //    }
+    //    //    else
+    //    //    {
+    //    //        SnackBarService.ShowErrorFromResponse(response);
+    //    //    }
+    //    //}
+    //}
 
     protected override void OnInitialized()
     {
@@ -50,7 +50,8 @@ public partial class Header
     }
     private void UpdateHeaderClass()
     {
-        _headerPage = NavigationManager.Uri.Equals(NavigationManager.BaseUri) ? "" : "header-page";
+        _headerPage = NavigationManager.Uri.Equals(NavigationManager.BaseUri) || NavigationManager.Uri.Equals(NavigationManager.BaseUri + "/#")
+            ? "" : "header-page";
         StateHasChanged();
     }
 

@@ -1,0 +1,99 @@
+﻿@using EzioLearning.Share.Validators.Account
+<!-- Profile Details -->
+<div class="col-xl-9 col-md-8">
+    <div class="settings-widget profile-details">
+        <div class="settings-menu p-0">
+            <div class="profile-heading">
+                <h3>Thông tin cá nhân</h3>
+                <p>Bạn có toàn quyền quản lý cài đặt tài khoản của riêng mình!</p>
+            </div>
+            <div class="course-group mb-0 d-flex">
+                <div class="course-group-img d-flex align-items-center">
+
+                    <div class="course-name">
+                        <h4>
+                            @* <a href="@AccountInfoMinimal.Avatar" target="_blank">Avatar</a> *@
+                        </h4>
+                    </div>
+                    <button>
+                        <img src="@AccountInfoMinimal.Avatar" alt="" class="img-fluid account-avatar">
+                        <InputFile OnChange="OnFileChange"
+                                   @bind-Value="Avatar"
+                                   class="pt-2 form-control"
+                                   accept="@string.Join(',', FileConstants.AcceptTypes)" placeholder='Chọn ảnh' />
+                    </button>
+                </div>
+                <div class="profile-share d-flex align-items-center justify-content-center">
+                    <Button @onclick="UpdateAvatar" class="btn btn-success">Lưu</Button>
+                    <Button @onclick="RemoveAvatar" class="btn btn-danger">Xoá</Button>
+                </div>
+            </div>
+            <div class="checkout-form personal-address add-course-info ">
+                <div class="personal-info-head">
+                    <h4>Thông tin chi tiết</h4>
+                    <p>Chỉnh sửa thông tin cá nhân của bạn.</p>
+                </div>
+                <EditForm Enhance="true" Model="AccountInfo" FormName="frmAccountInfo" action="#" OnValidSubmit="UpdateAccountInfo">
+                    <FluentValidationValidator Validator="new AccountInfoDtoValidator()" />
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Họ</label>
+                                <InputText @bind-Value="AccountInfo.FirstName" class="form-control" />
+                                <ValidationMessage For="() => AccountInfo.FirstName" class="text-danger my-1" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Tên</label>
+                                <InputText @bind-Value="AccountInfo.LastName" class="form-control" />
+                                <ValidationMessage For="() => AccountInfo.LastName" class="text-danger my-1" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Số điện thoại</label>
+                                <InputText @bind-Value="AccountInfo.PhoneNumber" class="form-control" />
+                                <ValidationMessage For="() => AccountInfo.PhoneNumber" class="text-danger my-1" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Ngày sinh</label>
+                                <InputDate @bind-Value="AccountInfo.DateOfBirth" class="form-control" />
+                                <ValidationMessage For="() => AccountInfo.DateOfBirth" class="text-danger my-1" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Email</label>
+                                <InputText @bind-Value="AccountInfo.Email" class="form-control" type="email" readonly />
+                                <ValidationMessage For="() => AccountInfo.Email" class="text-danger my-1" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="input-block">
+                                <label>Tên tài khoản</label>
+                                <InputText @bind-Value="AccountInfo.UserName" class="form-control" readonly />
+
+                            </div>
+                        </div>
+
+                        <div class="update-profile">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Profile Details -->

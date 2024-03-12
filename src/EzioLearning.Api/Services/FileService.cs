@@ -18,6 +18,7 @@ public class FileService
         var pathBuilder = new StringBuilder(path);
         while (File.Exists(pathBuilder.ToString()))
         {
+            File.Delete(pathBuilder.ToString());
             existCount++;
             var prefix = Path.GetDirectoryName(path);
             var name = Path.GetFileNameWithoutExtension(path);
@@ -31,6 +32,8 @@ public class FileService
             pathBuilder.Append(name);
             pathBuilder.Append($" ({existCount})");
             pathBuilder.Append(extension);
+
+
         }
 
         return pathBuilder.ToString();
@@ -42,14 +45,14 @@ public class FileService
 
         //var actuallyFilePath = GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
 
-        var actuallyFilePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath);
-        if (File.Exists(actuallyFilePath)) File.Delete(actuallyFilePath);
+        var oldFilePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath);
+        if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
 
-        await using var fileStream = new FileStream(actuallyFilePath, FileMode.CreateNew);
+        await using var fileStream = new FileStream(oldFilePath, FileMode.CreateNew);
 
         await file.CopyToAsync(fileStream);
 
-        var result = Path.Combine(folderPath, Path.GetFileName(actuallyFilePath));
+        var result = Path.Combine(folderPath, Path.GetFileName(oldFilePath));
 
         return result;
     }

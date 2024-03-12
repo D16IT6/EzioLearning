@@ -20,6 +20,16 @@ namespace EzioLearning.Wasm.Services.Implement
 
         }
 
+        public async Task<ResponseBaseWithData<AccountInfoMinimalDto>> GetMinimalInfo()
+        {
+            var response = await httpClient.GetAsync("api/Account/MinimalInfo");
+            await using var stream = await response.Content.ReadAsStreamAsync();
+
+            return (await JsonSerializer.DeserializeAsync<ResponseBaseWithData<AccountInfoMinimalDto>>(stream,
+                JsonCommonOptions.DefaultSerializer))!;
+        }
+
+
         public async Task<ResponseBaseWithData<AccountInfoDto>?> UpdateInfo(AccountInfoDto newInfo)
         {
             var response = await httpClient.PutAsJsonAsync("api/Account/Info", newInfo);

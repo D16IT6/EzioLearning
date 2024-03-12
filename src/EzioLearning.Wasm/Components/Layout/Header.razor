@@ -311,17 +311,17 @@
 
                                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                     <span class="user-img">
-                                        <img src="@ImageUrl" alt="">
+                                        <img src="@AccountInfoMinimal.Avatar" alt="">
                                         <span class="status online"></span>
                                     </span>
                                 </a>
                                 <div class="users dropdown-menu dropdown-menu-right" data-popper-placement="bottom-end">
                                     <div class="user-header">
                                         <div class="avatar avatar-sm">
-                                            <img src="@ImageUrl" alt="User Image" class="avatar-img rounded-circle">
+                                            <img src="@AccountInfoMinimal.Avatar" alt="User Image" class="avatar-img rounded-circle">
                                         </div>
                                         <div class="user-text">
-                                            <h6>@context.User.Identity!.Name</h6>
+                                            <h6 class="account-name">@AccountInfoMinimal.FullName</h6>
                                             <p class="text-muted mb-0">@context.User.Claims.First(x => x.Type == ClaimTypes.Role).Value</p>
                                         </div>
                                     </div>

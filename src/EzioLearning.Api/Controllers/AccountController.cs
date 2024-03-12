@@ -64,6 +64,40 @@ namespace EzioLearning.Api.Controllers
                 Data = accountInfoDto
             });
         }
+        [HttpGet(nameof(MinimalInfo))]
+        public async Task<IActionResult> MinimalInfo()
+        {
+            var userName = HttpContext.User.Claims
+                .FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            if (userName == null)
+            {
+                return BadRequest(new ResponseBase()
+                {
+                    Errors = new Dictionary<string, string[]>()
+                        { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                });
+            }
+
+            var user = await userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return BadRequest(new ResponseBase()
+                {
+                    Errors = new Dictionary<string, string[]>()
+                        { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                });
+            }
+
+            var accountInfoMinimalDto = mapper.Map<AccountInfoMinimalDto>(user);
+
+            return Ok(new ResponseBaseWithData<AccountInfoMinimalDto>()
+            {
+                Status = HttpStatusCode.OK,
+                Message = "Lấy thông tin tài khoản thành công",
+                Data = accountInfoMinimalDto
+            });
+        }
 
         [HttpPut(nameof(Info))]
         public async Task<IActionResult> UpdateInfo([FromBody] AccountInfoDto accountInfoDto)
