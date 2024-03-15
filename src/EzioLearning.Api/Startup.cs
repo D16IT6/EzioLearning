@@ -82,11 +82,7 @@ internal static class Startup
         services.ConfigureCustomMiddleware();
     }
 
-    private static void ConfigureCustomMiddleware(this IServiceCollection services)
-    {
-        services.AddScoped<Custom401ResponseMiddleware>();
-        services.AddScoped<Custom403ResponseMiddleware>();
-    }
+
 
     private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
     {
@@ -140,13 +136,13 @@ internal static class Startup
 
     private static void ConfigureValidator(this IServiceCollection services)
     {
-        services
-            .AddFluentValidationAutoValidation();
-
-        services.AddFluentValidationClientsideAdapters();
         services.AddValidatorsFromAssemblies([
             typeof(ValidatorInjectClass).Assembly, typeof(ValidatorInjectShareClass).Assembly
         ]);
+
+        services.AddFluentValidationAutoValidation();
+
+        //services.AddFluentValidationClientsideAdapters();
     }
 
 
@@ -236,6 +232,13 @@ internal static class Startup
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     }
 
+    private static void ConfigureCustomMiddleware(this IServiceCollection services)
+    {
+        services.AddScoped<Custom401ResponseMiddleware>();
+        services.AddScoped<Custom403ResponseMiddleware>();
+        services.AddScoped<HandleExceptionMiddleware>();
+    }
+
     private static void MigrateData(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -243,6 +246,8 @@ internal static class Startup
         context.Database.Migrate();
         new DataSeeder().SeedAsync(context).Wait();
     }
+
+
 
     internal static void Configure(this WebApplication app)
     {
@@ -255,7 +260,6 @@ internal static class Startup
             ConnectionConstants.ConnectionStringName = ConnectionStringName.Development;
         }
 
-
         app.UseCors("CorsPolicy");
 
         app.UseHttpsRedirection();
@@ -263,15 +267,16 @@ internal static class Startup
         app.UseStaticFiles();
 
         app.UseAuthentication();
+
         app.UseMiddleware<Custom401ResponseMiddleware>();
         app.UseMiddleware<Custom403ResponseMiddleware>();
 
         app.UseAuthorization();
 
-
         app.MapControllers();
 
+        app.UseMiddleware<HandleExceptionMiddleware>();
 
-        app.MigrateData();
+        //app.MigrateData();
     }
 }

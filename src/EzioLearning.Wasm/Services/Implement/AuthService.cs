@@ -71,8 +71,11 @@ public class AuthService(
 
         multipartContent.Add(new StringContent(model.PhoneNumber!), nameof(model.PhoneNumber));
         multipartContent.Add(new StringContent(model.Email!), nameof(model.Email));
-        multipartContent.Add(new StringContent(model.DateOfBirth.ToString("yyyy-MM-dd")), nameof(model.DateOfBirth));
+        if (model.DateOfBirth.HasValue)
+        {
+            multipartContent.Add(new StringContent(model.DateOfBirth.Value.ToString("yyyy-MM-dd")), nameof(model.DateOfBirth));
 
+        }
 
         if (!string.IsNullOrEmpty(model.LoginProvider))
             multipartContent.Add(new StringContent(model.LoginProvider!), nameof(model.LoginProvider));

@@ -14,10 +14,14 @@ public abstract record RouteConstants
     public const string PrivacyPolicy = $"/{nameof(PrivacyPolicy)}";
     public const string ForgotPassword = $"/{nameof(ForgotPassword)}";
     public const string ConfirmPassword = $"/{nameof(ConfirmPassword)}";
+    public const string Logout = $"/{nameof(Logout)}";
 
     public abstract record Account
     {
-        public const string Home = $"/{nameof(Account)}/{nameof(RouteConstants.Home)}";
+        public const string Home = $"/{nameof(Account)}/{nameof(Home)}";
+        public const string Security = $"/{nameof(Account)}/{nameof(Security)}";
+        public const string ConfirmChangeEmail = $"/{nameof(Account)}/{nameof(ConfirmChangeEmail)}";
+        public const string ConfirmChangePassword = $"/{nameof(Account)}/{nameof(ConfirmChangePassword)}";
     }
 
     public abstract record Error

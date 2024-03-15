@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@inherits AccountComponentBase
 <!-- sidebar -->
 <div class="col-xl-3 col-md-4 theiaStickySidebar">
     <div class="settings-widget dash-profile mb-3">
@@ -7,14 +8,13 @@
                 @* <h5>Beginner</h5> *@
                 <img src="assets/img/profile-bg.jpg" alt="">
                 <div class="profile-img">
-                    <a href="#">
-
+                    <a href="@AccountInfoMinimal.Avatar" target="_blank">
                         <img src="@AccountInfoMinimal.Avatar" alt="" class="account-avatar">
                     </a>
                 </div>
             </div>
             @{
-                var roles = AuthenticationState?.User.Claims
+                var roles = AuthenticationState.User.Claims
                 .Where(c => c.Type.Equals(ClaimTypes.Role))
                 .Select(c => c.Value)
                 .ToList();
@@ -25,39 +25,39 @@
                         @AccountInfoMinimal.FullName
                     </h4>
 
-                    @if (roles != null && roles.Any())
+                    @if (roles.Any())
                     {
                         <p>@string.Join(",", roles)</p>
                     }
                 </div>
-                <div class="go-dashboard text-center">
-                    <a href="deposit-student-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                </div>
+                @*  <div class="go-dashboard text-center">
+                <a href="deposit-student-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                </div> *@
             </div>
         </div>
     </div>
     <div class="settings-widget account-settings">
         <div class="settings-menu">
-            <h3>ACCOUNT SETTINGS</h3>
+            <h3>CÀI ĐẶT TÀI KHOẢN</h3>
             <ul>
-                <li class="nav-item active">
-                    <a href="setting-edit-profile.html" class="nav-link">
-                        <i class="feather-settings"></i> Edit Profile
-                    </a>
+                <li class="nav-item">
+                    <NavLink href="@RouteConstants.Account.Home" Match="NavLinkMatch.All" class="nav-link">
+                        <i class="feather-settings"></i> Thông tin
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-security.html" class="nav-link">
-                        <i class="feather-user"></i> Security
-                    </a>
+                    <NavLink href="@RouteConstants.Account.Security" Match="NavLinkMatch.All" class="nav-link">
+                        <i class="feather-user"></i> Bảo mật
+                    </NavLink>
                 </li>
                 <li class="nav-item">
                     <a href="setting-student-social-profile.html" class="nav-link">
-                        <i class="feather-refresh-cw"></i> Social Profiles
+                        <i class="feather-refresh-cw"></i> Mạng xã hội
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="setting-student-notification.html" class="nav-link">
-                        <i class="feather-bell"></i> Notifications
+                        <i class="feather-bell"></i> Thông báo
                     </a>
                 </li>
                 <li class="nav-item">
@@ -67,12 +67,12 @@
                 </li>
                 <li class="nav-item">
                     <a href="setting-student-delete-profile.html" class="nav-link">
-                        <i class="feather-trash-2"></i> Delete Profile
+                        <i class="feather-trash-2"></i> Xoá tài khoản
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="setting-student-accounts.html" class="nav-link">
-                        <i class="feather-user"></i> Linked Accounts
+                        <i class="feather-user"></i> Liên kết
                     </a>
                 </li>
                 <li class="nav-item">
@@ -81,9 +81,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="login.html" class="nav-link">
-                        <i class="feather-power"></i> Sign Out
-                    </a>
+                    <NavLink class="nav-link" href="@RouteConstants.Logout">
+                        <i class="feather-power"></i> Đăng xuất
+                    </NavLink>
                 </li>
             </ul>
             <h3>SUBSCRIPTION</h3>

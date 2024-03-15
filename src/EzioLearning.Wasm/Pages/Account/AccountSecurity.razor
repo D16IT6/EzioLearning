@@ -1,0 +1,18 @@
+﻿@using EzioLearning.Wasm.Components.Account
+@attribute [Route(RouteConstants.Account.Security)]
+@layout AccountLayout
+@inherits EzioLearning.Wasm.Components.Account.AccountComponentBase
+<!-- Student Security -->
+<div class="settings-widget profile-details">
+    <div class="settings-menu p-0">
+        <div class="profile-heading">
+            <h3>Bảo mật</h3>
+            <p>Thay đổi email và mật khẩu của bạn.</p>
+        </div>
+        
+        <AccountChangeEmail />
+       
+        <AccountChangePassword/>
+    </div>
+</div>
+<!-- Student Security -->

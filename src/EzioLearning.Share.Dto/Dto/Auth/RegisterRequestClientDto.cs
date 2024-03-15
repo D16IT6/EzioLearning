@@ -13,7 +13,7 @@ public class RegisterRequestClientDto
     public string? ConfirmPassword { get; set; }
     public string? PhoneNumber { get; set; }
 
-    public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
+    public DateTime? DateOfBirth { get; set; } = DateTime.UtcNow.AddYears(-10);
 
     public IFormFile? Avatar { get; set; }
 

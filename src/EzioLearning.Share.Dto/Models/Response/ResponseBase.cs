@@ -6,26 +6,22 @@ namespace EzioLearning.Share.Models.Response;
 public class ResponseBase
 {
     public string Type { get; set; } = HttpResponseType.Ok;
-    public string Title { get; init; } = string.Empty;
-    public HttpStatusCode Status { get; init; } = HttpStatusCode.BadRequest;
-    public string? Message { get; init; }
+    public string Title { get; set; } = string.Empty;
+    public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
+    public string? Message { get; set; }
 
     public bool IsSuccess
     {
         get
         {
-            switch (Status)
+            Type = Status switch
             {
-                case HttpStatusCode.BadRequest:
-                    Type = HttpResponseType.BadRequest;
-                    break;
-                case HttpStatusCode.Forbidden:
-                    Type = HttpResponseType.Forbidden;
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    Type = HttpResponseType.Unauthorized;
-                    break;
-            }
+                HttpStatusCode.BadRequest => HttpResponseType.BadRequest,
+                HttpStatusCode.Forbidden => HttpResponseType.Forbidden,
+                HttpStatusCode.Unauthorized => HttpResponseType.Unauthorized,
+                HttpStatusCode.InternalServerError => HttpResponseType.InternalServerError,
+                _ => Type
+            };
 
             var statusCode = (int)Status;
             

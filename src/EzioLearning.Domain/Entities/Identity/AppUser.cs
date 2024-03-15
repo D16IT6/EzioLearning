@@ -10,7 +10,7 @@ public class AppUser : IdentityUser<Guid>
 
     [PersonalData] public required string LastName { get; set; }
 
-    [ProtectedPersonalData] public DateOnly? DateOfBirth { get; set; }
+    [ProtectedPersonalData] public DateTime? DateOfBirth { get; set; }
 
     [PersonalData] public required string Avatar { get; set; }
 

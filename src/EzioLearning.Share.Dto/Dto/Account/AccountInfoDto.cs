@@ -12,7 +12,7 @@ namespace EzioLearning.Share.Dto.Account
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
 
-        public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
+        public DateTime? DateOfBirth { get; set; } =DateTime.UtcNow.AddYears(-10);
 
         public string[] Roles { get; set; } = [];
 

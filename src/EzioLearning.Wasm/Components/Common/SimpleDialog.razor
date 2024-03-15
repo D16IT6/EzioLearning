@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <DialogContent>
+        <div>@(new MarkupString(ContentHtml))</div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="@CancelColor">@CancelText</MudButton>
+
+        <MudButton OnClick="Submit" Color="@SubmitColor">@SubmitText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public string ContentHtml { get; set; } = string.Empty;
+    [Parameter] public Color SubmitColor { get; set; } = Color.Success;
+    [Parameter] public Color CancelColor { get; set; } = Color.Default;
+    [Parameter] public string SubmitText { get; set; } = string.Empty;
+    [Parameter] public string CancelText { get; set; } = string.Empty;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

@@ -2,9 +2,9 @@
 
 public static class ValidatorDateCommon
 {
-    public static bool BeValidDate(this DateOnly dateOfBirth)
+    public static bool BeValidDate(this DateTime? dateOfBirth)
     {
-        return dateOfBirth <= DateOnly.FromDateTime(DateTime.UtcNow).AddYears(-10) &&
-               dateOfBirth >= DateOnly.FromDateTime(DateTime.UtcNow).AddYears(-100);
+        return dateOfBirth <= DateTime.UtcNow.AddYears(-10) &&
+               dateOfBirth >= DateTime.UtcNow.AddYears(-100);
     }
 }

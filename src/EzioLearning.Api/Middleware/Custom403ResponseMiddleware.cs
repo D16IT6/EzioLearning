@@ -1,7 +1,6 @@
-﻿using System.Net;
+﻿using EzioLearning.Share.Models.Response;
+using System.Net;
 using System.Text.Json;
-using EzioLearning.Api.Utils;
-using EzioLearning.Share.Models.Response;
 
 namespace EzioLearning.Api.Middleware
 {

@@ -42,7 +42,7 @@ public class AuthController(
 
     [HttpPost("Register")]
     [ValidateModel]
-    public async Task<IActionResult> CreateNewUser([FromForm] RegisterRequestDto model)
+    public async Task<IActionResult> CreateNewUser([FromForm] RegisterRequestApiDto model)
     {
         var errors = new Dictionary<string, string[]>();
         var newUser = mapper.Map<AppUser>(model);

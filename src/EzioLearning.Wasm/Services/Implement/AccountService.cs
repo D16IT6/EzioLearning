@@ -65,15 +65,16 @@ namespace EzioLearning.Wasm.Services.Implement
             return responseData;
         }
 
-        public async Task<ResponseBaseWithData<string>?> GetAvatar()
+        public async Task<ResponseBase?> ChangePassword(ChangePasswordDto model)
         {
-            var response = await httpClient.GetAsync("api/Account/Avatar");
+            var response = await httpClient.PutAsJsonAsync("api/Account/ChangePassword",model,JsonCommonOptions.DefaultSerializer);
 
             await using var stream = await response.Content.ReadAsStreamAsync();
 
             var responseData =
                 await JsonSerializer.DeserializeAsync<ResponseBaseWithData<string>>(stream,
                     JsonCommonOptions.DefaultSerializer);
+
             return responseData;
         }
     }

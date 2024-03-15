@@ -3,20 +3,21 @@
 
 
 <MudThemeProvider />
-<MudDialogProvider />
+<MudDialogProvider CloseButton="true"
+                   Position="DialogPosition.Center"
+                   CloseOnEscapeKey="true"
+                   DisableBackdropClick="true" />
 <MudSnackbarProvider />
 
 
 <div class="main-wrapper">
-    <CascadingValue Value="AccountInfoMinimal">
-        <!-- Header -->
-        <Header></Header>
-        <!-- /Header -->
-        @Body
+    <!-- Header -->
+    <Header></Header>
+    <!-- /Header -->
+    @Body
 
-        <!-- Footer -->
-        <Footer></Footer>
-        <!-- /Footer -->
-    </CascadingValue>
+    <!-- Footer -->
+    <Footer></Footer>
+    <!-- /Footer -->
 
 </div>

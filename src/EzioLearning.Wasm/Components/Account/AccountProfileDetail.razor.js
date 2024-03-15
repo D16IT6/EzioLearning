@@ -7,4 +7,10 @@
 export function updateFullName(fullName) {
     window.$(".account-name").text(fullName);
 
+} export function hideLabelInputDateMargin() {
+    setTimeout(function() {
+            $('#register-birthday').parent().addClass('mt-0');
+        },
+        200);
+
 }

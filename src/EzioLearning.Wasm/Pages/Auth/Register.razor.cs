@@ -1,9 +1,9 @@
 ﻿using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Wasm.Common;
-using EzioLearning.Wasm.Services;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
 
@@ -14,17 +14,21 @@ public partial class Register
 
     private string[] AcceptTypes => FileConstants.AcceptTypes;
 
-    [SupplyParameterFromQuery] private string? Email { get; } = string.Empty;
+    [SupplyParameterFromQuery] private string? Email { get; set; } = string.Empty;
 
-    [SupplyParameterFromQuery] private string? FirstName { get; } = string.Empty;
-    [SupplyParameterFromQuery] private string? LastName { get; } = string.Empty;
-    [SupplyParameterFromQuery] private string? UserName { get; } = string.Empty;
+    [SupplyParameterFromQuery] private string? FirstName { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] private string? LastName { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] private string? UserName { get; set; } = string.Empty;
 
-    [SupplyParameterFromQuery] private string? LoginProvider { get; } = string.Empty;
-    [SupplyParameterFromQuery] private string? ProviderName { get; } = string.Empty;
-    [SupplyParameterFromQuery] private string? ProviderKey { get; } = string.Empty;
+    [SupplyParameterFromQuery] private string? LoginProvider { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] private string? ProviderName { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] private string? ProviderKey { get; set; } = string.Empty;
 
     [SupplyParameterFromForm] public RegisterRequestClientDto RegisterModel { get; set; } = new();
+
+    [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
+    private IJSObjectReference JsObjectReference { get; set; } = default!;
+
 
     private bool DisabledEmail { get; set; }
 
@@ -43,6 +47,14 @@ public partial class Register
     {
         File = e.File;
         return Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        JsObjectReference = await JsRunTime.InvokeAsync<IJSObjectReference>("import",
+            $"/{nameof(Pages)}/{nameof(Auth)}/{nameof(Register)}.razor.js");
+
+        await JsObjectReference.InvokeVoidAsync("hideLabelInputDateMargin");
     }
 
     protected override void OnInitialized()
@@ -122,5 +134,7 @@ public partial class Register
                 NavigationManager.NavigateTo(RouteConstants.Home, true);
                 break;
         }
+
+        
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EzioLearning.Core.Validators.Auth;
 
-public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
+public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestApiDto>
 {
     public RegisterRequestDtoValidator(UserManager<AppUser> userManager)
     {
@@ -26,20 +26,15 @@ public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
             .Must(s =>
             {
                 Regex regex = new("^[a-zA-Z0-9]+$");
-                if (s == null)
-                    return false;
-
-                return regex.IsMatch(s);
+                return s != null && regex.IsMatch(s);
             }).WithMessage("Tài khoản chỉ chấp nhận chữ cái và số")
-            .MaximumLength(32).WithMessage("Họ không được quá 50 ký tự")
+            .MaximumLength(32).WithMessage("Tài khoản không được quá 50 ký tự")
             .Must(userName =>
             {
                 if (string.IsNullOrEmpty(userName)) return false;
                 var user = userManager.FindByNameAsync(userName).Result;
-                return user == null;
-            }).WithMessage("Tên tài khoản đã tồn tại, vui lòng thử lại")
-            .MaximumLength(32).WithMessage("Họ không được quá 50 ký tự");
-
+                return user != null;
+            }).WithMessage("Tài khoản đã tồn tại hoặc không phù hợp");
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email không được để trống")

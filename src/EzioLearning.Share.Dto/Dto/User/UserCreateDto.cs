@@ -15,7 +15,7 @@ public class UserCreateDto
     public string? ConfirmPassword { get; init; }
     public string? PhoneNumber { get; init; }
 
-    public DateOnly DateOfBirth { get; init; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
+    public DateTime? DateOfBirth { get; init; } = DateTime.UtcNow.AddYears(-10);
 
     public IFormFile? Avatar { get; init; }
 

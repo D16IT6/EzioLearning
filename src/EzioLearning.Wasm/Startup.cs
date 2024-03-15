@@ -1,7 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Providers;
-using EzioLearning.Wasm.Services.Implement;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -15,7 +14,7 @@ namespace EzioLearning.Wasm
     {
         public static async Task ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddBlazorBootstrap();
+            //services.AddBlazorBootstrap();
             services.AddBlazoredLocalStorage();
             services.AddMudServices(config =>
             {

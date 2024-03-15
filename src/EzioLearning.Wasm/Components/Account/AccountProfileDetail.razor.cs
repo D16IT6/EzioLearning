@@ -1,9 +1,7 @@
 ﻿using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Common;
-using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -12,64 +10,53 @@ using System.Net;
 
 namespace EzioLearning.Wasm.Components.Account
 {
-    public partial class AccountProfileDetail
+    public partial class AccountProfileDetail : AccountComponentBase
     {
-        [CascadingParameter] public AccountInfoMinimalDto AccountInfoMinimal { get; set; } = new();
         [SupplyParameterFromForm] private AccountInfoDto AccountInfo { get; set; } = new();
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
-        [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
-        [Inject] private IAccountService AccountService { get; set; } = default!;
+
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
         [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
         private IJSObjectReference JsObjectReference { get; set; } = default!;
 
         private IBrowserFile? Avatar { get; set; }
 
-        [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
-        private AuthenticationState? AuthenticationState { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
             await LoadJs();
 
-            AuthenticationState = await AuthenticationStateTask!;
-            var isAuthenticated = AuthenticationState.User.Identity!.IsAuthenticated;
-
-            if (isAuthenticated)
+            var accountDto = await AccountService.GetInfo();
+            switch (accountDto.Status)
             {
-                var accountDto = await AccountService.GetInfo();
-                switch (accountDto.Status)
-                {
-                    case HttpStatusCode.BadRequest:
-                        SnackBarService.ShowErrorFromResponse(accountDto);
-                        await NavigateToHome();
-                        break;
-                    case HttpStatusCode.Unauthorized:
-                        await NavigateToHome("Bạn chưa xác thực");
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        await NavigateToHome("Bạn không có quyền truy cập chức năng này");
-                        break;
-                    case HttpStatusCode.OK:
-                        AccountInfo = accountDto.Data!;
-                        break;
-                }
+                case HttpStatusCode.BadRequest:
+                    SnackBarService.ShowErrorFromResponse(accountDto);
+                    await NavigateToHome();
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    await NavigateToHome("Bạn chưa xác thực");
+                    break;
+                case HttpStatusCode.Forbidden:
+                    await NavigateToHome("Bạn không có quyền truy cập chức năng này");
+                    break;
+                case HttpStatusCode.OK:
+                    AccountInfo = accountDto.Data!;
+                    break;
             }
+
         }
         private async Task LoadJs()
         {
             JsObjectReference = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
                 $"/{nameof(Components)}/{nameof(Account)}/{nameof(AccountProfileDetail)}.razor.js");
+            await JsObjectReference.InvokeVoidAsync("hideLabelInputDateMargin");
         }
-        private async Task NavigateToHome(string message = "", int seconds = 0)
+        private async Task NavigateToHome(string? message = "", int seconds = 0)
         {
-            if (!string.IsNullOrEmpty(message))
-                Snackbar.Add(message);
-
-            await Task.Delay(TimeSpan.FromSeconds(seconds));
-            NavigationManager.NavigateTo(RouteConstants.Home);
+            await NavigationService.Navigate(RouteConstants.Home, message, seconds);
         }
 
         private async Task UpdateAccountInfo()

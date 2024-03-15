@@ -1,0 +1,15 @@
+﻿@attribute [Route(RouteConstants.Logout)]
+
+@using EzioLearning.Wasm.Services.Interface
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] ITokenService TokenService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TokenService.DeleteToken();
+
+        NavigationManager.NavigateTo(RouteConstants.Login, forceLoad: true);
+    }
+
+}

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace EzioLearning.Core.Dto.Auth;
 
-public class RegisterRequestDto
+public class RegisterRequestApiDto
 {
     public string? FirstName { get; init; }
     public string? LastName { get; init; }
@@ -15,7 +15,7 @@ public class RegisterRequestDto
     public string? ConfirmPassword { get; init; }
     public string? PhoneNumber { get; init; }
 
-    public DateOnly DateOfBirth { get; init; } = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10));
+    public DateTime? DateOfBirth { get; init; } = DateTime.UtcNow.AddYears(-10);
 
     public IFormFile? Avatar { get; init; }
 
@@ -28,9 +28,9 @@ public class RegisterRequestDto
     {
         public RegisterRequestDtoProfile()
         {
-            CreateMap<RegisterRequestDto, AppUser>()
+            CreateMap<RegisterRequestApiDto, AppUser>()
                 .ForMember(x => x.Avatar, cfg => cfg.Ignore());
-            CreateMap<AppUser, RegisterRequestDto>()
+            CreateMap<AppUser, RegisterRequestApiDto>()
                 .ForMember(x => x.Avatar, cfg => cfg.Ignore());
         }
     }

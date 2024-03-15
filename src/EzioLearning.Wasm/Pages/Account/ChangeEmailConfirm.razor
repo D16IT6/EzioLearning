@@ -1,0 +1,11 @@
+﻿@attribute [Route(RouteConstants.Account.ConfirmChangeEmail)]
+@layout AccountLayout
+@inherits EzioLearning.Wasm.Components.Account.AccountComponentBase
+<div class="row">
+    <div class="col">
+        <h4>
+            <span>@LoadingText</span>
+            <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="@Loading" />
+        </h4>
+    </div>
+</div>
