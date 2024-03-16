@@ -49,7 +49,7 @@ namespace EzioLearning.Wasm.Pages.Account
                     await TokenService.DeleteToken();
                     await NavigationService.Navigate(RouteConstants.Login, response.Message, 2, true, Severity.Success);
                 }
-
+               
             }
         }
     }
