@@ -1,13 +1,14 @@
 ﻿using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
+using EzioLearning.Share.Models.Token;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace EzioLearning.Wasm.Services.Interface;
 
 public interface IAuthService: IServiceBase
 {
-    public Task<ResponseBase?> Login(LoginRequestDto loginRequestDto);
-    public Task<ResponseBase?> Register(RegisterRequestClientDto registerRequestClientDto, IBrowserFile? avatar = null);
+    public Task<ResponseBaseWithData<TokenResponse>> Login(LoginRequestDto loginRequestDto);
+    public Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto registerRequestClientDto, IBrowserFile? avatar = null);
     public Task<ResponseBase?> Logout();
 
     public Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto);

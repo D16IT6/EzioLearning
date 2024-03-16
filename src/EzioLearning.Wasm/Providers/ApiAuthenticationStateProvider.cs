@@ -6,8 +6,8 @@ using System.Text.Json;
 using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace EzioLearning.Wasm.Providers;

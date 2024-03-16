@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@using EzioLearning.Wasm.Utils.Common
 @inherits AccountComponentBase
 <!-- sidebar -->
 <div class="col-xl-3 col-md-4 theiaStickySidebar">
@@ -51,34 +52,34 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-social-profile.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-refresh-cw"></i> Mạng xã hội
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-notification.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-bell"></i> Thông báo
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-privacy.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-lock"></i> Profile Privacy
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-delete-profile.html" class="nav-link">
+                    <NavLink href="@RouteConstants.Account.Delete" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-trash-2"></i> Xoá tài khoản
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-accounts.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-user"></i> Liên kết
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-referral.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-user-plus"></i> Referrals
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
                     <NavLink class="nav-link" href="@RouteConstants.Logout">
@@ -86,27 +87,27 @@
                     </NavLink>
                 </li>
             </ul>
-            <h3>SUBSCRIPTION</h3>
+            <h3>Đăng ký</h3>
             <ul>
                 <li class="nav-item">
-                    <a href="setting-student-subscription.html" class="nav-link ">
-                        <i class="feather-calendar"></i> My Subscriptions
-                    </a>
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link ">
+                        <i class="feather-calendar"></i> Đăng ký của tôi
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-billing.html" class="nav-link">
-                        <i class="feather-credit-card"></i> Billing Info
-                    </a>
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
+                        <i class="feather-credit-card"></i> Thông tin thanh toán
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-payment.html" class="nav-link">
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
                         <i class="feather-credit-card"></i> Payment
-                    </a>
+                    </NavLink>
                 </li>
                 <li class="nav-item">
-                    <a href="setting-student-invoice.html" class="nav-link">
-                        <i class="feather-clipboard"></i> Invoice
-                    </a>
+                    <NavLink href="@RouteConstants.DevLater" Match="NavLinkMatch.All" class="nav-link">
+                        <i class="feather-clipboard"></i> Hoá đơn
+                    </NavLink>
                 </li>
             </ul>
         </div>

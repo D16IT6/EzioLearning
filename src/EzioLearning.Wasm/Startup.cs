@@ -1,7 +1,7 @@
 ﻿using Blazored.LocalStorage;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using MudBlazor.Services;

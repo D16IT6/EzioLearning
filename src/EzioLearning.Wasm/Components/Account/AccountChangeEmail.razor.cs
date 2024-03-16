@@ -1,11 +1,11 @@
 ﻿using EzioLearning.Share.Dto.Account;
-using EzioLearning.Wasm.Common;
 using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Components.Common;
+using EzioLearning.Wasm.Utils.Common;
 using MudBlazor;
 
 

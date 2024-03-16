@@ -1,7 +1,6 @@
 ﻿using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -9,6 +8,9 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
+using Azure;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
@@ -21,40 +23,19 @@ public class AuthService(
     private readonly ApiAuthenticationStateProvider _apiAuthenticationStateProvider =
         (ApiAuthenticationStateProvider)stateProvider;
 
-    public async Task<ResponseBase?> Login(LoginRequestDto loginRequestDto)
+    public async Task<ResponseBaseWithData<TokenResponse>> Login(LoginRequestDto loginRequestDto)
     {
         var response = await httpClient.PostAsJsonAsync("api/Auth/Login", loginRequestDto);
-        await using var stream = await response.Content.ReadAsStreamAsync();
 
-        ResponseBase? data =
-            await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream,
-                JsonCommonOptions.DefaultSerializer);
-
-        if (data!.Status != HttpStatusCode.OK) return data;
-
-        await tokenService.SaveFromResponse(data);
-        _apiAuthenticationStateProvider.MarkUserAsAuthenticated(loginRequestDto.UserName!);
-
-        return data;
+        return await response.GetResponse<ResponseBaseWithData<TokenResponse>>();
     }
 
-    public async Task<ResponseBase?> Register(RegisterRequestClientDto model, IBrowserFile? avatar)
+    public async Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto model, IBrowserFile? avatar)
     {
         var multipartContent = new MultipartFormDataContent();
 
         if (avatar != null)
         {
-            //if (avatar.Size > 10 * 1024 * 1024)//Fake Validator 😂
-            //{
-            //    return new ResponseBase()
-            //    {
-            //        Status = HttpStatusCode.BadRequest,
-            //        Errors = new Dictionary<string, string[]>()
-            //        {
-            //            { "FileSize", ["Kích thước file quá lớn, vui lòng chọn file khác"] }
-            //        }
-            //    };
-            //}
             await using FileStream fs = new(Path.GetRandomFileName(), FileMode.Create);
 
             var fileContent = new StreamContent(avatar.OpenReadStream(avatar.Size));
@@ -86,53 +67,34 @@ public class AuthService(
 
         var response = await httpClient.PostAsync("api/Auth/Register", multipartContent);
 
-
-        await using var stream = await response.Content.ReadAsStreamAsync();
-        ResponseBase? data =
-            await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream,
-                JsonCommonOptions.DefaultSerializer);
-        return data;
+        return await response.GetResponse<ResponseBaseWithData<TokenResponse>>();
     }
 
     public async Task<ResponseBase?> Logout()
     {
-        ResponseBase? data = null;
         var response = await httpClient.PostAsync("api/Auth/RevokeToken", null);
-
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            await using var stream = await response.Content.ReadAsStreamAsync();
-            data = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
-        }
 
         await tokenService.DeleteToken();
 
         _apiAuthenticationStateProvider.MarkUserAsLoggedOut();
 
-        return data;
+        return await response.GetResponse<ResponseBase>();
     }
 
     public async Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
     {
-        var data = await httpClient.PostAsJsonAsync("api/Auth/ForgotPassword", forgotPasswordDto,
+        var response = await httpClient.PostAsJsonAsync("api/Auth/ForgotPassword", forgotPasswordDto,
             JsonCommonOptions.DefaultSerializer);
 
-        await using var responseStream = await data.Content.ReadAsStreamAsync();
-        var responseBase =
-            await JsonSerializer.DeserializeAsync<ResponseBase>(responseStream, JsonCommonOptions.DefaultSerializer);
-
-        return responseBase;
+        return await response.GetResponse<ResponseBase>();
     }
 
     public async Task<ResponseBase?> ConfirmPassword(ConfirmPasswordDto confirmPasswordDto)
     {
-        var data = await httpClient.PostAsJsonAsync("api/Auth/ConfirmPassword", confirmPasswordDto,
+        var response = await httpClient.PostAsJsonAsync("api/Auth/ConfirmPassword", confirmPasswordDto,
             JsonCommonOptions.DefaultSerializer);
 
-        await using var responseStream = await data.Content.ReadAsStreamAsync();
-        var responseBase =
-            await JsonSerializer.DeserializeAsync<ResponseBase>(responseStream, JsonCommonOptions.DefaultSerializer);
+        return await response.GetResponse<ResponseBase>();
 
-        return responseBase;
     }
 }

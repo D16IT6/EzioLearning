@@ -11,5 +11,6 @@ namespace EzioLearning.Wasm.Services.Interface
         Task<ResponseBaseWithData<AccountInfoDto>?> UpdateInfo(AccountInfoDto accountInfo);
         Task<ResponseBaseWithData<AccountInfoDto>?> UpdateAvatar(IBrowserFile? avatar = null);
         Task<ResponseBase?> ChangePassword(ChangePasswordDto model);
+        Task<ResponseBase?> Delete();
     }
 }

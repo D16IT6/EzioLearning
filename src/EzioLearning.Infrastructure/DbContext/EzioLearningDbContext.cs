@@ -29,19 +29,27 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
 
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        ConfigIdentity(builder);
+        ConfigureIdentity(builder);
+
+        ConfigureFilters(builder);
     }
 
-    public void ConfigIdentity(ModelBuilder builder, string prefix = "App", string schema = "Auth")
+    private void ConfigureFilters(ModelBuilder builder)
+    {
+        builder.Entity<AppUser>().HasQueryFilter(user => user.IsDeleted == false);
+
+    }
+
+    public void ConfigureIdentity(ModelBuilder builder, string prefix = "App", string schema = "Auth")
     {
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
             var tableName = entityType.GetTableName();
-            if (tableName != null && tableName.StartsWith("AspNet"))
-            {
-                entityType.SetTableName(tableName.Replace("AspNet", prefix));
-                entityType.SetSchema(schema);
-            }
+
+            if (tableName == null || !tableName.StartsWith("AspNet")) continue;
+
+            entityType.SetTableName(tableName.Replace("AspNet", prefix));
+            entityType.SetSchema(schema);
         }
     }
 
@@ -63,7 +71,7 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
             AuditablePropertyConstants.ModifiedDate,
             DateTime.Now
         );
-        
+
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 

@@ -6,7 +6,7 @@ namespace EzioLearning.Share.Models.Response;
 public class ResponseBase
 {
     public string Type { get; set; } = HttpResponseType.Ok;
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = "Thành công";
     public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
     public string? Message { get; set; }
 

@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Wasm.Common;
+﻿namespace EzioLearning.Wasm.Utils.Common;
 
 public abstract record ApiConstants
 {

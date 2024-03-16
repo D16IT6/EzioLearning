@@ -1,6 +1,6 @@
 ﻿using EzioLearning.Share.Dto.Account;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
