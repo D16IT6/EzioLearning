@@ -1,10 +1,11 @@
 ﻿using System.Net.Http.Json;
 using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services.Interface;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Forms;
+using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 
 namespace EzioLearning.Wasm.Services.Implement
 {
@@ -25,8 +26,7 @@ namespace EzioLearning.Wasm.Services.Implement
             var response = await httpClient.GetAsync("api/Account/MinimalInfo");
             await using var stream = await response.Content.ReadAsStreamAsync();
 
-            return (await JsonSerializer.DeserializeAsync<ResponseBaseWithData<AccountInfoMinimalDto>>(stream,
-                JsonCommonOptions.DefaultSerializer))!;
+            return (await response.GetResponse<ResponseBaseWithData<AccountInfoMinimalDto>>());
         }
 
 
@@ -36,11 +36,9 @@ namespace EzioLearning.Wasm.Services.Implement
 
             await using var stream = await response.Content.ReadAsStreamAsync();
 
-            var responseData =
-                await JsonSerializer.DeserializeAsync<ResponseBaseWithData<AccountInfoDto>>(stream,
-                    JsonCommonOptions.DefaultSerializer);
-            return responseData;
-        }
+            return await response.GetResponse<ResponseBaseWithData<AccountInfoDto>>();
+        }            
+
 
         public async Task<ResponseBaseWithData<AccountInfoDto>?> UpdateAvatar(IBrowserFile? avatar = null)
         {
@@ -56,26 +54,23 @@ namespace EzioLearning.Wasm.Services.Implement
             }
 
             var response = await httpClient.PutAsync("/api/Account/Avatar", formContent);
-
-            await using var stream = await response.Content.ReadAsStreamAsync();
-
-            var responseData =
-                await JsonSerializer.DeserializeAsync<ResponseBaseWithData<AccountInfoDto>>(stream,
-                    JsonCommonOptions.DefaultSerializer);
-            return responseData;
+            
+            return await response.GetResponse<ResponseBaseWithData<AccountInfoDto>>();
         }
 
         public async Task<ResponseBase?> ChangePassword(ChangePasswordDto model)
         {
             var response = await httpClient.PutAsJsonAsync("api/Account/ChangePassword",model,JsonCommonOptions.DefaultSerializer);
 
-            await using var stream = await response.Content.ReadAsStreamAsync();
-
-            var responseData =
-                await JsonSerializer.DeserializeAsync<ResponseBaseWithData<string>>(stream,
-                    JsonCommonOptions.DefaultSerializer);
-
-            return responseData;
+            return await response.GetResponse<ResponseBase>();
         }
+
+        public async Task<ResponseBase?> Delete()
+        {
+            var response = await httpClient.DeleteAsync("api/Account");
+
+            return await response.GetResponse<ResponseBase>();
+        }
+
     }
 }

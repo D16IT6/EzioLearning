@@ -1,4 +1,6 @@
 ﻿@using System.Security.Claims
+@using EzioLearning.Domain.Common
+@using EzioLearning.Wasm.Utils.Common
 @inherits AccountComponentBase
 <!-- sidebar -->
 <div class="col-xl-3 col-md-4 theiaStickySidebar">
@@ -8,9 +10,9 @@
                 @* <h5>Beginner</h5> *@
                 <img src="assets/img/profile-bg.jpg" alt="">
                 <div class="profile-img">
-                    <a href="@AccountInfoMinimal.Avatar" target="_blank">
+                    <NavLink href="@AccountInfoMinimal.Avatar" target="_blank">
                         <img src="@AccountInfoMinimal.Avatar" alt="" class="account-avatar">
-                    </a>
+                    </NavLink>
                 </div>
             </div>
             @{
@@ -38,77 +40,53 @@
     </div>
     <div class="settings-widget account-settings">
         <div class="settings-menu">
-            <h3>CÀI ĐẶT TÀI KHOẢN</h3>
-            <ul>
-                <li class="nav-item">
-                    <NavLink href="@RouteConstants.Account.Home" Match="NavLinkMatch.All" class="nav-link">
-                        <i class="feather-settings"></i> Thông tin
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="@RouteConstants.Account.Security" Match="NavLinkMatch.All" class="nav-link">
-                        <i class="feather-user"></i> Bảo mật
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-social-profile.html" class="nav-link">
-                        <i class="feather-refresh-cw"></i> Mạng xã hội
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-notification.html" class="nav-link">
-                        <i class="feather-bell"></i> Thông báo
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-privacy.html" class="nav-link">
-                        <i class="feather-lock"></i> Profile Privacy
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-delete-profile.html" class="nav-link">
-                        <i class="feather-trash-2"></i> Xoá tài khoản
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-accounts.html" class="nav-link">
-                        <i class="feather-user"></i> Liên kết
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-referral.html" class="nav-link">
-                        <i class="feather-user-plus"></i> Referrals
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="@RouteConstants.Logout">
-                        <i class="feather-power"></i> Đăng xuất
-                    </NavLink>
-                </li>
-            </ul>
-            <h3>SUBSCRIPTION</h3>
-            <ul>
-                <li class="nav-item">
-                    <a href="setting-student-subscription.html" class="nav-link ">
-                        <i class="feather-calendar"></i> My Subscriptions
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-billing.html" class="nav-link">
-                        <i class="feather-credit-card"></i> Billing Info
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-payment.html" class="nav-link">
-                        <i class="feather-credit-card"></i> Payment
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-student-invoice.html" class="nav-link">
-                        <i class="feather-clipboard"></i> Invoice
-                    </a>
-                </li>
-            </ul>
+            <MudNavMenu>
+                @if (AuthenticationState.User.IsInRole(RoleConstants.Admin) || AuthenticationState.User.IsInRole(RoleConstants.Teacher))
+                {
+                    <MudNavGroup Title="Dashboard" Icon="@Icons.Material.Filled.Dashboard">
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                            <i class="feather-home"></i> My Dashboard
+                        </MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                            <i class="feather-home"></i> My Dashboard
+                        </MudNavLink>
+
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                            <i class="feather-home"></i> My Dashboard
+                        </MudNavLink>
+
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                            <i class="feather-home"></i> My Dashboard
+                        </MudNavLink>
+
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                            <i class="feather-home"></i> My Dashboard
+                        </MudNavLink>
+                    </MudNavGroup>
+                }
+
+                <MudNavGroup Title="Cài đặt tài khoản" Icon="@Icons.Material.Filled.ManageAccounts">
+                    <MudNavLink href="@RouteConstants.Account.Home" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Info">
+                        Thông tin
+                    </MudNavLink>
+
+                    <MudNavLink href="@RouteConstants.Account.Security" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Security">
+                        Bảo mật
+                    </MudNavLink>
+
+                    <MudNavLink href="@RouteConstants.Account.Delete" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.NoAccounts">
+                        Xoá tài khoản
+                    </MudNavLink>
+
+
+                    <MudNavLink href="@RouteConstants.Logout" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Logout">
+                        Đăng xuất
+                    </MudNavLink>
+
+
+                </MudNavGroup>
+            </MudNavMenu>
+
         </div>
     </div>
 </div>

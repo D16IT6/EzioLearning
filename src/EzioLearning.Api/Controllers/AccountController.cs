@@ -407,6 +407,45 @@ namespace EzioLearning.Api.Controllers
             });
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var userId = HttpContext.User.Claims.First(x => x.Type.Equals(ClaimTypes.PrimarySid)).Value;
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return BadRequest(new ResponseBase()
+                {
+                    Errors = new Dictionary<string, string[]>(){
+                    {
+                        "NotFound",["Không tìm thấy tài khoản trong hệ thống"]
+                    }}
+                });
+            }
+
+            user.IsDeleted = true;
+            var result = await userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Ok(new ResponseBase()
+                {
+                    Message = "Xoá tài khoản thành công",
+                });
+            }
+            return BadRequest(new ResponseBase()
+            {
+                Errors = result.Errors
+                    .Select(x =>
+                        new KeyValuePair<string, string[]>(x.Code, ["Lỗi xoá tài khoản", x.Description])
+                    )
+                    .ToDictionary(),
+                Message = "Có lỗi xảy ra, vui lòng thử lại",
+                Status = HttpStatusCode.BadRequest,
+                Type = HttpResponseType.BadRequest
+            });
+        }
         #endregion
     }
 }

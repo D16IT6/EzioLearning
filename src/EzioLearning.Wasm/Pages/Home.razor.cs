@@ -3,9 +3,9 @@ using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
-using EzioLearning.Wasm.Common;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
+using EzioLearning.Wasm.Utils.Common;
 
 namespace EzioLearning.Wasm.Pages;
 

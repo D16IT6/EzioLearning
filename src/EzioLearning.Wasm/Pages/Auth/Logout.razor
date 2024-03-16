@@ -1,6 +1,7 @@
 ﻿@attribute [Route(RouteConstants.Logout)]
 
 @using EzioLearning.Wasm.Services.Interface
+@using EzioLearning.Wasm.Utils.Common
 @code {
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] ITokenService TokenService { get; set; } = default!;

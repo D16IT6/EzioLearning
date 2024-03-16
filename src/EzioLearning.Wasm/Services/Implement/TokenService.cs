@@ -1,13 +1,13 @@
 ﻿using Blazored.LocalStorage;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
-using EzioLearning.Wasm.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using EzioLearning.Wasm.Services.Interface;
 using System.Net.Http.Headers;
+using EzioLearning.Wasm.Utils.Common;
 
 namespace EzioLearning.Wasm.Services.Implement;
 

@@ -1,5 +1,5 @@
 ﻿using Blazored.LocalStorage;
-using EzioLearning.Wasm.Common;
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
 
 namespace EzioLearning.Wasm.Pages.Auth;

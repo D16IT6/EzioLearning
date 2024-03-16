@@ -1,25 +1,25 @@
 ﻿using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Wasm.Utils.Common;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
 public partial class ConfirmPassword
 {
-    [SupplyParameterFromForm] private ConfirmPasswordDto ConfirmPasswordDto { get; } = new();
+    [SupplyParameterFromForm] private ConfirmPasswordDto ConfirmPasswordDto { get; set; } = new();
 
     [Inject] private IAuthService AuthService { get; set; } = default!;
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    [SupplyParameterFromQuery] private string VerifyCode { get; } = string.Empty;
+    [SupplyParameterFromQuery] private string VerifyCode { get; set; } = string.Empty;
 
-    [SupplyParameterFromQuery] private string Email { get; } = string.Empty;
+    [SupplyParameterFromQuery] private string Email { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {

@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims
 @using EzioLearning.Domain.Common
+@using EzioLearning.Wasm.Utils.Common
 @inherits EzioLearning.Wasm.Components.Account.AccountComponentBase
 <!-- Header -->
 <header class="header @_headerPage">
@@ -326,21 +327,15 @@
                                             <p class="text-muted mb-0">@context.User.Claims.First(x => x.Type == ClaimTypes.Role).Value</p>
                                         </div>
                                     </div>
-                                    @if (context.User.IsInRole(RoleConstants.Admin))
-                                    {
-                                        <a class="dropdown-item" href="setting-edit-profile.html"><i class="feather-user me-1"></i> Trang cá nhân (Admin)</a>
-                                    }
-                                    @if (context.User.IsInRole(RoleConstants.Teacher) || context.User.IsInRole(RoleConstants.Admin))
-                                    {
-                                        <a class="dropdown-item" href="setting-edit-profile.html">
-                                            <i class="feather-user me-1"></i> Trang cá nhân (Giảng viên)
-                                        </a>
-                                    }
 
-                                    <a class="dropdown-item" href="@RouteConstants.Account.Home"><i class="feather-user me-1"></i> Trang cá nhân (người dùng)</a>
+                                    <NavLink class="dropdown-item" href="@RouteConstants.Account.Home">
+                                        <i class="feather-user me-1"></i> Trang cá nhân (người dùng)
+                                    </NavLink>
 
 
-                                    <a class="dropdown-item" href="setting-student-subscription.html"><i class="feather-star me-1"></i> Subscription</a>
+                                   @*  <a class="dropdown-item" href="setting-student-subscription.html">
+                                        <i class="feather-star me-1"></i> Subscription
+                                    </a> *@
 
 
                                     <button class="dropdown-item justify-content-start" @onclick="Logout">

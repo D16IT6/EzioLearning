@@ -25,8 +25,6 @@ public class AppUser : IdentityUser<Guid>
     public ICollection<Course> Courses { get; set; } = new List<Course>();
     public ICollection<AppPermission> Permissions { get; set; } = new List<AppPermission>();
 
-
-
     public string? CacheKey { get; set; }
     public DateTime CreatedDate { get; set; }
     public Guid CreatedBy { get; set; }
@@ -35,6 +33,8 @@ public class AppUser : IdentityUser<Guid>
     public override bool LockoutEnabled { get; set; } = false;
     public override bool EmailConfirmed { get; set; } = true;
     public override bool PhoneNumberConfirmed { get; set; } = true;
+    public bool IsDeleted { get; set; } = false;
+
 
     [NotMapped] public string FullName => $"{FirstName} {LastName}";
 }

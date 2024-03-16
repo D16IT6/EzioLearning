@@ -1,0 +1,22 @@
+﻿@attribute [Route(RouteConstants.Account.Delete)]
+@layout AccountLayout
+@using EzioLearning.Wasm.Utils.Common
+@inherits EzioLearning.Wasm.Components.Account.AccountComponentBase
+
+<div class="settings-widget profile-details">
+    <div class="settings-menu p-0">
+        <div class="profile-heading">
+            <h3>Xoá tài khoản</h3>
+            <p>Xóa hoặc đóng tài khoản của bạn vĩnh viễn.</p>
+        </div>
+        <div class="checkout-form personal-address">
+            <div class="personal-info-head">
+                <h4>Cảnh báo</h4>
+                <p>Nếu bạn đóng tài khoản của mình, bạn sẽ bị hủy đăng ký tất cả khóa học và sẽ mất quyền truy cập.</p>
+            </div>
+            <div class="un-subscribe p-0">
+                <MudButton Class="btn btn-danger" OnClick="OnDeleteAccount">Xoá tài khoản</MudButton>
+            </div>
+        </div>
+    </div>
+</div>

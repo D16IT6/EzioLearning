@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Wasm.Common;
+﻿namespace EzioLearning.Wasm.Utils.Common;
 
 public abstract record RouteConstants
 {
@@ -15,6 +15,7 @@ public abstract record RouteConstants
     public const string ForgotPassword = $"/{nameof(ForgotPassword)}";
     public const string ConfirmPassword = $"/{nameof(ConfirmPassword)}";
     public const string Logout = $"/{nameof(Logout)}";
+    public const string DevLater = $"/{nameof(DevLater)}";
 
     public abstract record Account
     {
@@ -22,6 +23,7 @@ public abstract record RouteConstants
         public const string Security = $"/{nameof(Account)}/{nameof(Security)}";
         public const string ConfirmChangeEmail = $"/{nameof(Account)}/{nameof(ConfirmChangeEmail)}";
         public const string ConfirmChangePassword = $"/{nameof(Account)}/{nameof(ConfirmChangePassword)}";
+        public const string Delete = $"/{nameof(Account)}/{nameof(Delete)}";
     }
 
     public abstract record Error

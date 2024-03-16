@@ -1,10 +1,10 @@
 ﻿using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Wasm.Common;
 using EzioLearning.Wasm.Services;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Wasm.Utils.Common;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 

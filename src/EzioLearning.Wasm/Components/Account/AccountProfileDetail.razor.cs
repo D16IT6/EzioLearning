@@ -1,11 +1,11 @@
 ﻿using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
-using EzioLearning.Wasm.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Wasm.Utils.Common;
 
 
 namespace EzioLearning.Wasm.Components.Account
