@@ -22,10 +22,9 @@ public class JwtService(JwtConfiguration jwtConfiguration)
             new(ClaimTypes.Sid, Guid.NewGuid().ToString()),
             new(ClaimTypes.PrimarySid, user.Id.ToString()),
             //new(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-            new(ClaimTypes.NameIdentifier, user.UserName!),
+            new(ClaimTypes.NameIdentifier, user.UserName!)
             //new(ClaimTypes.Email, user.Email!),
             //new(CustomClaimTypes.Avatar, user.Avatar),
-
         };
         claims.AddRange(roleList
             .Select(role => new Claim(

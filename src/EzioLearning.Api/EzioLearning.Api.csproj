@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<InvariantGlobalization>false</InvariantGlobalization>
+		<UserSecretsId>fe0c4066-8b92-4c95-8fb8-7afb9da4ac7c</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,6 +22,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="MimeKit" Version="4.3.0" />
 		<PackageReference Include="SlugGenerator" Version="2.0.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

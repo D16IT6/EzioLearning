@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace EzioLearning.Api.Authorization
+namespace EzioLearning.Api.Authorization;
+
+public class PermissionRequirement(string permission) : IAuthorizationRequirement
 {
-    public class PermissionRequirement(string permission) : IAuthorizationRequirement
-    {
-        public string Permission { get; set; } = permission;
-    }
+    public string Permission { get; set; } = permission;
 }
