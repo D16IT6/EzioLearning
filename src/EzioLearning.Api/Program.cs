@@ -7,9 +7,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.ConfigureBuilder();
-        
-        
-
+       
         var app = builder.Build();
 
         app.Configure();

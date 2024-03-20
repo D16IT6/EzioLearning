@@ -49,7 +49,7 @@ internal static class Startup
 
         services.AddDbContext<EzioLearningDbContext>(option =>
         {
-            option.UseSqlServer(configuration.GetConnectionString(ConnectionConstants.ConnectionStringName));
+            option.UseSqlServer(configuration.GetConnectionString(nameof(EzioLearning)));
         });
 
         services.ConfigureValidator();
@@ -250,13 +250,11 @@ internal static class Startup
 
     internal static void Configure(this WebApplication app)
     {
-        ConnectionConstants.ConnectionStringName = ConnectionStringName.Production;
 
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-            ConnectionConstants.ConnectionStringName = ConnectionStringName.Development;
         }
 
         app.UseCors("CorsPolicy");
