@@ -8,6 +8,7 @@ namespace EzioLearning.Infrastructure.SeedWorks;
 public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepository<T, TKey>
     where T : class
 {
+
     protected readonly DbSet<T> DbSet = context.Set<T>();
 
     public virtual async Task<T?> GetByIdAsync(TKey key)

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Net;
+using System.Text.Json.Serialization;
 using EzioLearning.Api.Authorization;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Middleware;
@@ -81,7 +82,6 @@ internal static class Startup
 
         services.ConfigureCustomMiddleware();
     }
-
 
 
     private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
@@ -227,8 +227,8 @@ internal static class Startup
         {
             config.AddPolicy("AdminOnly", policy => { policy.RequireRole(RoleConstants.Admin); });
         });
-        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
+        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     }
 
@@ -246,7 +246,6 @@ internal static class Startup
         context.Database.Migrate();
         new DataSeeder().SeedAsync(context).Wait();
     }
-
 
 
     internal static void Configure(this WebApplication app)
@@ -273,10 +272,25 @@ internal static class Startup
 
         app.UseAuthorization();
 
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = ctx =>
+            {
+                if (ctx.Context.Request.Path.StartsWithSegments("/files/users"))
+                {
+                    if (ctx.Context.User.Identity!.IsAuthenticated) return;
+
+                    ctx.Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    ctx.Context.Response.ContentLength = 0;
+                    ctx.Context.Response.Body = Stream.Null;
+                }
+            }
+        });
+
         app.MapControllers();
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        //app.MigrateData();
+        app.MigrateData();
     }
 }

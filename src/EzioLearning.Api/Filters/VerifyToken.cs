@@ -24,9 +24,9 @@ public class VerifyTokenAttribute : ActionFilterAttribute
             {
                 Message = "Token giả mạo!",
                 Status = HttpStatusCode.BadRequest,
-                Errors = new Dictionary<string, string[]>()
+                Errors = new Dictionary<string, string[]>
                 {
-                    {"Token",["Token giả mạo"]}
+                    { "Token", ["Token giả mạo"] }
                 }
             });
         base.OnActionExecuting(context);

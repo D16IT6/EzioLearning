@@ -32,8 +32,6 @@ public class FileService
             pathBuilder.Append(name);
             pathBuilder.Append($" ({existCount})");
             pathBuilder.Append(extension);
-
-
         }
 
         return pathBuilder.ToString();

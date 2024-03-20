@@ -6,7 +6,6 @@ using EzioLearning.Api.Utils;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,12 @@ namespace EzioLearning.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(IMapper mapper, UserManager<AppUser> userManager, FileService fileService, PermissionService permissionService, RoleManager<AppRole> roleManager) : ControllerBase
+public class UserController(
+    IMapper mapper,
+    UserManager<AppUser> userManager,
+    FileService fileService,
+    PermissionService permissionService,
+    RoleManager<AppRole> roleManager) : ControllerBase
 {
     public static readonly string FolderPath = "Uploads/Images/Users/";
 
@@ -64,10 +68,6 @@ public class UserController(IMapper mapper, UserManager<AppUser> userManager, Fi
         newUser.Avatar = imagePath;
 
 
-
-
-
-
         var result = await userManager.CreateAsync(newUser, model.Password!);
 
         var roleList = await roleManager.Roles.Where(x => model.RoleIds.Contains(x.Id)).ToListAsync();
@@ -84,13 +84,11 @@ public class UserController(IMapper mapper, UserManager<AppUser> userManager, Fi
         await permissionService.AddPermissionsForNewUser(newUser);
 
         if (result.Succeeded)
-        {
             return Ok(new ResponseBase
             {
                 Status = HttpStatusCode.OK,
                 Message = "Thêm user mới thành công"
             });
-        }
 
         return BadRequest(new ResponseBaseWithList<IdentityError>
         {
@@ -99,5 +97,4 @@ public class UserController(IMapper mapper, UserManager<AppUser> userManager, Fi
             Message = "Tạo tài khoản thất bại, vui lòng xem lỗi"
         });
     }
-
 }

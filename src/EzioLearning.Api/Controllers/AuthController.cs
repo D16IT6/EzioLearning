@@ -31,12 +31,21 @@ public class AuthController(
     CacheService cacheService,
     FileService fileService,
     IMapper mapper,
-    MailService mailService, PermissionService permissionService, IPermissionRepository permissionRepository)
+    MailService mailService,
+    PermissionService permissionService,
+    IPermissionRepository permissionRepository)
     : ControllerBase
 {
     private static readonly string PrefixCache = CacheConstant.AccessToken;
     private static readonly string ExternalLoginCallback = ExternalLoginConstants.CallBackPath;
     private static readonly string FolderPath = "Uploads/Images/Users/";
+
+
+    [HttpGet]
+    public Task<IActionResult> Test()
+    {
+        throw new Exception("throw test");
+    }
 
     #region Register
 
@@ -317,15 +326,12 @@ public class AuthController(
         var result = await userManager.UpdateAsync(user);
 
         if (result.Succeeded)
-        {
             return Ok(new ResponseBaseWithData<TokenResponse>
             {
                 Data = jwtToken,
                 Message = "Refresh token thành công",
                 Status = HttpStatusCode.OK
             });
-
-        }
         return BadRequest(new ResponseBase
         {
             Message = "Có lỗi trong quá trình xử lý, vui lòng thử lại",
@@ -349,7 +355,7 @@ public class AuthController(
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Yêu cầu không hợp lệ!",
+                Message = "Yêu cầu không hợp lệ!"
             });
 
         var jwtToken = await GenerateAndCacheToken(user);
@@ -359,7 +365,6 @@ public class AuthController(
             Message = "Refresh token thành công",
             Status = HttpStatusCode.OK
         });
-
     }
 
     [HttpPost(nameof(TestToken))]
@@ -367,13 +372,12 @@ public class AuthController(
     [VerifyToken]
     public Task<IActionResult> TestToken()
     {
-        return Task.FromResult<IActionResult>(Ok(new ResponseBase()
+        return Task.FromResult<IActionResult>(Ok(new ResponseBase
         {
             Message = "Token còn hoạt động",
             Status = HttpStatusCode.OK
         }));
     }
-
 
     #endregion
 

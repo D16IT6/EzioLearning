@@ -1,41 +1,36 @@
 ﻿using System.Net;
 using System.Text.Json;
-using EzioLearning.Api.Utils;
 using EzioLearning.Share.Models.Response;
 
-namespace EzioLearning.Api.Middleware
+namespace EzioLearning.Api.Middleware;
+
+public class Custom401ResponseMiddleware : IMiddleware
 {
-    public class Custom401ResponseMiddleware : IMiddleware
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        await next(context);
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
         {
-            await next(context);
-
-            if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+            var response = new ResponseBase
             {
-                var response = new ResponseBase()
+                Message = "Bạn chưa xác thực",
+                Errors =
                 {
-                    Message = "Bạn chưa xác thực",
-                    Errors =
-                    {
-                        { "UnAuthorized", ["Bạn chưa xác thực"] }
-                    },
-                    Status = HttpStatusCode.Unauthorized,
-                    Type = HttpResponseType.Unauthorized
-                };
+                    { "UnAuthorized", ["Bạn chưa xác thực"] }
+                },
+                Status = HttpStatusCode.Unauthorized,
+                Type = HttpResponseType.Unauthorized
+            };
 
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
-                // Set response content type to application/json
-                context.Response.ContentType = "application/json";
+            // Set response content type to application/json
+            context.Response.ContentType = "application/json";
 
-                // Serialize the response object to JSON and write it to the response body
-                var jsonResponse = JsonSerializer.Serialize(response);
-                await context.Response.WriteAsync(jsonResponse);
-            }
-
-
+            // Serialize the response object to JSON and write it to the response body
+            var jsonResponse = JsonSerializer.Serialize(response);
+            await context.Response.WriteAsync(jsonResponse);
         }
     }
 }
