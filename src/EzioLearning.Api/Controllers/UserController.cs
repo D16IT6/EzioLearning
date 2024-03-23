@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using AutoMapper;
-using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Domain.Entities.Identity;
@@ -43,7 +42,6 @@ public class UserController(
     }
 
     [HttpPost]
-    [ValidateModel]
     public async Task<IActionResult> CreateNewUser([FromForm] UserCreateDto model)
     {
         var newUser = mapper.Map<AppUser>(model);

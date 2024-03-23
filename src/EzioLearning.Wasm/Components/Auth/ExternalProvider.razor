@@ -1,18 +1,22 @@
 ﻿<div class="sign-google">
     <ul>
         <li>
-            <a href="@GoogleCallbackUrl">
+            <button class="me-5" @onclick="() => {  ExternalLogin(ExternalLoginProvider.Google);}">
                 <img src="assets/img/net-icon-01.png" class="img-fluid" alt="Logo">
-                Google
-            </a>
+                <span class="fw-medium ps-1">Google</span>
+            </button>
         </li>
-
         <li>
-
-            <a href="@FacebookCallbackUrl">
+            <button class="me-5" @onclick="() => {  ExternalLogin(ExternalLoginProvider.Facebook);}">
                 <img src="assets/img/net-icon-02.png" class="img-fluid" alt="Logo">
-                Facebook
-            </a>
+                <span class="fw-medium ps-1">Facebook</span>
+            </button>
+        </li>
+        <li>
+            <button class="me-5" @onclick="() => {  ExternalLogin(ExternalLoginProvider.Microsoft);}">
+                <img src="assets/img/net-icon-03.png" class="img-fluid" alt="Logo">
+                <span class="fw-medium ps-1">Microsoft</span>
+            </button>
         </li>
     </ul>
 </div>

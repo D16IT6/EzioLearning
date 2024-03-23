@@ -12,25 +12,25 @@
 		<PackageReference Include="FluentValidation" Version="11.9.0" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
-		<PackageReference Include="Google.Apis.Auth" Version="1.67.0" />
-		<PackageReference Include="MailKit" Version="4.3.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
+		<PackageReference Include="MailKit" Version="4.4.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-		<PackageReference Include="MimeKit" Version="4.3.0" />
-		<PackageReference Include="SlugGenerator" Version="2.0.2" />
+		<PackageReference Include="MimeKit" Version="4.4.0" />
+		<PackageReference Include="Serilog" Version="3.1.1" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\EzioLearning.Core\EzioLearning.Core.csproj" />
-		<ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
 		<ProjectReference Include="..\EzioLearning.Infrastructure\EzioLearning.Infrastructure.csproj" />
 	</ItemGroup>
 

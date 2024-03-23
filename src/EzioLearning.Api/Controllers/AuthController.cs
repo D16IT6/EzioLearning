@@ -50,7 +50,6 @@ public class AuthController(
     #region Register
 
     [HttpPost("Register")]
-    [ValidateModel]
     public async Task<IActionResult> CreateNewUser([FromForm] RegisterRequestApiDto model)
     {
         var errors = new Dictionary<string, string[]>();
@@ -223,7 +222,6 @@ public class AuthController(
     #region Token Handler
 
     [HttpPost("Login")]
-    [ValidateModel]
     [AllowAnonymous]
     public async Task<IActionResult> Login(LoginRequestDto model)
     {
@@ -408,6 +406,23 @@ public class AuthController(
     public IActionResult FacebookLogin(string? returnUrl = null)
     {
         var provider = ExternalLoginConstants.Facebook;
+
+        var redirectUrlBuilder = new StringBuilder(ExternalLoginCallback);
+
+        if (!string.IsNullOrEmpty(returnUrl))
+            redirectUrlBuilder.Append($"?returnUrl={Uri.EscapeDataString(returnUrl)}");
+
+        var redirectUrl = redirectUrlBuilder.ToString();
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+        return new ChallengeResult(provider, properties);
+    }
+    [HttpGet]
+    [Route(nameof(MicrosoftLogin))]
+    [AllowAnonymous]
+    public IActionResult MicrosoftLogin(string? returnUrl = null)
+    {
+        var provider = ExternalLoginConstants.Microsoft;
 
         var redirectUrlBuilder = new StringBuilder(ExternalLoginCallback);
 

@@ -1,6 +1,8 @@
 ﻿@using EzioLearning.Share.Validators.Account
 @using EzioLearning.Wasm.Utils.Common
+@using Microsoft.Extensions.Localization
 @inherits AccountComponentBase
+@inject IStringLocalizer<AccountInfoDtoValidator> Localizer
 <!-- Profile Details -->
 <div class="settings-widget profile-details">
     <div class="settings-menu p-0">
@@ -35,7 +37,7 @@
                 <p>Chỉnh sửa thông tin cá nhân của bạn.</p>
             </div>
             <EditForm Enhance="true" Model="AccountInfo" FormName="frmAccountInfo" action="#" OnValidSubmit="UpdateAccountInfo">
-                <FluentValidationValidator Validator="new AccountInfoDtoValidator()" />
+                <FluentValidationValidator Validator="new AccountInfoDtoValidator(Localizer)" />
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="input-block">

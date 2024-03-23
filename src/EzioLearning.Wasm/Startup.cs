@@ -1,4 +1,6 @@
-﻿using Blazored.LocalStorage;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
+using Blazored.LocalStorage;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
@@ -36,9 +38,15 @@ namespace EzioLearning.Wasm
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
 
-            services.AddScoped(_ => new HttpClient
+            services.AddScoped(_ =>
             {
-                BaseAddress = new Uri(ApiConstants.BaseUrl)
+                var httpClient = new HttpClient
+                {
+                    BaseAddress = new Uri(ApiConstants.BaseUrl)
+
+                };
+                httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
+                return httpClient;
             });
 
             await using var log = new LoggerConfiguration()
@@ -47,6 +55,20 @@ namespace EzioLearning.Wasm
 
             services.AddSingleton<ILogger>(log);
 
+            services.AddLocalization();
+
+            services.ConfigureMultiLanguages();
+
+        }
+        private static void ConfigureMultiLanguages(this IServiceCollection services)
+        {
+            var defaultCulture = new CultureInfo("vi-VN");
+
+            services.AddLocalization(options =>
+            {
+                options.ResourcesPath = "Resources";
+            });
+            //CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
         }
 
         private static void ScanLocalServices(this IServiceCollection services)

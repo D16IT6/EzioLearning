@@ -6,7 +6,7 @@
         <p>Email hiện tại của bạn: @AccountInfoMinimal.Email</p>
     </div>
     <EditForm Enhance="true" FormName="frmUpdateEmail" Model="AccountInfoChangeEmail" OnValidSubmit="OnSubmitChangeEmail">
-        <FluentValidationValidator Validator="new ChangeEmailDtoValidator() " />
+        <FluentValidationValidator />
         <div class="new-address">
             <div class="row">
                 <div class="col-lg-6">

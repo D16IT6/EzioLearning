@@ -66,7 +66,6 @@ public class CourseCategoryController(
 
 
     [HttpPut]
-    [ValidateModel]
     [VerifyToken]
     public async Task<IActionResult> Create([FromForm] CourseCategoryCreateDto courseCategoryCreateDto)
     {

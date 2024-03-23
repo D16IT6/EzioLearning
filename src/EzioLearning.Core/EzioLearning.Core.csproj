@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
-    <ProjectReference Include="..\EzioLearning.Share.Dto\EzioLearning.Share.csproj" />
+    <ProjectReference Include="..\EzioLearning.Share\EzioLearning.Share.csproj" />
   </ItemGroup>
 
 </Project>

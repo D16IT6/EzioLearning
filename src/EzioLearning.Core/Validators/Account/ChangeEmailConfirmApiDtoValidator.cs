@@ -2,33 +2,33 @@
 using EzioLearning.Domain.Entities.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Core.Validators.Account
 {
     public class ChangeEmailConfirmApiDtoValidator : AbstractValidator<ChangeEmailConfirmApiDto>
     {
-        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager)
+        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager,IStringLocalizer<ChangeEmailConfirmApiDtoValidator> localizer)
         {
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("Id người dùng không được rỗng")
+                .NotEmpty().WithMessage(localizer.GetString("UserIdEmpty"))
                 .Must(x =>
                 {
                     if (string.IsNullOrEmpty(x)) return false;
                     return userManager.FindByIdAsync(x).Result != null;
-                }).WithMessage("Người dùng không tồn tại");
+                }).WithMessage(localizer.GetString("UserNotExist"));
 
             RuleFor(x => x.VerifyCode)
-                .NotEmpty().WithMessage("Mã xác thực không được rỗng");
+                .NotEmpty().WithMessage(localizer.GetString("VerifyCodeEmpty"));
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email hiện tại không được để trống")
-                .EmailAddress().WithMessage("Định dạng email không hợp lệ")
+                .EmailAddress().WithMessage(localizer.GetString("EmailNotValid"))
                 .Must(email =>
                 {
                     if (string.IsNullOrEmpty(email)) return false;
                     var user = userManager.FindByEmailAsync(email).Result;
                     return user == null;
-                }).WithMessage("Email đã có trong hệ thống, vui lòng thử lại");
+                }).WithMessage(localizer.GetString("EmailExist"));
         }
     }
 }

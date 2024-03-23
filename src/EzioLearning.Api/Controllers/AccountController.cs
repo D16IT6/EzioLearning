@@ -11,7 +11,6 @@ using EzioLearning.Core.Dto.Account;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,6 @@ namespace EzioLearning.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [VerifyToken]
-[Authorize]
 public class AccountController(
     UserManager<AppUser> userManager,
     IMapper mapper,

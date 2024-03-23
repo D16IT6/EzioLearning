@@ -2,45 +2,44 @@
 using EzioLearning.Domain.Entities.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Core.Validators.Account
 {
     public class ChangeEmailApiDtoValidator : AbstractValidator<ChangeEmailApiDto>
     {
-        public ChangeEmailApiDtoValidator(UserManager<AppUser> userManager)
+        public ChangeEmailApiDtoValidator(UserManager<AppUser> userManager,IStringLocalizer<ChangeEmailApiDtoValidator> localizer)
         {
 
             RuleFor(x => x.CurrentEmail)
-                .NotEmpty().WithMessage("Email hiện tại không được để trống")
-                .EmailAddress().WithMessage("Định dạng email không hợp lệ")
+                .EmailAddress().WithMessage(localizer.GetString("EmailNotValid"))
                 .Must(email =>
                 {
                     if (string.IsNullOrEmpty(email)) return false;
                     var user = userManager.FindByEmailAsync(email).Result;
                     return user != null;
-                }).WithMessage("Email không có trong hệ thống, vui lòng thử lại")
+                }).WithMessage(localizer.GetString("EmailNotExist"))
                 .Must(email =>
                 {
                     if (string.IsNullOrEmpty(email)) return false;
                     var user = userManager.FindByEmailAsync(email).Result;
                     return user != null && userManager.IsEmailConfirmedAsync(user).Result;
-                }).WithMessage("Email cũ của bạn chưa được xác thực, vui lòng thử lại");
+                }).WithMessage(localizer.GetString("EmailNotConfirm"));
 
 
             RuleFor(x => x.NewEmail
                     )
-                .NotEmpty().WithMessage("Email mới không được để trống")
-                .EmailAddress().WithMessage("Định dạng email không hợp lệ")
+                .EmailAddress().WithMessage(localizer.GetString("EmailNotValid"))
                 .Must(email =>
                 {
                     if (string.IsNullOrEmpty(email)) return false;
                     var user = userManager.FindByEmailAsync(email).Result;
                     return user == null;
-                }).WithMessage($"Email mới đã tồn tại, vui lòng thử lại")
-                .NotEqual(x => x.CurrentEmail).WithMessage("Email mới không được trùng email cũ");
+                }).WithMessage(localizer.GetString("EmailExist"))
+                .NotEqual(x => x.CurrentEmail).WithMessage(localizer.GetString("NewEmailEqual"));
 
             RuleFor(x => x.ClientUrl)
-                .NotEmpty().WithMessage("Url không được để trống");
+                .NotEmpty().WithMessage(localizer.GetString("UrlEmpty"));
         }
     }
 }
