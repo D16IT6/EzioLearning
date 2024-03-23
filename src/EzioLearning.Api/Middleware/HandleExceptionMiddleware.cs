@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using EzioLearning.Share.Models.Response;
+using Serilog;
 
 namespace EzioLearning.Api.Middleware;
 
@@ -37,5 +38,7 @@ public class HandleExceptionMiddleware : IMiddleware
         };
         var jsonResponse = JsonSerializer.Serialize(response);
         await context.Response.WriteAsync(jsonResponse);
+        Log.Error("Lỗi từ custom 500 middleware");
+
     }
 }

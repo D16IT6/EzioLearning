@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using EzioLearning.Share.Models.Response;
+using Serilog;
 
 namespace EzioLearning.Api.Middleware;
 
@@ -9,7 +10,6 @@ public class Custom403ResponseMiddleware : IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         await next(context);
-
         if (context.Response.StatusCode == StatusCodes.Status403Forbidden)
         {
             context.Response.ContentType = "application/json";
@@ -27,6 +27,8 @@ public class Custom403ResponseMiddleware : IMiddleware
             };
             var jsonResponse = JsonSerializer.Serialize(response);
             await context.Response.WriteAsync(jsonResponse);
+            Log.Error("Lỗi từ custom 403 middleware");
+
         }
     }
 }

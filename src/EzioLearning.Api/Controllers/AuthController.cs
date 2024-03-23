@@ -1,23 +1,24 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using System.Web;
-using AutoMapper;
+﻿using AutoMapper;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Models.Auth;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Auth;
 using EzioLearning.Core.Repositories;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
+using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
+using System.Text;
+using System.Web;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -33,24 +34,16 @@ public class AuthController(
     IMapper mapper,
     MailService mailService,
     PermissionService permissionService,
-    IPermissionRepository permissionRepository)
+    IPermissionRepository permissionRepository,IStringLocalizer<AuthController> localizer)
     : ControllerBase
 {
     private static readonly string PrefixCache = CacheConstant.AccessToken;
     private static readonly string ExternalLoginCallback = ExternalLoginConstants.CallBackPath;
     private static readonly string FolderPath = "Uploads/Images/Users/";
 
-
-    [HttpGet]
-    public Task<IActionResult> Test()
-    {
-        throw new Exception("throw test");
-    }
-
     #region Register
 
     [HttpPost("Register")]
-    [ValidateModel]
     public async Task<IActionResult> CreateNewUser([FromForm] RegisterRequestApiDto model)
     {
         var errors = new Dictionary<string, string[]>();
@@ -65,11 +58,11 @@ public class AuthController(
         {
             if (!fileService.IsImageAccept(image.FileName))
             {
-                errors.Add("Image", ["Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"]);
+                errors.Add("AvatarExtensionNotAllow", [localizer.GetString("AvatarExtensionNotAllow")]);
                 return BadRequest(new ResponseBase
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác",
+                    Message = localizer.GetString("AvatarExtensionNotAllow"),
                     Errors = errors
                 });
             }
@@ -83,46 +76,45 @@ public class AuthController(
         var result = await userManager.CreateAsync(newUser, model.Password!);
 
 
-        if (result.Succeeded)
-        {
-            var addToRoleResult = await userManager.AddToRoleAsync(newUser, RoleConstants.User);
-
-            if (!addToRoleResult.Succeeded)
-                foreach (var addToRole in addToRoleResult.Errors)
-                    errors.Add(addToRole.Code, [addToRole.Description]);
-
-            if (!string.IsNullOrEmpty(model.ProviderKey) && !string.IsNullOrEmpty(model.LoginProvider))
+        if (!result.Succeeded)
+            return BadRequest(new ResponseBase
             {
-                var addToLoginResult = await userManager.AddLoginAsync(newUser,
-                    new UserLoginInfo(model.LoginProvider, model.ProviderKey, model.ProviderName));
-
-                if (addToLoginResult.Succeeded)
-                    return Ok(new ResponseBaseWithData<TokenResponse>
-                    {
-                        Status = HttpStatusCode.OK,
-                        Message = $"Tạo tài khoản mới và liên kết tới {model.ProviderName} thành công",
-                        Data = await GenerateAndCacheToken(newUser)
-                    });
-
-                foreach (var error in addToLoginResult.Errors) errors.Add(error.Code, [error.Description]);
-            }
-
-            await permissionService.AddPermissionsForNewUser(newUser);
-
-            return Ok(new ResponseBaseWithData<TokenResponse>
-            {
-                Status = HttpStatusCode.OK,
-                Message = "Tạo tài khoản mới thành công!",
-                Data = await GenerateAndCacheToken(newUser)
+                Status = HttpStatusCode.BadRequest,
+                Message = localizer.GetString("AccountCreateFail"),
+                Errors = errors
             });
+
+        var addToRoleResult = await userManager.AddToRoleAsync(newUser, RoleConstants.User);
+
+        if (!addToRoleResult.Succeeded)
+            foreach (var addToRole in addToRoleResult.Errors)
+                errors.Add(addToRole.Code, [addToRole.Description]);
+
+        if (!string.IsNullOrEmpty(model.ProviderKey) && !string.IsNullOrEmpty(model.LoginProvider))
+        {
+            var addToLoginResult = await userManager.AddLoginAsync(newUser,
+                new UserLoginInfo(model.LoginProvider, model.ProviderKey, model.ProviderName));
+
+            if (addToLoginResult.Succeeded)
+                return Ok(new ResponseBaseWithData<TokenResponse>
+                {
+                    Status = HttpStatusCode.OK,
+                    Message = localizer.GetString("AccountCreateAndLinkSuccess",model.ProviderName!),
+                    Data = await GenerateAndCacheToken(newUser)
+                });
+
+            foreach (var error in addToLoginResult.Errors) errors.Add(error.Code, [error.Description]);
         }
 
-        return BadRequest(new ResponseBase
+        await permissionService.AddPermissionsForNewUser(newUser);
+
+        return Ok(new ResponseBaseWithData<TokenResponse>
         {
-            Status = HttpStatusCode.BadRequest,
-            Message = "Tạo tài khoản thất bại, vui lòng xem lỗi",
-            Errors = errors
+            Status = HttpStatusCode.OK,
+            Message = localizer.GetString("AccountCreateSuccess"),
+            Data = await GenerateAndCacheToken(newUser)
         });
+
     }
 
     #endregion
@@ -137,11 +129,12 @@ public class AuthController(
         var user = await userManager.FindByEmailAsync(model.Email!);
         if (user == null)
         {
-            errors.Add("Email", ["Email không tồn tại trong hệ thống"]);
+            errors.Add("EmailNotFound", [localizer.GetString("EmailNotFound")]);
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Errors = errors
+                Errors = errors,
+                Message = localizer.GetString("EmailNotFound")
             });
         }
 
@@ -149,11 +142,12 @@ public class AuthController(
 
         if (string.IsNullOrEmpty(verifyCode))
         {
-            errors.Add("VerifyCode", ["Không thể tạo VerifyCode, vui lòng thử lại"]);
+            errors.Add("VerifyCodeCannotCreate", [localizer.GetString("VerifyCodeCannotCreate")]);
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Errors = errors
+                Errors = errors,
+                Message = localizer.GetString("VerifyCodeCannotCreate")
             });
         }
 
@@ -184,7 +178,7 @@ public class AuthController(
         await mailService.SendMail(mailContent);
         return Ok(new ResponseBase
         {
-            Message = "Gửi email khôi phục thành công",
+            Message = localizer.GetString("EmailSendSuccess"),
             Status = HttpStatusCode.OK
         });
     }
@@ -194,27 +188,29 @@ public class AuthController(
     {
         var errors = new Dictionary<string, string[]>();
         if (string.IsNullOrEmpty(model.VerifyCode))
-            errors.Add(nameof(model.VerifyCode), ["VerifyCode lỗi, không thể xác thực"]);
+            errors.Add(nameof(model.VerifyCode), [localizer.GetString("VerifyCodeFail")]);
 
         var user = await userManager.FindByEmailAsync(model.Email!);
-        if (user == null) errors.Add(nameof(model.Email), ["Email không tồn tại trên hệ thống"]);
+        if (user == null) errors.Add(nameof(model.Email), [localizer.GetString("EmailNotFound")]);
 
         var confirmPasswordResult =
             await userManager.ResetPasswordAsync(user!, model.VerifyCode!, model.ConfirmPassword!);
 
+        errors.Add("ResetPassword", [localizer.GetString("ResetPasswordFail")]);
         errors.Add("ResetPassword", confirmPasswordResult.Errors.Select(x => x.Description).ToArray());
 
         if (errors.Any())
             return Ok(new ResponseBase
             {
-                Message = "Khôi phục mật khẩu thành công",
+                Message = localizer.GetString("ResetPasswordSuccess"),
                 Status = HttpStatusCode.OK
             });
 
         return BadRequest(new ResponseBase
         {
             Status = HttpStatusCode.BadRequest,
-            Errors = errors
+            Errors = errors,
+            Message = localizer.GetString("ResetPasswordFail")
         });
     }
 
@@ -223,7 +219,6 @@ public class AuthController(
     #region Token Handler
 
     [HttpPost("Login")]
-    [ValidateModel]
     [AllowAnonymous]
     public async Task<IActionResult> Login(LoginRequestDto model)
     {
@@ -231,11 +226,12 @@ public class AuthController(
         var user = await userManager.FindByNameAsync(model.UserName!);
         if (user == null)
         {
-            errors.Add("NotFoundAccount", ["Không tìm thấy tài khoản"]);
+            errors.Add("NotFoundAccount", [localizer.GetString("AccountNotFound")]);
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Errors = errors
+                Errors = errors,
+                Message = localizer.GetString("AccountNotFound")
             });
         }
 
@@ -243,15 +239,15 @@ public class AuthController(
             .CheckPasswordSignInAsync(user, model.Password!, true);
 
         if (signInResult.IsLockedOut)
-            errors.Add("LockedAccount", ["Tài khoản bị khoá"]);
+            errors.Add("LockedAccount", [localizer.GetString("AccountLocked")]);
         if (signInResult.IsNotAllowed)
-            errors.Add("NotAllowedAccount", ["Tài khoản chưa xác thực"]);
+            errors.Add("AccountNotVerify", [localizer.GetString("AccountNotVerify")]);
 
         if (signInResult.RequiresTwoFactor)
-            errors.Add("RequiresTwoFactor", ["Tài khoản cần xác thực 2 lớp"]);
+            errors.Add("AccountNotVerifyTwoFactor", [localizer.GetString("AccountNotVerifyTwoFactor")]);
 
         if (!signInResult.Succeeded)
-            errors.Add("FakeAccount", ["Thông tin đăng nhập không chính xác"]);
+            errors.Add("AccountFake", [localizer.GetString("AccountFake")]);
 
         if (errors.Any())
             return BadRequest(new ResponseBase
@@ -270,7 +266,7 @@ public class AuthController(
                     AccessToken = memoryToken,
                     RefreshToken = user.RefreshToken
                 },
-                Message = "Đăng nhập thành công",
+                Message = localizer.GetString("LoginSuccess"),
                 Status = HttpStatusCode.OK
             });
 
@@ -279,7 +275,7 @@ public class AuthController(
         return Ok(new ResponseBaseWithData<TokenResponse>
         {
             Data = jwtToken,
-            Message = "Đăng nhập thành công",
+            Message = localizer.GetString("LoginSuccess"),
             Status = HttpStatusCode.OK
         });
     }
@@ -302,7 +298,7 @@ public class AuthController(
         return Ok(new ResponseBase
         {
             Status = HttpStatusCode.OK,
-            Message = "Revoked token!"
+            Message = localizer.GetString("RevokeTokenSuccess")
         });
     }
 
@@ -316,12 +312,11 @@ public class AuthController(
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Yêu cầu không hợp lệ!"
+                Message = localizer.GetString("RequestFake")
             });
 
         var jwtToken = await GenerateAndCacheToken(user);
 
-        //change refresh token
         user.RefreshToken = jwtService.GenerateRefreshToken(user);
         var result = await userManager.UpdateAsync(user);
 
@@ -329,17 +324,17 @@ public class AuthController(
             return Ok(new ResponseBaseWithData<TokenResponse>
             {
                 Data = jwtToken,
-                Message = "Refresh token thành công",
+                Message = localizer.GetString("RefreshTokenSuccess"),
                 Status = HttpStatusCode.OK
             });
         return BadRequest(new ResponseBase
         {
-            Message = "Có lỗi trong quá trình xử lý, vui lòng thử lại",
+            Message = localizer.GetString("RefreshTokenFail"),
             Status = HttpStatusCode.BadRequest,
             Errors = (Dictionary<string, string[]>)result.Errors
                 .Select(x =>
                     new KeyValuePair<string, string[]>(
-                        x.Code, [x.Description]
+                        x.Code, [localizer.GetString("RefreshTokenFail"),x.Description]
                     )
                 )
         });
@@ -355,14 +350,14 @@ public class AuthController(
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Yêu cầu không hợp lệ!"
+                Message = localizer.GetString("RequestFake")
             });
 
         var jwtToken = await GenerateAndCacheToken(user);
         return Ok(new ResponseBaseWithData<TokenResponse>
         {
             Data = jwtToken,
-            Message = "Refresh token thành công",
+            Message = localizer.GetString("RefreshTokenSuccess"),
             Status = HttpStatusCode.OK
         });
     }
@@ -374,7 +369,7 @@ public class AuthController(
     {
         return Task.FromResult<IActionResult>(Ok(new ResponseBase
         {
-            Message = "Token còn hoạt động",
+            Message = localizer.GetString("TokenLive"),
             Status = HttpStatusCode.OK
         }));
     }
@@ -419,6 +414,23 @@ public class AuthController(
 
         return new ChallengeResult(provider, properties);
     }
+    [HttpGet]
+    [Route(nameof(MicrosoftLogin))]
+    [AllowAnonymous]
+    public IActionResult MicrosoftLogin(string? returnUrl = null)
+    {
+        var provider = ExternalLoginConstants.Microsoft;
+
+        var redirectUrlBuilder = new StringBuilder(ExternalLoginCallback);
+
+        if (!string.IsNullOrEmpty(returnUrl))
+            redirectUrlBuilder.Append($"?returnUrl={Uri.EscapeDataString(returnUrl)}");
+
+        var redirectUrl = redirectUrlBuilder.ToString();
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+        return new ChallengeResult(provider, properties);
+    }
 
 
     [HttpGet]
@@ -428,7 +440,7 @@ public class AuthController(
         if (string.IsNullOrEmpty(returnUrl))
             return BadRequest(new ResponseBase
             {
-                Message = "Không tìm được return url",
+                Message = localizer.GetString("ReturnUrlNotFound"),
                 Status = HttpStatusCode.BadRequest
             });
 

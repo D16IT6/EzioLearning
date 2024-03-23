@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -24,18 +25,21 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-		<PackageReference Include="MudBlazor" Version="6.17.0" />
+		<PackageReference Include="MudBlazor" Version="6.19.1" />
 		<PackageReference Include="Serilog" Version="3.1.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
 		<PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EzioLearning.Domain\EzioLearning.Domain.csproj" />
-		<ProjectReference Include="..\EzioLearning.Share.Dto\EzioLearning.Share.csproj" />
+	  <ProjectReference Include="..\EzioLearning.Share\EzioLearning.Share.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.AspNetCore.Localization">
+	    <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.3\Microsoft.AspNetCore.Localization.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>

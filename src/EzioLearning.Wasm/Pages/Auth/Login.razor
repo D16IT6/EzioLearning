@@ -2,6 +2,8 @@
 @using EzioLearning.Share.Validators.Auth
 @using EzioLearning.Wasm.Utils.Common
 @attribute [Route(RouteConstants.Login)]
+@* @inject IStringLocalizer<LoginRequestDtoValidator> Localizer
+ *@
 @layout EmptyLayout
 <div class="row">
 
@@ -26,7 +28,7 @@
                               Enhance="true"
                               Model="LoginRequest"
                               OnValidSubmit="LoginSubmit">
-                        <FluentValidationValidator Validator="new LoginRequestDtoValidator()"/>
+                        <FluentValidationValidator/>
                         <div class="input-block">
                             <label class="form-control-label">Tài khoản</label>
                             <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Tên đăng nhập của bạn"></InputText>

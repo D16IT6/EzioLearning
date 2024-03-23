@@ -3,6 +3,7 @@ using EzioLearning.Core.Repositories;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.SeedWorks;
+using EzioLearning.Share.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace EzioLearning.Infrastructure.Repositories;

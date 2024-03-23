@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using EzioLearning.Domain.Entities.Identity;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace EzioLearning.Core.Dto.Auth;
 
@@ -23,15 +21,4 @@ public class RegisterRequestApiDto
     public string? ProviderName { get; init; }
     public string? ProviderKey { get; init; }
 
-
-    public class RegisterRequestDtoProfile : Profile
-    {
-        public RegisterRequestDtoProfile()
-        {
-            CreateMap<RegisterRequestApiDto, AppUser>()
-                .ForMember(x => x.Avatar, cfg => cfg.Ignore());
-            CreateMap<AppUser, RegisterRequestApiDto>()
-                .ForMember(x => x.Avatar, cfg => cfg.Ignore());
-        }
-    }
 }

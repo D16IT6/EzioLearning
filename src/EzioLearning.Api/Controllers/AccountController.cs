@@ -11,10 +11,10 @@ using EzioLearning.Core.Dto.Account;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using MailService = EzioLearning.Api.Services.MailService;
 
 namespace EzioLearning.Api.Controllers;
@@ -22,17 +22,16 @@ namespace EzioLearning.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [VerifyToken]
-[Authorize]
 public class AccountController(
     UserManager<AppUser> userManager,
     IMapper mapper,
     RoleManager<AppRole> roleManager,
     FileService fileService,
     MailService mailService,
-    CacheService cacheService)
+    CacheService cacheService,IStringLocalizer<AccountController> localizer)
     : ControllerBase
 {
-    private static readonly string FolderPath = "Uploads/Images/Users/";
+    private const string FolderPath = "Uploads/Images/Users/";
 
     #region Info
 
@@ -44,7 +43,7 @@ public class AccountController(
         if (userName == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
 
         var user = await userManager.FindByNameAsync(userName);
@@ -52,7 +51,7 @@ public class AccountController(
         if (user == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
 
         var accountInfoDto = mapper.Map<AccountInfoDto>(user);
@@ -67,7 +66,7 @@ public class AccountController(
         return Ok(new ResponseBaseWithData<AccountInfoDto>
         {
             Status = HttpStatusCode.OK,
-            Message = "Lấy thông tin tài khoản thành công",
+            Message = localizer.GetString("AccountInfoFound"),
             Data = accountInfoDto
         });
     }
@@ -80,7 +79,7 @@ public class AccountController(
         if (userName == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
 
         var user = await userManager.FindByNameAsync(userName);
@@ -88,7 +87,7 @@ public class AccountController(
         if (user == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
 
         var accountInfoMinimalDto = mapper.Map<AccountInfoMinimalDto>(user);
@@ -96,7 +95,7 @@ public class AccountController(
         return Ok(new ResponseBaseWithData<AccountInfoMinimalDto>
         {
             Status = HttpStatusCode.OK,
-            Message = "Lấy thông tin tài khoản thành công",
+            Message = localizer.GetString("AccountInfoFound"),
             Data = accountInfoMinimalDto
         });
     }
@@ -109,10 +108,10 @@ public class AccountController(
             return BadRequest(new ResponseBase
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Không tìm thấy tài khoản",
+                Message = localizer.GetString("AccountNotFound"),
                 Errors = new Dictionary<string, string[]>
                 {
-                    { "NotFound", ["Không tìm thấy tài khoản"] }
+                    { "NotFound", [localizer.GetString("AccountNotFound")] }
                 }
             });
 
@@ -128,18 +127,18 @@ public class AccountController(
             {
                 Data = mapper.Map<AccountInfoDto>(user),
                 Status = HttpStatusCode.OK,
-                Message = "Cập nhật thông tin thành công"
+                Message = localizer.GetString("AccountUpdateSuccess")
             });
 
         return BadRequest(new ResponseBase
         {
             Status = HttpStatusCode.BadRequest,
-            Message = "Cập nhật thông tin thất bại",
+            Message = localizer.GetString("AccountUpdateFail"),
             Errors = (Dictionary<string, string[]>)result.Errors.Select(x =>
                 new KeyValuePair<string, string[]>
                 (
                     x.Code,
-                    [x.Description]
+                    [localizer.GetString("AccountUpdateFail"),x.Description]
                 )
             )
         });
@@ -158,13 +157,13 @@ public class AccountController(
         if (user == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
         return Ok(new ResponseBaseWithData<string>
         {
             Data = user.Avatar,
             Status = HttpStatusCode.OK,
-            Message = "Lấy ảnh đại diện thành công"
+            Message = localizer.GetString("AvatarFound")
         });
     }
 
@@ -177,7 +176,7 @@ public class AccountController(
         if (user == null)
             return BadRequest(new ResponseBase
             {
-                Errors = new Dictionary<string, string[]> { { "NotFound", ["Không tìm thấy tài khoản"] } }
+                Errors = new Dictionary<string, string[]> { { "NotFound", [localizer.GetString("AccountNotFound")] } }
             });
 
         var imagePath = ImageConstants.DefaultAvatarImage;
@@ -187,10 +186,10 @@ public class AccountController(
                 return BadRequest(new ResponseBase
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác",
+                    Message = localizer.GetString("AvatarExtensionNotAllow"),
                     Errors = new Dictionary<string, string[]>
                     {
-                        { "Image", ["Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"] }
+                        { "Image", [localizer.GetString("AvatarExtensionNotAllow")] }
                     }
                 });
 
@@ -205,18 +204,18 @@ public class AccountController(
             {
                 Data = mapper.Map<AccountInfoDto>(user),
                 Status = HttpStatusCode.OK,
-                Message = "Cập nhật thông tin thành công"
+                Message = localizer.GetString("AvatarUpdateSuccess")
             });
 
         return BadRequest(new ResponseBase
         {
             Status = HttpStatusCode.BadRequest,
-            Message = "Cập nhật thông tin thất bại",
+            Message = localizer.GetString("AvatarUpdateFail"),
             Errors = (Dictionary<string, string[]>)result.Errors.Select(x =>
                 new KeyValuePair<string, string[]>
                 (
                     x.Code,
-                    [x.Description]
+                    [localizer.GetString("AvatarUpdateFail"),x.Description]
                 )
             )
         });
@@ -236,7 +235,7 @@ public class AccountController(
                 Errors = new Dictionary<string, string[]>
                 {
                     {
-                        "Email", ["Không tìm thấy email trong hệ thống"]
+                        "Email", [localizer.GetString("EmailNotFound")]
                     }
                 }
             });
@@ -283,7 +282,7 @@ public class AccountController(
 
             return Ok(new ResponseBase
             {
-                Message = "Gửi email xác thực thành công",
+                Message = localizer.GetString("EmailSendSuccess"),
                 Status = HttpStatusCode.OK
             });
         }
@@ -296,7 +295,7 @@ public class AccountController(
                 Errors = new Dictionary<string, string[]>
                 {
                     {
-                        "SendMail", ["Lỗi gửi email, vui lòng thử lại", e.Message]
+                        "SendMail", [localizer.GetString("EmailSendFail"), e.Message]
                     }
                 }
             });
@@ -314,7 +313,7 @@ public class AccountController(
             {
                 Errors = new Dictionary<string, string[]>
                 {
-                    { "FakeRequest", ["Yêu cầu giả mạo"] }
+                    { "FakeRequest", [localizer.GetString("FakeRequest")] }
                 },
                 Status = HttpStatusCode.BadRequest,
                 Type = HttpResponseType.BadRequest
@@ -328,7 +327,7 @@ public class AccountController(
                 CacheConstant.AccessToken);
             return Ok(new ResponseBase
             {
-                Message = "Đổi email thành công, vui lòng đăng nhập lại"
+                Message = localizer.GetString("ChangeEmailSuccess")
             });
         }
 
@@ -337,7 +336,8 @@ public class AccountController(
             Status = HttpStatusCode.BadRequest,
             Type = HttpResponseType.BadRequest,
             Errors = result.Errors
-                .Select(x => new KeyValuePair<string, string[]>(x.Code, ["Mã xác thực đã hết hạn", x.Description]))
+                .Select(x => new KeyValuePair<string, string[]>(
+                    x.Code, [localizer.GetString("VerifyCodeExpired"), x.Description]))
                 .ToDictionary()
         });
     }
@@ -355,7 +355,7 @@ public class AccountController(
                 Errors = new Dictionary<string, string[]>
                 {
                     {
-                        "NotFound", ["Không tìm thấy tài khoản trong hệ thống"]
+                        "NotFound", [localizer.GetString("AccountNotFound")]
                     }
                 }
             });
@@ -365,7 +365,7 @@ public class AccountController(
         if (changeResult.Succeeded)
             return Ok(new ResponseBase
             {
-                Message = "Đổi mật khẩu thành công",
+                Message = localizer.GetString("ChangePasswordSuccess"),
                 Status = HttpStatusCode.OK,
                 Type = HttpResponseType.Ok
             });
@@ -373,10 +373,10 @@ public class AccountController(
         {
             Errors = changeResult.Errors
                 .Select(x =>
-                    new KeyValuePair<string, string[]>(x.Code, ["Lỗi xác thực mật khẩu", x.Description])
+                    new KeyValuePair<string, string[]>(x.Code, [localizer.GetString("ChangePasswordFail"), x.Description])
                 )
                 .ToDictionary(),
-            Message = "Có lỗi xảy ra, vui lòng thử lại",
+            Message = localizer.GetString("ChangePasswordFail"),
             Status = HttpStatusCode.BadRequest,
             Type = HttpResponseType.BadRequest
         });
@@ -394,7 +394,7 @@ public class AccountController(
                 Errors = new Dictionary<string, string[]>
                 {
                     {
-                        "NotFound", ["Không tìm thấy tài khoản trong hệ thống"]
+                        "NotFound", [localizer.GetString("AccountNotFound")]
                     }
                 }
             });
@@ -405,16 +405,16 @@ public class AccountController(
         if (result.Succeeded)
             return Ok(new ResponseBase
             {
-                Message = "Xoá tài khoản thành công"
+                Message = localizer.GetString("DeleteAccountSuccess")
             });
         return BadRequest(new ResponseBase
         {
             Errors = result.Errors
                 .Select(x =>
-                    new KeyValuePair<string, string[]>(x.Code, ["Lỗi xoá tài khoản", x.Description])
+                    new KeyValuePair<string, string[]>(x.Code, [localizer.GetString("DeleteAccountFail"), x.Description])
                 )
                 .ToDictionary(),
-            Message = "Có lỗi xảy ra, vui lòng thử lại",
+            Message = localizer.GetString("DeleteAccountFail"),
             Status = HttpStatusCode.BadRequest,
             Type = HttpResponseType.BadRequest
         });

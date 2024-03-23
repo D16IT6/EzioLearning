@@ -1,6 +1,6 @@
 ﻿using EzioLearning.Core.Repositories;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
+using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Identity;
 
 namespace EzioLearning.Api.Services;

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
+using EzioLearning.Share.Utils;
 
 namespace EzioLearning.Domain.Entities.Learning;
 
@@ -24,19 +25,4 @@ public class Course : AuditableEntity
     public ICollection<Student> Students { get; set; } = new List<Student>();
 
     [ForeignKey(nameof(CreatedBy))] public AppUser? User { get; set; }
-}
-
-public enum CourseStatus
-{
-    Ready,
-    Upcoming,
-    Cancelled
-}
-
-public enum CourseLevel
-{
-    AllLevel,
-    Beginner,
-    Intermediate,
-    Expert
 }

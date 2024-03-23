@@ -1,9 +1,11 @@
 ﻿@using EzioLearning.Wasm.Components.Auth
 @using EzioLearning.Share.Validators.Auth
 @using EzioLearning.Wasm.Utils.Common
+@using Microsoft.Extensions.Localization
 @layout EmptyLayout
 
 @attribute [Route(RouteConstants.Register)]
+@inject IStringLocalizer<RegisterRequestClientValidator> Localizer
 <div class="row">
 
     <LoginSlide />
@@ -20,7 +22,7 @@
                 </div>
                 <h1>Đăng ký</h1>
                 <EditForm Enhance="true" FormName="frmRegister" Model="RegisterModel" OnValidSubmit="OnValidSubmitRegisterForm">
-                    <FluentValidationValidator Validator="new RegisterRequestClientValidator()"/>
+                    <FluentValidationValidator Validator="new RegisterRequestClientValidator(Localizer)" />
                     <div class="row">
                         <div class="col-xxl-6">
                             <div class="input-block">

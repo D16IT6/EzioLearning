@@ -19,15 +19,15 @@ namespace EzioLearning.Wasm.Components.Account
 
         private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
         InputType _passwordInputType = InputType.Password;
-        bool _isPasswordShow;
+        private bool IsPasswordShow { get; set; }
 
         private string _newPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
         InputType _newPasswordInputType = InputType.Password;
-        bool _isNewPasswordShow;
+        private bool IsNewPasswordShow { get; set; }
 
         private string _confirmPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-        InputType _confirmPasswordInputType = InputType.Password;
-        bool _isConfirmPasswordShow;
+        private InputType _confirmPasswordInputType = InputType.Password;
+        private bool IsConfirmPasswordShow { get; set; }
 
 
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
@@ -71,17 +71,17 @@ namespace EzioLearning.Wasm.Components.Account
         }
 
 
-        void TogglePassword(bool show, ref string inputIcon, ref InputType inputType)
+        private void TogglePassword(bool show, ref string inputIcon, ref InputType inputType)
         {
-            if (_isPasswordShow)
+            if (IsPasswordShow)
             {
-                _isPasswordShow = false;
+                IsPasswordShow = false;
                 inputIcon = Icons.Material.Filled.VisibilityOff;
                 inputType = InputType.Password;
             }
             else
             {
-                _isPasswordShow = true;
+                IsPasswordShow = true;
                 inputIcon = Icons.Material.Filled.Visibility;
                 inputType = InputType.Text;
             }

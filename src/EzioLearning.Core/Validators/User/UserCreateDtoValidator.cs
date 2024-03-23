@@ -61,10 +61,11 @@ public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("Số điện thoại không được để trống.");
+        int minYear = 10, maxYear = 100;
 
         RuleFor(x => x.DateOfBirth)
             .NotEmpty().WithMessage("Ngày sinh không được để trống.")
-            .Must(x => x.BeValidDate()).WithMessage("Người dùng tuổi chỉ từ 10 tới 100.");
+            .Must(x => x.BeValidDate(minYear, maxYear)).WithMessage("Người dùng tuổi chỉ từ 10 tới 100.");
 
         var actuallyRoleListIds = roleManager.Roles.Select(x => x.Id).ToList();
         RuleFor(x => x.RoleIds)

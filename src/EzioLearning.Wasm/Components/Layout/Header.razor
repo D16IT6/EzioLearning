@@ -1,5 +1,4 @@
 ﻿@using System.Security.Claims
-@using EzioLearning.Domain.Common
 @using EzioLearning.Wasm.Utils.Common
 @inherits EzioLearning.Wasm.Components.Account.AccountComponentBase
 <!-- Header -->
@@ -328,9 +327,9 @@
                                         </div>
                                     </div>
 
-                                    <NavLink class="dropdown-item" href="@RouteConstants.Account.Home">
+                                    <a class="dropdown-item" href="@RouteConstants.Account.Home">
                                         <i class="feather-user me-1"></i> Trang cá nhân (người dùng)
-                                    </NavLink>
+                                    </a>
 
 
                                    @*  <a class="dropdown-item" href="setting-student-subscription.html">

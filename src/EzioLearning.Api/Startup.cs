@@ -1,29 +1,31 @@
-﻿using System.Net;
-using System.Text.Json.Serialization;
-using EzioLearning.Api.Authorization;
-using EzioLearning.Api.Filters;
+﻿using EzioLearning.Api.Authorization;
 using EzioLearning.Api.Middleware;
 using EzioLearning.Api.Models.Auth;
+using EzioLearning.Api.Models.Payment;
 using EzioLearning.Api.Services;
 using EzioLearning.Core.Dto;
 using EzioLearning.Core.Repositories;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Core.Validators;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.Repositories;
 using EzioLearning.Infrastructure.SeedWorks;
-using EzioLearning.Share.Dto;
 using EzioLearning.Share.Models.Token;
+using EzioLearning.Share.Utils;
 using EzioLearning.Share.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace EzioLearning.Api;
 
@@ -58,7 +60,7 @@ internal static class Startup
 
         services.ConfigureRepository();
 
-        services.AddAutoMapper([typeof(MapperClass), typeof(MapperShareClass)]);
+        services.AddAutoMapper(typeof(MapperClass));
 
         services.ConfigureAuthentication(configuration);
 
@@ -75,14 +77,18 @@ internal static class Startup
             return jwtConfiguration;
         });
 
-
         services.AddMemoryCache();
 
         services.ConfigureLocalService(configuration);
 
         services.ConfigureCustomMiddleware();
-    }
 
+        services.ConfigurePayments(configuration);
+
+        services.ConfigureLogs(configuration);
+
+        services.ConfigureMultiLanguages(configuration);
+    }
 
     private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
     {
@@ -145,7 +151,6 @@ internal static class Startup
         //services.AddFluentValidationClientsideAdapters();
     }
 
-
     private static void ConfigureRepository(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
@@ -169,7 +174,6 @@ internal static class Startup
 
         services.AddScoped<ICourseCategoryRepository, CourseCategoryRepository>();
     }
-
 
     private static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
@@ -205,9 +209,6 @@ internal static class Startup
                 };
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
-
-                //external login
-                options.TokenHandlers.Add(new GoogleJwtTokenHandler(externalAuthentication.Google.ClientId));
             }).AddGoogle(options =>
             {
                 options.ClientId = externalAuthentication.Google.ClientId;
@@ -216,6 +217,10 @@ internal static class Startup
             {
                 options.ClientId = externalAuthentication.Facebook.ClientId;
                 options.ClientSecret = externalAuthentication.Facebook.ClientSecret;
+            }).AddMicrosoftAccount(options =>
+            {
+                options.ClientId = externalAuthentication.Microsoft.ClientId;
+                options.ClientSecret = externalAuthentication.Microsoft.ClientSecret;
             });
 
         services.AddAuthorization();
@@ -239,14 +244,67 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    private static void MigrateData(this WebApplication app)
+    //private static void MigrateData(this WebApplication app)
+    //{
+    //    using var scope = app.Services.CreateScope();
+    //    using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+    //    context.Database.Migrate();
+    //    new DataSeeder().SeedAsync(context).Wait();
+    //}
+
+    private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
-        using var scope = app.Services.CreateScope();
-        using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-        context.Database.Migrate();
-        new DataSeeder().SeedAsync(context).Wait();
+        var paymentSettings = new PaymentSettings();
+        configuration.Bind(nameof(PaymentSettings), paymentSettings);
+
+        services.AddSingleton(_ => new PaypalClient(paymentSettings.Paypal));
+
     }
 
+    private static void ConfigureLogs(this IServiceCollection services, IConfiguration _)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
+        services.AddLogging(loggingBuilder =>
+            {
+                //loggingBuilder.ClearProviders();
+                loggingBuilder.AddSerilog(dispose: true);
+            }
+        );
+    }
+
+    private static void ConfigureMultiLanguages(this IServiceCollection services, IConfiguration _)
+    {
+        var defaultCulture = new CultureInfo("vi-VN");
+
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+
+            options.SupportedCultures = new List<CultureInfo>
+            {
+                defaultCulture,
+                new("en-US")
+            };
+
+            options.SupportedUICultures = options.SupportedCultures;
+
+            options.RequestCultureProviders = new List<IRequestCultureProvider>
+            {
+                new RouteDataRequestCultureProvider() { Options = options },
+                new QueryStringRequestCultureProvider() { Options = options },
+                new AcceptLanguageHeaderRequestCultureProvider() { Options = options }
+            };
+        });
+
+        services.AddLocalization(options =>
+        {
+            options.ResourcesPath = "Resources";
+        });
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+    }
 
     internal static void Configure(this WebApplication app)
     {
@@ -263,32 +321,17 @@ internal static class Startup
 
         app.UseStaticFiles();
 
-        app.UseAuthentication();
+        app.UseRequestLocalization();
 
+        app.UseAuthentication();
         app.UseMiddleware<Custom401ResponseMiddleware>();
         app.UseMiddleware<Custom403ResponseMiddleware>();
-
         app.UseAuthorization();
-
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            OnPrepareResponse = ctx =>
-            {
-                if (ctx.Context.Request.Path.StartsWithSegments("/files/users"))
-                {
-                    if (ctx.Context.User.Identity!.IsAuthenticated) return;
-
-                    ctx.Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    ctx.Context.Response.ContentLength = 0;
-                    ctx.Context.Response.Body = Stream.Null;
-                }
-            }
-        });
 
         app.MapControllers();
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        app.MigrateData();
+        //app.MigrateData();
     }
 }

@@ -9,6 +9,7 @@ public partial class ExternalProvider
 
     private string GoogleCallbackUrl { get; set; } = string.Empty;
     private string FacebookCallbackUrl { get; set; } = string.Empty;
+    private string MicrosoftCallbackUrl { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -19,5 +20,23 @@ public partial class ExternalProvider
         FacebookCallbackUrl =
             $"{ApiConstants.BaseUrl}api/Auth/FacebookLogin?returnUrl=" +
             NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+
+        MicrosoftCallbackUrl =
+            $"{ApiConstants.BaseUrl}api/Auth/MicrosoftLogin?returnUrl=" +
+            NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
     }
+
+    public void ExternalLogin(string externalProvider)
+    {
+        var uri = $"{ApiConstants.BaseUrl}api/Auth/{externalProvider}Login?returnUrl=" +
+                  NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+        NavigationManager.NavigateTo(uri);
+    }
+}
+
+public static class ExternalLoginProvider
+{
+    public static string Google = nameof(Google);
+    public static string Facebook = nameof(Facebook);
+    public static string Microsoft = nameof(Microsoft);
 }

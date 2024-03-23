@@ -10,6 +10,8 @@ using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using CourseCreateApiDto = EzioLearning.Core.Dto.Learning.Course.CourseCreateApiDto;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -21,7 +23,7 @@ public class CourseController(
     IUnitOfWork unitOfWork,
     FileService fileService,
     ICourseCategoryRepository courseCategoryRepository,
-    UserManager<AppUser> userManager) : ControllerBase
+    UserManager<AppUser> userManager,IStringLocalizer<CourseController> localizer) : ControllerBase
 {
     private static readonly string FolderPath = "Uploads/Images/Courses/";
 
@@ -32,7 +34,7 @@ public class CourseController(
         return Ok(new ResponseBaseWithData<int>
         {
             Status = HttpStatusCode.OK,
-            Message = "Đếm số khoá học hiện có thành công",
+            Message =localizer.GetString("CourseCountSuccess"),
             Data = count
         });
     }
@@ -51,13 +53,13 @@ public class CourseController(
         return Ok(new ResponseBaseWithList<CourseViewDto>
         {
             Status = HttpStatusCode.OK,
-            Message = "Lấy danh sách khoá học thịnh hành thành công",
+            Message = localizer.GetString("CourseFeatureGetSuccess"),
             Data = resultData
         });
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateNewCourse([FromForm] CourseCreateDto model)
+    public async Task<IActionResult> CreateNewCourse([FromForm] CourseCreateApiDto model)
     {
         var newCourse = mapper.Map<Course>(model);
 
@@ -72,7 +74,7 @@ public class CourseController(
                 return BadRequest(new ResponseBase
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
+                    Message = localizer.GetString("ImageExtensionNotAllow")
                 });
 
             imagePath = await fileService.SaveFile(poster, FolderPath, newCourse.Id.ToString());
@@ -89,12 +91,12 @@ public class CourseController(
         if (result > 0)
             return Ok(new ResponseBase
             {
-                Message = "Thêm mới khoá học thành công",
+                Message = localizer.GetString("CourseCreateSuccess"),
                 Status = HttpStatusCode.OK
             });
         return BadRequest(new ResponseBase
         {
-            Message = "Thêm mới khoá học thất bại, vui lòng thử lại",
+            Message = localizer.GetString("CourseCreateFail"),
             Status = HttpStatusCode.BadRequest
         });
     }
@@ -104,16 +106,14 @@ public class CourseController(
         foreach (var courseViewDto in listCourseViewDto)
         {
             var trainer = await userManager.FindByIdAsync(courseViewDto.CreatedBy.ToString());
-            if (trainer != null)
-            {
-                courseViewDto.TeacherName = trainer.FullName;
-                courseViewDto.TeacherAvatar = trainer.Avatar;
-            }
+            if (trainer == null) continue;
+            courseViewDto.TeacherName = trainer.FullName;
+            courseViewDto.TeacherAvatar = trainer.Avatar;
         }
     }
 
     private async Task<IEnumerable<CourseCategory>> GetInsertCourseCategories(
-        CourseCreateDto courseCreateDto)
+        CourseCreateApiDto courseCreateDto)
     {
         var result = new List<CourseCategory>();
         foreach (var courseCategoryId in courseCreateDto.CourseCategoryIds)

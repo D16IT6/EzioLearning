@@ -10,6 +10,8 @@ using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using CourseCategoryCreateDto = EzioLearning.Core.Dto.Learning.CourseCategory.CourseCategoryCreateDto;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -19,7 +21,7 @@ public class CourseCategoryController(
     IMapper mapper,
     ICourseCategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
-    FileService fileService) : ControllerBase
+    FileService fileService, IStringLocalizer<CourseCategoryController> localizer) : ControllerBase
 {
     private static readonly string FolderPath = "Uploads/Images/CourseCategories/";
 
@@ -33,7 +35,7 @@ public class CourseCategoryController(
         return Ok(new ResponseBaseWithList<CourseCategoryViewDto>
         {
             Data = data.ToList(),
-            Message = "Lấy dữ liệu thành công",
+            Message = localizer.GetString("CourseCategoryGetSuccess"),
             Status = HttpStatusCode.OK
         });
     }
@@ -59,14 +61,13 @@ public class CourseCategoryController(
         return Ok(new ResponseBaseWithList<TopCourseCategoryDto>
         {
             Data = responseData.ToList(),
-            Message = "Lấy dữ liệu thành công",
+            Message = localizer.GetString("CourseCategoryTopGetSuccess"),
             Status = HttpStatusCode.OK
         });
     }
 
 
     [HttpPut]
-    [ValidateModel]
     [VerifyToken]
     public async Task<IActionResult> Create([FromForm] CourseCategoryCreateDto courseCategoryCreateDto)
     {
@@ -82,7 +83,11 @@ public class CourseCategoryController(
                 return BadRequest(new ResponseBase
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
+                    Message = localizer.GetString("ImageExtensionNotAllow"),
+                    Errors = new Dictionary<string, string[]>()
+                    {
+                        {"ImageExtensionNotAllow", [localizer.GetString("ImageExtensionNotAllow")]}
+                    }
                 });
 
             imagePath = await fileService.SaveFile(image, FolderPath, newCourseCategory.Name);
@@ -101,7 +106,7 @@ public class CourseCategoryController(
                 new ResponseBase
                 {
                     Status = HttpStatusCode.OK,
-                    Message = "Tạo mới danh mục thành công"
+                    Message = localizer.GetString("CourseCategoryCreateSuccess")
                 });
         return BadRequest(new ResponseBase
         {

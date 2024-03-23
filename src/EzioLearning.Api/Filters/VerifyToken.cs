@@ -5,10 +5,11 @@ using EzioLearning.Api.Utils;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Api.Filters;
 
-public class VerifyTokenAttribute : ActionFilterAttribute
+public class VerifyToken : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -17,16 +18,18 @@ public class VerifyTokenAttribute : ActionFilterAttribute
         var sessionId = context.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value ??
                         string.Empty;
 
+        var localizer = context.HttpContext.RequestServices.GetService<IStringLocalizer<VerifyToken>>();
+
         var token = memoryCache?.Get<string>(sessionId, CacheConstant.AccessToken);
 
         if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(token))
             context.Result = new BadRequestObjectResult(new ResponseBase
             {
-                Message = "Token giả mạo!",
+                Message = localizer.GetString("TokenFake"),
                 Status = HttpStatusCode.BadRequest,
                 Errors = new Dictionary<string, string[]>
                 {
-                    { "Token", ["Token giả mạo"] }
+                    { "Token", [localizer.GetString("TokenFake")] }
                 }
             });
         base.OnActionExecuting(context);

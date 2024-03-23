@@ -1,14 +1,15 @@
 ﻿using System.Net;
 using AutoMapper;
-using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
+using EzioLearning.Core.Dto.Auth;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -19,7 +20,7 @@ public class UserController(
     UserManager<AppUser> userManager,
     FileService fileService,
     PermissionService permissionService,
-    RoleManager<AppRole> roleManager) : ControllerBase
+    RoleManager<AppRole> roleManager, IStringLocalizer<UserController> localizer) : ControllerBase
 {
     public static readonly string FolderPath = "Uploads/Images/Users/";
 
@@ -37,14 +38,13 @@ public class UserController(
         return Ok(new ResponseBaseWithList<InstructorViewDto>
         {
             Status = HttpStatusCode.OK,
-            Message = "Lấy danh sách giảng viên nổi bật thành công",
+            Message = localizer.GetString("FeatureInstructorsGetSuccess"),
             Data = await data.ToListAsync()
         });
     }
 
     [HttpPost]
-    [ValidateModel]
-    public async Task<IActionResult> CreateNewUser([FromForm] UserCreateDto model)
+    public async Task<IActionResult> CreateNewUser([FromForm] UserCreateApiDto model)
     {
         var newUser = mapper.Map<AppUser>(model);
         var image = model.Avatar;
@@ -59,7 +59,7 @@ public class UserController(
                 return BadRequest(new ResponseBase
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Message = "Ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác"
+                    Message = localizer.GetString("ImageExtensionNotAllow")
                 });
 
             imagePath = await fileService.SaveFile(image, FolderPath, newUser.Id.ToString());
@@ -77,8 +77,12 @@ public class UserController(
             return BadRequest(new ResponseBaseWithList<IdentityError>
             {
                 Status = HttpStatusCode.BadRequest,
-                Data = addToRoleResult.Errors.ToList(),
-                Message = "Thêm quyền vào tài khoản thất bại, vui lòng xem lỗi"
+                Errors = new Dictionary<string, string[]>()
+                    {
+                    {
+                        "UserAddRoleFail", [localizer.GetString("UserAddRoleFail")]
+                    }},
+                Message = localizer.GetString("UserAddRoleFail")
             });
 
         await permissionService.AddPermissionsForNewUser(newUser);
@@ -87,14 +91,14 @@ public class UserController(
             return Ok(new ResponseBase
             {
                 Status = HttpStatusCode.OK,
-                Message = "Thêm user mới thành công"
+                Message = localizer.GetString("UserCreateSuccess")
             });
 
         return BadRequest(new ResponseBaseWithList<IdentityError>
         {
             Status = HttpStatusCode.BadRequest,
             Data = result.Errors.ToList(),
-            Message = "Tạo tài khoản thất bại, vui lòng xem lỗi"
+            Message = localizer.GetString("UserCreateFail")
         });
     }
 }
