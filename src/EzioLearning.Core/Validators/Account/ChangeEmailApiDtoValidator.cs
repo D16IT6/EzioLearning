@@ -8,7 +8,7 @@ namespace EzioLearning.Core.Validators.Account
 {
     public class ChangeEmailApiDtoValidator : AbstractValidator<ChangeEmailApiDto>
     {
-        public ChangeEmailApiDtoValidator(UserManager<AppUser> userManager,IStringLocalizer<ChangeEmailApiDtoValidator> localizer)
+        public ChangeEmailApiDtoValidator(UserManager<AppUser> userManager, IStringLocalizer<ChangeEmailApiDtoValidator> localizer)
         {
 
             RuleFor(x => x.CurrentEmail)

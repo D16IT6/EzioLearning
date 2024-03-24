@@ -9,4 +9,6 @@ public class CourseCategoryCreateDto
     public IBrowserFile? Image { get; init; }
     public bool IsActive { get; init; }
     public Guid? ParentId { get; init; }
+
+    
 }

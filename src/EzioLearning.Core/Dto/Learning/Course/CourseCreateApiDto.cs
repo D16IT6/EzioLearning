@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EzioLearning.Share.Utils;
+﻿using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Http;
 
 namespace EzioLearning.Core.Dto.Learning.Course
@@ -22,6 +21,6 @@ namespace EzioLearning.Core.Dto.Learning.Course
 
         public Guid CreatedBy { get; set; }
 
-        
+
     }
 }

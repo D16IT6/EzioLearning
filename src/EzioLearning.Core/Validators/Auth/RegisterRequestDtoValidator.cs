@@ -1,16 +1,16 @@
-﻿using System.Text.RegularExpressions;
-using EzioLearning.Core.Dto.Auth;
+﻿using EzioLearning.Core.Dto.Auth;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Validators.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using System.Text.RegularExpressions;
 
 namespace EzioLearning.Core.Validators.Auth;
 
 public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestApiDto>
 {
-    public RegisterRequestDtoValidator(UserManager<AppUser> userManager,IStringLocalizer<RegisterRequestDtoValidator> localizer)
+    public RegisterRequestDtoValidator(UserManager<AppUser> userManager, IStringLocalizer<RegisterRequestDtoValidator> localizer)
     {
         const int nameMaxLength = 50;
         RuleFor(x => x.FirstName)

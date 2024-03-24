@@ -1,4 +1,5 @@
-﻿namespace EzioLearning.Share.Dto.User;
+﻿
+namespace EzioLearning.Share.Dto.User;
 
 public class InstructorViewDto
 {

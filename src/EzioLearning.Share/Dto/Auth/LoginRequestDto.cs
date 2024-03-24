@@ -1,4 +1,6 @@
-﻿namespace EzioLearning.Share.Dto.Auth;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EzioLearning.Share.Dto.Auth;
 
 public class LoginRequestDto
 {

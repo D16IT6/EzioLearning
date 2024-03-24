@@ -30,11 +30,11 @@ namespace EzioLearning.Core.SeedWorks.Constants
             public const string Edit = $"{nameof(Permissions)}.{nameof(Users)}.{nameof(Edit)}";
             [Description("Xóa người dùng")]
             public const string Delete = $"{nameof(Permissions)}.{nameof(Users)}.{nameof(Delete)}";
-        } 
+        }
         public static class Accounts
         {
             [Description("Bình luận")]
-            public const string Comment = $"{nameof(Permissions)}.{nameof(Accounts)}.{nameof(Comment)}"; 
+            public const string Comment = $"{nameof(Permissions)}.{nameof(Accounts)}.{nameof(Comment)}";
             [Description("Đổi email mới")]
             public const string ChangeEmail = $"{nameof(Permissions)}.{nameof(Accounts)}.{nameof(ChangeEmail)}";
         }

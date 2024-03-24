@@ -18,7 +18,7 @@ public class MapperClass
     {
         public CourseCreateApiDtoProfile()
         {
-            CreateMap<CourseCreateApiDto, Domain.Entities.Learning.Course>();
+            CreateMap<CourseCreateApiDto, Course>();
         }
     }
 
@@ -26,9 +26,9 @@ public class MapperClass
     {
         public CourseCategoryViewDtoProfile()
         {
-            CreateMap<CourseCategoryViewDto, Domain.Entities.Learning.CourseCategory>();
+            CreateMap<CourseCategoryViewDto, CourseCategory>();
 
-            CreateMap<Domain.Entities.Learning.CourseCategory, CourseCategoryViewDto>()
+            CreateMap<CourseCategory, CourseCategoryViewDto>()
                 .ForMember(dest => dest.ParentName,
                     otp =>
                         otp.MapFrom(src => src.Parent!.Name));
@@ -122,4 +122,5 @@ public class MapperClass
     }
 
     #endregion
+
 }

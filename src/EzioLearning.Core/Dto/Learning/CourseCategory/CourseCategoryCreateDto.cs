@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace EzioLearning.Core.Dto.Learning.CourseCategory
 {
@@ -11,6 +10,6 @@ namespace EzioLearning.Core.Dto.Learning.CourseCategory
         public bool IsActive { get; init; }
         public Guid? ParentId { get; init; }
 
-        
+
     }
 }

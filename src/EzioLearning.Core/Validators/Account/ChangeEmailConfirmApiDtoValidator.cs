@@ -8,7 +8,7 @@ namespace EzioLearning.Core.Validators.Account
 {
     public class ChangeEmailConfirmApiDtoValidator : AbstractValidator<ChangeEmailConfirmApiDto>
     {
-        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager,IStringLocalizer<ChangeEmailConfirmApiDtoValidator> localizer)
+        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager, IStringLocalizer<ChangeEmailConfirmApiDtoValidator> localizer)
         {
             RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage(localizer.GetString("UserIdEmpty"))

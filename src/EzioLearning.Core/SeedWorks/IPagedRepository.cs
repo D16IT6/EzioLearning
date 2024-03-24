@@ -1,5 +1,5 @@
-﻿using System.Linq.Expressions;
-using EzioLearning.Share.Models.Pages;
+﻿using EzioLearning.Share.Models.Pages;
+using System.Linq.Expressions;
 
 namespace EzioLearning.Core.SeedWorks;
 

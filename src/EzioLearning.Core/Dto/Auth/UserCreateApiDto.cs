@@ -22,6 +22,6 @@ namespace EzioLearning.Core.Dto.Auth
         public string? ProviderKey { get; init; }
         public Guid[] RoleIds { get; init; } = [];
 
-        
+
     }
 }

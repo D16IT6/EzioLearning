@@ -25,11 +25,11 @@ public class VerifyToken : ActionFilterAttribute
         if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(token))
             context.Result = new BadRequestObjectResult(new ResponseBase
             {
-                Message = localizer.GetString("TokenFake"),
+                Message = localizer?.GetString("TokenFake") ?? "",
                 Status = HttpStatusCode.BadRequest,
                 Errors = new Dictionary<string, string[]>
                 {
-                    { "Token", [localizer.GetString("TokenFake")] }
+                    { "Token", [localizer?.GetString("TokenFake") ?? ""] }
                 }
             });
         base.OnActionExecuting(context);

@@ -1,5 +1,4 @@
-﻿
-namespace EzioLearning.Share.Dto.Learning.CourseCategory;
+﻿namespace EzioLearning.Share.Dto.Learning.CourseCategory;
 
 public class TopCourseCategoryDto
 {

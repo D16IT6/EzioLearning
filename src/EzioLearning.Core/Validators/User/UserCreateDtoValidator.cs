@@ -1,9 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using EzioLearning.Domain.Entities.Identity;
+﻿using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Validators.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using System.Text.RegularExpressions;
 
 namespace EzioLearning.Core.Validators.User;
 
