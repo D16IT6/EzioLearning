@@ -1,4 +1,7 @@
-﻿namespace EzioLearning.Share.Dto.User;
+﻿using AutoMapper;
+using EzioLearning.Domain.Entities.Identity;
+
+namespace EzioLearning.Share.Dto.User;
 
 public class InstructorViewDto
 {

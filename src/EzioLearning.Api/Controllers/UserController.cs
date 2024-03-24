@@ -45,6 +45,7 @@ public class UserController(
 
     [HttpPost]
     public async Task<IActionResult> CreateNewUser([FromForm] UserCreateApiDto model)
+    public async Task<IActionResult> CreateNewUser([FromForm] UserCreateDto model)
     {
         var newUser = mapper.Map<AppUser>(model);
         var image = model.Avatar;

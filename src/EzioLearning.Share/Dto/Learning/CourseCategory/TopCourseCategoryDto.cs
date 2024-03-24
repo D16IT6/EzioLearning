@@ -1,4 +1,5 @@
-﻿
+﻿using AutoMapper;
+
 namespace EzioLearning.Share.Dto.Learning.CourseCategory;
 
 public class TopCourseCategoryDto

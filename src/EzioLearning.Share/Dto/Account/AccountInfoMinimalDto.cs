@@ -1,4 +1,6 @@
-﻿
+﻿using AutoMapper;
+using EzioLearning.Domain.Entities.Identity;
+
 namespace EzioLearning.Share.Dto.Account
 {
     public class AccountInfoMinimalDto

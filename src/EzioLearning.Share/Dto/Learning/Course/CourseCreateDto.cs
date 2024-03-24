@@ -20,4 +20,32 @@ public class CourseCreateDto
     public Guid[] CourseCategoryIds { get; set; } = [];
 
     public Guid CreatedBy { get; set; }
+
+    public class CourseCreateDtoProfile : Profile
+    {
+        public CourseCreateDtoProfile()
+        {
+            CreateMap<CourseCreateDto, Domain.Entities.Learning.Course>();
+            //.ForMember(x => x.Categories, memberOptions: expression =>
+            //{
+            //    expression.MapFrom(mapExpression: x =>
+            //        GetInsertCourseCategories(x)
+            //        );
+            //});
+        }
+
+
+        //private async Task<IEnumerable<Domain.Entities.Learning.CourseCategory>> GetInsertCourseCategories(
+        //    CourseCreateDto courseCreateDto)
+        //{
+        //    var result = new List<Domain.Entities.Learning.CourseCategory>();
+        //    foreach (var courseCategoryId in courseCreateDto.CourseCategoryIds)
+        //    {
+        //        var insertItem = await _courseCategoryRepository.GetByIdAsync(courseCategoryId);
+        //        if (insertItem != null)
+        //            result.Add(insertItem);
+        //    }
+        //    return result;
+        //}
+    }
 }
