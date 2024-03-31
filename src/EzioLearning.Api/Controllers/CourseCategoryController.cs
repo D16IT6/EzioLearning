@@ -11,7 +11,7 @@ using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using CourseCategoryCreateDto = EzioLearning.Core.Dto.Learning.CourseCategory.CourseCategoryCreateDto;
+using CourseCategoryCreateApiDto = EzioLearning.Core.Dto.Learning.CourseCategory.CourseCategoryCreateApiDto;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -68,8 +68,8 @@ public class CourseCategoryController(
 
 
     [HttpPut]
-    [VerifyToken]
-    public async Task<IActionResult> Create([FromForm] CourseCategoryCreateDto courseCategoryCreateDto)
+    //[VerifyToken]
+    public async Task<IActionResult> Create([FromForm] CourseCategoryCreateApiDto courseCategoryCreateDto)
     {
         var newCourseCategory = mapper.Map<CourseCategory>(courseCategoryCreateDto);
 

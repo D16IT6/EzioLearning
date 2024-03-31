@@ -18,7 +18,7 @@ public partial class Testimonial
         if (firstRender)
             JsObjectReference =
                 await JsRunTime.InvokeAsync<IJSObjectReference>
-                    ("import", $"/Components/Home/{nameof(Testimonial)}.razor.js");
+                    ("import", $"/Components/Index/{nameof(Testimonial)}.razor.js");
         else
             await JsObjectReference.InvokeVoidAsync("loadSlider");
     }

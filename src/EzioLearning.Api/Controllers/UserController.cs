@@ -23,26 +23,7 @@ public class UserController(
     RoleManager<AppRole> roleManager, IStringLocalizer<UserController> localizer) : ControllerBase
 {
     public static readonly string FolderPath = "Uploads/Images/Users/";
-
-
-    [HttpGet("FeaturedInstructor/{take:int?}")]
-    public async Task<IActionResult> GetFeatureInstructors([FromRoute] int take = 12)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(take);
-
-        var userList = userManager.Users
-            .OrderByDescending(x => x.Students.Count)
-            .ThenByDescending(x => x.Courses.Count)
-            .Take(take);
-        var data = mapper.ProjectTo<InstructorViewDto>(userList);
-        return Ok(new ResponseBaseWithList<InstructorViewDto>
-        {
-            Status = HttpStatusCode.OK,
-            Message = localizer.GetString("FeatureInstructorsGetSuccess"),
-            Data = await data.ToListAsync()
-        });
-    }
-
+    
     [HttpPost]
     public async Task<IActionResult> CreateNewUser([FromForm] UserCreateApiDto model)
     {

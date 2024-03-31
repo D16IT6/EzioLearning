@@ -5,16 +5,13 @@ using EzioLearning.Share.Utils;
 
 namespace EzioLearning.Domain.Entities.Learning;
 
-[Table("Courses", Schema = "Learning")]
+[Table(nameof(Course) +"s", Schema = nameof(Learning))]
 public class Course : AuditableEntity
 {
     public Guid Id { get; set; }
-    public required string Name { get; set; }
-    public required string Description { get; set; }
     public string? Poster { get; set; }
-    public string? Content { get; set; }
-    public required double Price { get; set; } = 0;
-    public required double PromotionPrice { get; set; }
+    public double Price { get; set; } = 0;
+    public double PromotionPrice { get; set; }
     public int SortOrder { get; set; }
     public CourseLevel Level { get; set; }
     public CourseStatus Status { get; set; }

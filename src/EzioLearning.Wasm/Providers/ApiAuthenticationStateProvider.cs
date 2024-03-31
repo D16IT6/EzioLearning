@@ -47,7 +47,7 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error occurred while validating authentication state: {ex.Message}");
+            Console.WriteLine($"ErrorRoute occurred while validating authentication state: {ex.Message}");
             return emptyAuthenticationState;
         }
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
@@ -17,8 +18,10 @@ public partial class ForgotPassword
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+    [Inject] private IStringLocalizer<ForgotPassword> Localizer { get; set; } = default!;
+
     private bool DisableSubmitButton { get; set; }
-    private string SubmitButtonText { get; set; } = "Xác nhận";
+    private string SubmitButtonText { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -29,7 +32,7 @@ public partial class ForgotPassword
 
     public async Task SubmitForgotPasswordForm()
     {
-        SubmitButtonText = "Đang xử lý...";
+        SubmitButtonText = Localizer.GetString("SubmitTextProcessing");
         DisableSubmitButton = true;
 
         var data = await AuthService.ForgotPassword(ForgotPasswordDto);
@@ -50,11 +53,12 @@ public partial class ForgotPassword
                     option.CloseAfterNavigation = true;
                 });
                 await Task.Delay(3000);
-                NavigationManager.NavigateTo(RouteConstants.Home);
+                NavigationManager.NavigateTo(RouteConstants.Index);
                 break;
         }
 
-        SubmitButtonText = "Xác nhận";
+        SubmitButtonText = Localizer.GetString("SubmitText");
+        DisableSubmitButton = false;
         StateHasChanged();
     }
 }

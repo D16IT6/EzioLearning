@@ -10,8 +10,4 @@ public class UnitOfWork(EzioLearningDbContext context) : IUnitOfWork
         return await context.SaveChangesAsync();
     }
 
-    public void Dispose()
-    {
-        context.Dispose();
-    }
 }

@@ -2,7 +2,7 @@
 
 public abstract record RouteConstants
 {
-    public const string Home = "/";
+    public const string Index = "/";
     public const string Login = $"/{nameof(Login)}";
     public const string Course = $"/{nameof(Course)}";
     public const string About = $"/{nameof(About)}";
@@ -17,17 +17,22 @@ public abstract record RouteConstants
     public const string Logout = $"/{nameof(Logout)}";
     public const string DevLater = $"/{nameof(DevLater)}";
 
-    public abstract record Account
+    public abstract record AccountRoute
     {
-        public const string Home = $"/{nameof(Account)}/{nameof(Home)}";
-        public const string Security = $"/{nameof(Account)}/{nameof(Security)}";
-        public const string ConfirmChangeEmail = $"/{nameof(Account)}/{nameof(ConfirmChangeEmail)}";
-        public const string ConfirmChangePassword = $"/{nameof(Account)}/{nameof(ConfirmChangePassword)}";
-        public const string Delete = $"/{nameof(Account)}/{nameof(Delete)}";
+        public const string Home = $"Account/{nameof(Home)}";
+        public const string Security = $"Account/{nameof(Security)}";
+        public const string ConfirmChangeEmail = $"Account/{nameof(ConfirmChangeEmail)}";
+        public const string ConfirmChangePassword = $"Account/{nameof(ConfirmChangePassword)}";
+        public const string Delete = $"Account/{nameof(Delete)}";
     }
 
-    public abstract record Error
+    public abstract record CourseRoute
     {
-        public const string UnAuthorized = $"/{nameof(Error)}/{nameof(UnAuthorized)}";
+        public const string Create = $"/Course/{nameof(Create)}";
+    }
+
+    public abstract record ErrorRoute
+    {
+        public const string UnAuthorized = $"/ErrorRoute/{nameof(UnAuthorized)}";
     }
 }

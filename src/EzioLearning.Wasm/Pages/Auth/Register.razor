@@ -1,11 +1,8 @@
 ﻿@using EzioLearning.Wasm.Components.Auth
-@using EzioLearning.Share.Validators.Auth
 @using EzioLearning.Wasm.Utils.Common
-@using Microsoft.Extensions.Localization
 @layout EmptyLayout
 
 @attribute [Route(RouteConstants.Register)]
-@inject IStringLocalizer<RegisterRequestClientValidator> Localizer
 <div class="row">
 
     <LoginSlide />
@@ -17,25 +14,27 @@
                 <div class="img-logo">
                     <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
                     <div class="back-home">
-                        <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Home">Về trang chủ</NavLink>
+                        <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Index">
+                            @Localizer.GetString("BackHome")
+                        </NavLink>
                     </div>
                 </div>
-                <h1>Đăng ký</h1>
+                <h1>@Localizer.GetString("Title")</h1>
                 <EditForm Enhance="true" FormName="frmRegister" Model="RegisterModel" OnValidSubmit="OnValidSubmitRegisterForm">
-                    <FluentValidationValidator Validator="new RegisterRequestClientValidator(Localizer)" />
+                    <FluentValidationValidator />
                     <div class="row">
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Họ</label>
-                                <InputText @bind-Value="RegisterModel.FirstName" type="text" class="form-control" placeholder="Họ của bạn"/>
+                                <label class="form-label">@Localizer.GetString("FirstNameLabel")</label>
+                                <InputText @bind-Value="RegisterModel.FirstName" type="text" class="form-control" />
                                 <ValidationMessage For="() => RegisterModel.FirstName" class="text-danger mt-1 ms-1"/>
                             </div>
                         </div>
 
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Tên</label>
-                                <InputText @bind-Value="RegisterModel.LastName" type="text" class="form-control" placeholder="Tên của bạn"/>
+                                <label class="form-label">@Localizer.GetString("LastNameLabel")</label>
+                                <InputText @bind-Value="RegisterModel.LastName" type="text" class="form-control" />
                                 <ValidationMessage For="() => RegisterModel.LastName" class="text-danger mt-1 ms-1"/>
 
                             </div>
@@ -45,16 +44,16 @@
                     <div class="row">
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Email</label>
-                                <InputText @bind-Value="RegisterModel.Email" type="email" class="form-control" placeholder="Địa chỉ email của bạn" disabled="@DisabledEmail"/>
+                                <label class="form-label">@Localizer.GetString("EmailLabel")</label>
+                                <InputText @bind-Value="RegisterModel.Email" type="email" class="form-control" disabled="@DisabledEmail"/>
                                 <ValidationMessage For="() => RegisterModel.Email" class="text-danger mt-1 ms-1"/>
 
                             </div>
                         </div>
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Số điện thoại</label>
-                                <InputText @bind-Value="RegisterModel.PhoneNumber" type="text" class="form-control" placeholder="Số điện thoại của bạn"/>
+                                <label class="form-label">@Localizer.GetString("PhoneLabel")</label>
+                                <InputText @bind-Value="RegisterModel.PhoneNumber" type="text" class="form-control" />
                                 <ValidationMessage For="() => RegisterModel.PhoneNumber" class="text-danger mt-1 ms-1"/>
 
                             </div>
@@ -63,25 +62,32 @@
                     <div class="row">
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Ngày sinh</label>
-                                @* <InputDate @bind-Value="RegisterModel.DateOfBirth" fo class="form-control" placeholder="Ngày sinh của bạn"/> *@
-                                <MudDatePicker @bind-Date="RegisterModel.DateOfBirth" fo class="form-control" DateFormat="dd/MM/yyyy" id="register-birthday" MaxDate="DateTime.UtcNow.AddYears(-10)"/>
+                                <label class="form-label">@Localizer.GetString("DateOfBirthLabel")</label>
+                                <MudDatePicker @bind-Date="RegisterModel.DateOfBirth" 
+                                               fo 
+                                               class="form-control" 
+                                               DateFormat="dd/MM/yyyy" 
+                                               id="register-birthday" 
+                                               MaxDate="DateTime.UtcNow.AddYears(-10)"/>
                                 <ValidationMessage For="() => RegisterModel.DateOfBirth" class="text-danger mt-1 ms-1"/>
                             </div>
                         </div>
 
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Ảnh đại diện</label>
-                                <InputFile @bind-Value="RegisterModel.Avatar" OnChange="LoadFile" accept="@string.Join(',', AcceptTypes)" placeholder="Ảnh đại diện" class="pt-3 form-control"/>
+                                <label class="form-label">@Localizer.GetString("AvatarLabel")</label>
+                                <InputFile 
+                                    @bind-Value="RegisterModel.Avatar" 
+                                    OnChange="LoadFile" accept="@string.Join(',', AcceptTypes)" 
+                                    class="pt-3 form-control"/>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <div class="input-block">
-                                <label class="form-label">Tài khoản</label>
-                                <InputText @bind-Value="RegisterModel.UserName" fo class="form-control" placeholder="Tên đăng nhập của bạn"/>
+                                <label class="form-label">@Localizer.GetString("UserNameLabel")</label>
+                                <InputText @bind-Value="RegisterModel.UserName" fo class="form-control"/>
                                 <ValidationMessage For="() => RegisterModel.UserName" class="text-danger mt-1 ms-1"/>
                             </div>
                         </div>
@@ -89,8 +95,8 @@
                     <div class="row">
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Mật khẩu</label>
-                                <InputText type="password" @bind-Value="RegisterModel.Password" fo class="form-control" placeholder="Ngày sinh của bạn"/>
+                                <label class="form-label">@Localizer.GetString("PasswordLabel")</label>
+                                <InputText type="password" @bind-Value="RegisterModel.Password" fo class="form-control" />
                                 <ValidationMessage For="() => RegisterModel.Password" class="text-danger mt-1 ms-1"/>
 
                             </div>
@@ -98,8 +104,8 @@
                         </div>
                         <div class="col-xxl-6">
                             <div class="input-block">
-                                <label class="form-label">Mật khẩu xác nhận</label>
-                                <InputText type="password" @bind-Value="RegisterModel.ConfirmPassword" fo class="form-control" placeholder="Ngày sinh của bạn"/>
+                                <label class="form-label">@Localizer.GetString("PasswordConfirmLabel")</label>
+                                <InputText type="password" @bind-Value="RegisterModel.ConfirmPassword" fo class="form-control" />
                                 <ValidationMessage For="() => RegisterModel.ConfirmPassword" class="text-danger mt-1 ms-1"/>
 
                             </div>
@@ -109,16 +115,16 @@
                     <div class="form-check remember-me">
                         <label class="form-check-label mb-0">
                             <InputCheckbox @bind-Value="RegisterModel.AllowPolicy" class="form-check-input" type="checkbox" name="remember"/>
-                            Tôi đồng ý với
+                            @Localizer.GetString("AllowPolicyLabel1")
                             <NavLink Match="NavLinkMatch.All" href="@RouteConstants.TermCondition">
-                                điều khoản dịch vụ
+                                @Localizer.GetString("AllowPolicyLabel2")
                             </NavLink>
-                            và
+                            &
                             <NavLink Match="NavLinkMatch.All" href="@RouteConstants.PrivacyPolicy">
-                                chính sách bảo mật.
+                                @Localizer.GetString("AllowPolicyLabel3")
                             </NavLink>
 
-                            <ValidationMessage For="() => RegisterModel.AllowPolicy" class="text-danger mt-1"></ValidationMessage>
+                            <ValidationMessage For="() => RegisterModel.AllowPolicy" class="text-danger mt-1"/>
                         </label>
                     </div>
                     <div class="d-grid">
@@ -129,14 +135,17 @@
 
 
             <div class="google-bg text-center">
-                <span>Hoặc đăng ký với</span>
+                <span>
+                    @Localizer.GetString("ExternalTitle")
+                </span>
 
-                <ExternalProvider></ExternalProvider>
+                <ExternalProvider />
 
                 <p class="mb-0">
-                    Đã có tài khoản?
+                    @Localizer.GetString("OldUser")
                     <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Login">
-                        Đăng nhập
+                        @Localizer.GetString("LoginText")
+
                     </NavLink>
                 </p>
             </div>

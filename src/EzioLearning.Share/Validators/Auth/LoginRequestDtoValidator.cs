@@ -21,7 +21,7 @@ public class LoginRequestDtoValidator : AbstractValidator<LoginRequestDto>
 
             }).WithMessage(localizer.GetString("UserNameNotMatchRegex"))
 
-            .MinimumLength(minLength).WithMessage(localizer.GetString("PasswordMinimumLength", minLength))
+            .MinimumLength(minLength).WithMessage(localizer.GetString("UserNameMinimumLength", minLength))
             .MaximumLength(maxLength).WithMessage(localizer.GetString("UserNameMaximumLength", maxLength));
 
 

@@ -7,9 +7,11 @@ using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Share.Dto.Learning.Course;
+using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using CourseCreateApiDto = EzioLearning.Core.Dto.Learning.Course.CourseCreateApiDto;
 
@@ -39,7 +41,26 @@ public class CourseController(
         });
     }
 
-    [HttpGet("Feature/{take:int?}")]
+    [HttpGet("FeaturedInstructor/{take:int?}")]
+    public async Task<IActionResult> GetFeatureInstructors([FromRoute] int take = 12)
+    {
+	    ArgumentOutOfRangeException.ThrowIfNegative(take);
+
+	    var userList = userManager.Users
+		    .OrderByDescending(x => x.Students.Count)
+		    .ThenByDescending(x => x.Courses.Count)
+		    .Take(take);
+	    var data = mapper.ProjectTo<InstructorViewDto>(userList);
+	    return Ok(new ResponseBaseWithList<InstructorViewDto>
+	    {
+		    Status = HttpStatusCode.OK,
+		    Message = localizer.GetString("FeatureInstructorsGetSuccess"),
+		    Data = await data.ToListAsync()
+	    });
+    }
+
+
+	[HttpGet("Feature/{take:int?}")]
     public async Task<IActionResult> GetFeaturedCourses([FromRoute] int take = 12)
     {
         var data = await courseRepository.GetAllAsync();

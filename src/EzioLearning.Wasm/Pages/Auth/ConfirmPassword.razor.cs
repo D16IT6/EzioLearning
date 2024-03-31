@@ -1,10 +1,10 @@
 ﻿using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Wasm.Services;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
@@ -16,6 +16,7 @@ public partial class ConfirmPassword
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IStringLocalizer<ConfirmPassword> Localizer { get; set; } = default!;
 
     [SupplyParameterFromQuery] private string VerifyCode { get; set; } = string.Empty;
 

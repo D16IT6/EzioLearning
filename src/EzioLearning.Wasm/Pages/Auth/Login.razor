@@ -1,9 +1,7 @@
 ﻿@using EzioLearning.Wasm.Components.Auth
-@using EzioLearning.Share.Validators.Auth
 @using EzioLearning.Wasm.Utils.Common
 @attribute [Route(RouteConstants.Login)]
-@* @inject IStringLocalizer<LoginRequestDtoValidator> Localizer
- *@
+
 @layout EmptyLayout
 <div class="row">
 
@@ -16,50 +14,57 @@
             <div class="loginbox">
                 <div class="w-100">
                     <div class="img-logo">
-                        <NavLink href="@RouteConstants.Home" Match="NavLinkMatch.All">
+                        <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">
                             <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
                         </NavLink>
                         <div class="back-home">
-                            <NavLink href="@RouteConstants.Home" Match="NavLinkMatch.All">Quay về trang chủ</NavLink>
+                            <NavLink href="@RouteConstants.Index" Match="NavLinkMatch.All">
+                                @Localizer.GetString("BackHome")
+
+                            </NavLink>
                         </div>
                     </div>
-                    <h1>Đăng nhập bằng tài khoản của bạn</h1>
+                    <h1>@Localizer.GetString("Title")</h1>
                     <EditForm FormName="frmLogin"
                               Enhance="true"
                               Model="LoginRequest"
                               OnValidSubmit="LoginSubmit">
                         <FluentValidationValidator/>
                         <div class="input-block">
-                            <label class="form-control-label">Tài khoản</label>
-                            <InputText @bind-Value="LoginRequest.UserName" class="form-control" placeholder="Tên đăng nhập của bạn"></InputText>
+                            <label class="form-control-label">@Localizer.GetString("UserNameLabel")</label>
+                            <InputText @bind-Value="LoginRequest.UserName" class="form-control" />
 
-                            <ValidationMessage For="() => LoginRequest.UserName" class="text-danger"></ValidationMessage>
+                            <ValidationMessage For="() => LoginRequest.UserName" class="text-danger"/>
                         </div>
                         <div class="input-block">
 
-                            <label class="form-control-label">Mật khẩu</label>
+                            <label class="form-control-label">@Localizer.GetString("PasswordLabel")</label>
                             <div class="pass-group">
-                                <InputText type="password" class="form-control pass-input" placeholder="Mật khẩu của bạn" @bind-Value="LoginRequest.Password"></InputText>
+                                <InputText type="password" class="form-control pass-input" @bind-Value="LoginRequest.Password"/>
 
                                 <span class="feather-eye toggle-password"></span>
                             </div>
-                            <ValidationMessage For="() => LoginRequest.Password" class="text-danger"></ValidationMessage>
+                            <ValidationMessage For="() => LoginRequest.Password" class="text-danger" />
 
                         </div>
 
                         <ForgotPasswordLink/>
                         <div class="d-grid">
-                            <button class="btn btn-primary btn-start" type="submit">Đăng nhập</button>
+                            <button class="btn btn-primary btn-start" type="submit">@Localizer.GetString("ButtonText")</button>
                         </div>
                     </EditForm>
                 </div>
             </div>
             <div class="google-bg text-center">
 
-                <span>Hoặc đăng nhập bằng</span>
+                <span>@Localizer.GetString("ExternalTitle")</span>
                 <ExternalProvider></ExternalProvider>
 
-                <p class="mb-0">Người mới? <a href="@RouteConstants.Register">Tạo tài khoản</a></p>
+                <p class="mb-0">
+                    @Localizer.GetString("NewUser")
+                    <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Register">@Localizer.GetString("SignupText")
+                    </NavLink>
+                </p>
             </div>
         </div>
         <!-- /Login -->

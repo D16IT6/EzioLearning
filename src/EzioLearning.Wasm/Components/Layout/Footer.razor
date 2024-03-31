@@ -1,4 +1,5 @@
-﻿<!-- Footer -->
+﻿@using EzioLearning.Wasm.Utils.Common
+<!-- Footer -->
 <footer class="footer">
 
     <!-- Footer Top -->
@@ -14,7 +15,7 @@
                             <img src="assets/img/logo.svg" alt="logo">
                         </div>
                         <div class="footer-about-content">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut consequat mauris Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut consequat mauris</p>
+                            <p>@Localizer.GetString("Content")</p>
                         </div>
                     </div>
                     <!-- /Footer Widget -->
@@ -25,22 +26,22 @@
 
                     <!-- Footer Widget -->
                     <div class="footer-widget footer-menu">
-                        <h2 class="footer-title">For Instructor</h2>
+                        <h2 class="footer-title">@Localizer.GetString("InstructorTitle")</h2>
                         <ul>
                             <li>
-                                <a href="instructor-profile.html">Profile</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
                             </li>
                             <li>
-                                <a href="login.html">Login</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
                             </li>
                             <li>
-                                <a href="register.html">Register</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
                             </li>
                             <li>
-                                <a href="instructor-list.html">Instructor</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Instructor")</NavLink>
                             </li>
                             <li>
-                                <a href="deposit-instructor-dashboard.html"> Dashboard</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
                             </li>
                         </ul>
                     </div>
@@ -52,22 +53,22 @@
 
                     <!-- Footer Widget -->
                     <div class="footer-widget footer-menu">
-                        <h2 class="footer-title">For Student</h2>
+                        <h2 class="footer-title">@Localizer.GetString("StudentTitle")</h2>
                         <ul>
                             <li>
-                                <a href="student-profile.html">Profile</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
                             </li>
                             <li>
-                                <a href="login.html">Login</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
                             </li>
                             <li>
-                                <a href="register.html">Register</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
                             </li>
                             <li>
-                                <a href="students-list.html">Student</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Student")</NavLink>
                             </li>
                             <li>
-                                <a href="deposit-student-dashboard.html"> Dashboard</a>
+                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
                             </li>
                         </ul>
                     </div>
@@ -79,12 +80,7 @@
 
                     <!-- Footer Widget -->
                     <div class="footer-widget footer-contact">
-                        <h2 class="footer-title">News letter</h2>
-                        <div class="news-letter">
-                            <form>
-                                <input type="text" class="form-control" placeholder="Enter your email address" name="email">
-                            </form>
-                        </div>
+                        <h2 class="footer-title">@Localizer.GetString("Contact")</h2>
                         <div class="footer-contact-info">
                             <div class="footer-address">
                                 <img src="assets/img/icon/icon-20.svg" alt="" class="img-fluid">
@@ -92,11 +88,11 @@
                             </div>
                             <p>
                                 <img src="assets/img/icon/icon-19.svg" alt="" class="img-fluid">
-                                <a href="https://dreamslms.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ea8e988f8b8799868799aa8f928b879a868fc4898587">[email&#160;protected]</a>
+                                <NavLink Match=NavLinkMatch.All href="mailto:vuthemanh1707@gmail.com">vuthemanh1707@gmail.com</NavLink>
                             </p>
                             <p class="mb-0">
                                 <img src="assets/img/icon/icon-21.svg" alt="" class="img-fluid">
-                                +19 123-456-7890
+                                +84 988 355 845
                             </p>
                         </div>
                     </div>
@@ -120,17 +116,17 @@
                         <div class="privacy-policy">
                             <ul>
                                 <li>
-                                    <a href="term-condition.html">Terms</a>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.TermCondition">Terms</NavLink>
                                 </li>
                                 <li>
-                                    <a href="privacy-policy.html">Privacy</a>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.PrivacyPolicy">Privacy</NavLink>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="copyright-text">
-                            <p class="mb-0">&copy; 2023 DreamsLMS. All rights reserved.</p>
+                            <p class="mb-0">&copy; 2023 DreamsLMS</p>
                         </div>
                     </div>
                 </div>

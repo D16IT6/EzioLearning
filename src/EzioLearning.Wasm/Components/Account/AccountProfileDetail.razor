@@ -2,13 +2,12 @@
 @using EzioLearning.Wasm.Utils.Common
 @using Microsoft.Extensions.Localization
 @inherits AccountComponentBase
-@inject IStringLocalizer<AccountInfoDtoValidator> Localizer
 <!-- Profile Details -->
 <div class="settings-widget profile-details">
     <div class="settings-menu p-0">
         <div class="profile-heading">
-            <h3>Thông tin cá nhân</h3>
-            <p>Bạn có toàn quyền quản lý cài đặt tài khoản của riêng mình!</p>
+            <h3>@Localizer.GetString("Title")</h3>
+            <p>@Localizer.GetString("Description")</p>
         </div>
         <div class="course-group mb-0 d-flex">
             <div class="course-group-img d-flex align-items-center">
@@ -23,32 +22,32 @@
                     <InputFile OnChange="OnFileChange"
                                @bind-Value="Avatar"
                                class="pt-2 form-control"
-                               accept="@string.Join(',', FileConstants.AcceptTypes)" placeholder='Chọn ảnh' />
+                               accept="@string.Join(',', FileConstants.AcceptTypes)" placeholder="@Localizer.GetString("InputImagePlaceholder")" />
                 </button>
             </div>
             <div class="profile-share d-flex align-items-center justify-content-center">
-                <button @onclick="UpdateAvatar" class="btn btn-success">Lưu</button>
-                <button @onclick="RemoveAvatar" class="btn btn-danger">Xoá</button>
+                <button @onclick="UpdateAvatar" class="btn btn-success">@Localizer.GetString("UpdateAvatarButton")</button>
+                <button @onclick="RemoveAvatar" class="btn btn-danger">@Localizer.GetString("DeleteAvatarButton")</button>
             </div>
         </div>
         <div class="checkout-form personal-address add-course-info ">
             <div class="personal-info-head">
-                <h4>Thông tin chi tiết</h4>
-                <p>Chỉnh sửa thông tin cá nhân của bạn.</p>
+                <h4>@Localizer.GetString("InfoTitle")</h4>
+                <p>@Localizer.GetString("InfoDescription")</p>
             </div>
             <EditForm Enhance="true" Model="AccountInfo" FormName="frmAccountInfo" action="#" OnValidSubmit="UpdateAccountInfo">
-                <FluentValidationValidator Validator="new AccountInfoDtoValidator(Localizer)" />
+                <FluentValidationValidator />
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Họ</label>
+                            <label>@Localizer.GetString("FirstNameLabel")</label>
                             <InputText @bind-Value="AccountInfo.FirstName" class="form-control" />
                             <ValidationMessage For="() => AccountInfo.FirstName" class="text-danger my-1" />
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Tên</label>
+                            <label>@Localizer.GetString("LastNameLabel")</label>
                             <InputText @bind-Value="AccountInfo.LastName" class="form-control" />
                             <ValidationMessage For="() => AccountInfo.LastName" class="text-danger my-1" />
 
@@ -57,7 +56,7 @@
 
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Số điện thoại</label>
+                            <label>@Localizer.GetString("PhoneNumberLabel")</label>
                             <InputText @bind-Value="AccountInfo.PhoneNumber" class="form-control" />
                             <ValidationMessage For="() => AccountInfo.PhoneNumber" class="text-danger my-1" />
 
@@ -66,7 +65,7 @@
 
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Ngày sinh</label>
+                            <label>@Localizer.GetString("DateOfBirthLabel")</label>
                             @* <InputDate @bind-Value="AccountInfo.DateOfBirth" class="form-control" /> *@
                             <MudDatePicker @bind-Date="AccountInfo.DateOfBirth" class="mt-0" DateFormat="dd/MM/yyyy" id="register-birthday" MaxDate="DateTime.UtcNow.AddYears(-10)" />
                             <ValidationMessage For="() => AccountInfo.DateOfBirth" class="text-danger my-1" />
@@ -76,7 +75,7 @@
 
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Email</label>
+                            <label>@Localizer.GetString("EmailLabel")</label>
                             <InputText @bind-Value="AccountInfo.Email" class="form-control" type="email" readonly />
                             <ValidationMessage For="() => AccountInfo.Email" class="text-danger my-1" />
 
@@ -85,14 +84,14 @@
 
                     <div class="col-lg-6">
                         <div class="input-block">
-                            <label>Tên tài khoản</label>
+                            <label>@Localizer.GetString("UserNameLabel")</label>
                             <InputText @bind-Value="AccountInfo.UserName" class="form-control" readonly />
 
                         </div>
                     </div>
 
                     <div class="update-profile">
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <button type="submit" class="btn btn-primary">@Localizer.GetString("UpdateInfoButton")</button>
                     </div>
                 </div>
             </EditForm>

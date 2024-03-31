@@ -7,7 +7,7 @@ namespace EzioLearning.Domain.Entities.Learning;
 public class CourseCategory : AuditableEntity
 {
     public Guid Id { get; set; }
-    public required string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public string? Image { get; set; }
     public bool IsActive { get; set; }
 

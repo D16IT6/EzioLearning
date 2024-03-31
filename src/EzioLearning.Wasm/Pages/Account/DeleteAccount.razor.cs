@@ -3,6 +3,7 @@ using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 
 
@@ -12,6 +13,7 @@ namespace EzioLearning.Wasm.Pages.Account
     {
         [Inject] private IDialogService DialogService { get; set; } = default!;
         [Inject] private ITokenService TokenService { get; set; } = default!;
+        [Inject] private IStringLocalizer<DeleteAccount> Localizer { get; set; } = default!;
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -25,21 +27,20 @@ namespace EzioLearning.Wasm.Pages.Account
                 {
                     x=>
                         x.ContentHtml,
-                    $"Bạn thực sự muốn xoá tài khoản chứ?<br/>"+
-                    "Nếu muốn khôi phục, bạn có thể liên hệ admin trước 30 ngày!"
+                    Localizer.GetString("ContentHtml")
                 },
                 {
-                    x => x.CancelText,"Huỷ"
+                    x => x.CancelText,Localizer.GetString("CancelText")
                 },
                 {
-                    x=>x.SubmitText ,"Đồng ý"
+                    x=>x.SubmitText ,Localizer.GetString("SubmitText")
                 },
                 {
                     x=>x.SubmitColor, Color.Error
                 }
             };
 
-            var result = await (await DialogService.ShowAsync<SimpleDialog>("Xoá tài khoản", dialogParams)).Result;
+            var result = await (await DialogService.ShowAsync<SimpleDialog>(Localizer.GetString("Title"), dialogParams)).Result;
 
             if (!result.Canceled && (bool)result.Data)
             {

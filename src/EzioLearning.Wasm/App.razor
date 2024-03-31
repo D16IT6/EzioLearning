@@ -1,16 +1,21 @@
-﻿<CascadingAuthenticationState>
+﻿@inject IStringLocalizer<App> Localizer
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(GuestLayout)">
                 <NotAuthorized>
                     <EzioLearning.Wasm.Components.Error.UnAuthorize/>
                 </NotAuthorized>
-                
+                <Authorizing>
+                    <MudSkeleton Width="80%" Height="80%" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle">
+                        @Localizer.GetString("Authorizing")
+                    </MudSkeleton>
+                </Authorizing>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
         </Found>
         <NotFound>
-            <PageTitle>Không tìm thấy!</PageTitle>
+            <PageTitle>@Localizer.GetString("NotFound")</PageTitle>
             <LayoutView Layout="@typeof(EmptyLayout)">
                 <EzioLearning.Wasm.Components.Error.NotFound/>
             </LayoutView>

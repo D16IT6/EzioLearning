@@ -1,6 +1,20 @@
 ﻿@using EzioLearning.Wasm.Utils.Common
 @attribute [Route(RouteConstants.DevLater)]
-@layout AccountLayout
-<h3>Chức năng chưa phát triển</h3>
+@layout EmptyLayout
+@inject IStringLocalizer<DevLater> Localizer
+
+<div class="error-box">
+    <div class="error-logo">
+        <NavLink href="@RouteConstants.Index">
+            <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
+        </NavLink>
+    </div>
+    <div class="error-box-img">
+        <img src="assets/img/error-02.png" alt="" class="img-fluid" >
+    </div>
+    <h3 class="h2 mb-3">@Localizer.GetString("Title")</h3>
+    <p class="h4 font-weight-normal">@Localizer.GetString("Description")</p>
+    <NavLink href="@RouteConstants.Index" class="btn btn-primary">@Localizer.GetString("BackHome")</NavLink>
+</div>
 
 

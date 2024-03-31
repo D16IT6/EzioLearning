@@ -66,23 +66,22 @@
                 }
 
                 <MudNavGroup Title="Cài đặt tài khoản" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="true">
-                    <MudNavLink href="@RouteConstants.Account.Home" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Info">
-                        Thông tin
+                    <MudNavLink href="@RouteConstants.AccountRoute.Home" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Info">
+                        @Localizer.GetString("Info")
                     </MudNavLink>
 
-                    <MudNavLink href="@RouteConstants.Account.Security" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Security">
-                        Bảo mật
+                    <MudNavLink href="@RouteConstants.AccountRoute.Security" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Security">
+                        @Localizer.GetString("Security")
                     </MudNavLink>
 
-                    <MudNavLink href="@RouteConstants.Account.Delete" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.NoAccounts">
-                        Xoá tài khoản
+                    <MudNavLink href="@RouteConstants.AccountRoute.Delete" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.NoAccounts">
+                        @Localizer.GetString("Delete account")
                     </MudNavLink>
 
 
                     <MudNavLink href="@RouteConstants.Logout" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Logout">
-                        Đăng xuất
+                        @Localizer.GetString("Logout")
                     </MudNavLink>
-
 
                 </MudNavGroup>
             </MudNavMenu>

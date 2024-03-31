@@ -32,11 +32,14 @@ namespace EzioLearning.Wasm.Components.Account
                     response.Data!.Avatar = ApiConstants.BaseUrl + response.Data.Avatar + $"?t={Guid.NewGuid()}";
 
                     AccountInfoMinimal = response.Data;
+                    
+                    StateHasChanged();
                 }
+
                 else
                 {
                     SnackBarService.ShowErrorFromResponse(response);
-                    await NavigationService.Navigate(RouteConstants.Home, "Không có quyền truy cập",0,false,Severity.Error);
+                    await NavigationService.Navigate(RouteConstants.Index, response.Message,0,false,Severity.Error);
 
                 }
             }

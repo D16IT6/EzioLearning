@@ -16,6 +16,8 @@ namespace EzioLearning.Api.Services
             ? "https://api-m.sandbox.paypal.com"
                 : "https://api-m.paypal.com";
 
+        public AuthResponse? AuthResponse { get; set; }
+
         public async Task<AuthResponse> Authenticate()
         {
             var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ClientId}:{ClientSecret}"));
@@ -38,37 +40,37 @@ namespace EzioLearning.Api.Services
 
             httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {response!.AccessToken}");
 
-            var responseWebHook = await httpClient.GetAsync("/v1/notifications/webhooks");
+            //var responseWebHook = await httpClient.GetAsync("/v1/notifications/webhooks");
 
-            var webHookStream = await responseWebHook.Content.ReadAsStreamAsync();
+            //var webHookStream = await responseWebHook.Content.ReadAsStreamAsync();
 
-            var webhookResponse = await JsonSerializer.DeserializeAsync<WebhookResponse>(webHookStream);
-            if (webhookResponse!.Webhooks.Any())
-            {
-                var id = webhookResponse.Webhooks.First().Id;
-                var responseWebHookDelete = await httpClient.DeleteAsync($"/v1/notifications/webhooks/{id}");
+            //var webhookResponse = await JsonSerializer.DeserializeAsync<WebhookResponse>(webHookStream);
+            //if (webhookResponse!.Webhooks.Any())
+            //{
+            //    var id = webhookResponse.Webhooks.First().Id;
+            //    var responseWebHookDelete = await httpClient.DeleteAsync($"/v1/notifications/webhooks/{id}");
 
-            }
+            //}
 
-            var webhookCreate = new WebhookCreate()
-            {
-                Url = "https://ce59-222-252-29-229.ngrok-free.app/api/Payment/Paypal/Callback",
-                EventTypes =
-                [
-                    new EventType(){Name="*"},
-                ]
-            };
-            var responseWebHook2 = await httpClient.PostAsJsonAsync("v1/notifications/webhooks", webhookCreate);
-
-
+            //var webhookCreate = new WebhookCreate()
+            //{
+            //    Url = "https://ce59-222-252-29-229.ngrok-free.app/api/Payment/Paypal/Callback",
+            //    EventTypes =
+            //    [
+            //        new EventType(){Name="*"},
+            //    ]
+            //};
+            //var responseWebHook2 = await httpClient.PostAsJsonAsync("v1/notifications/webhooks", webhookCreate);
 
 
+
+            AuthResponse = response;
             return response;
         }
 
         public async Task<CreateOrderResponse> CreateOrder(double price, string currency, string reference)
         {
-            var auth = await Authenticate();
+            AuthResponse ??= await Authenticate();
 
             var request = new CreateOrderRequest
             {
@@ -99,7 +101,7 @@ namespace EzioLearning.Api.Services
                 BaseAddress = new Uri(BaseUrl)
             };
 
-            httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {auth.AccessToken}");
+            httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {AuthResponse.AccessToken}");
 
 
             var httpResponse = await httpClient.PostAsJsonAsync("/v2/checkout/orders", request);

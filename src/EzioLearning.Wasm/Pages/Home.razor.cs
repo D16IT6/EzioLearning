@@ -5,6 +5,7 @@ using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
+using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 
 namespace EzioLearning.Wasm.Pages;
@@ -12,6 +13,10 @@ namespace EzioLearning.Wasm.Pages;
 public partial class Home
 {
     [Inject] private HttpClient HttpClient { get; set; } = default!;
+
+    [Inject] private ICourseCategoryService CourseCategoryService { get; set; } = default!;
+    [Inject] private ICourseService CourseService { get; set; } = default!;
+
 
     private List<CourseCategoryViewDto> CourseCategories { get; set; } = new();
     private int CourseCount { get; set; }
@@ -25,120 +30,26 @@ public partial class Home
     private IAnimation? AnimationType { get; set; }
     private TimeSpan AnimationDuration { get; set; }
 
-
     protected override void OnInitialized()
     {
         AnimationType = Animations.FadeUp;
         AnimationDuration = TimeSpan.FromSeconds(1);
     }
 
-
     protected override async Task OnInitializedAsync()
     {
-        CourseCategories = await GetCourseCategories();
+        CourseCategories = await CourseCategoryService.GetCourseCategories();
 
-        CourseCount = await GetCourseCount();
+        CourseCount = await CourseService.GetCourseCount();
 
-        TopCourseCategories = await GetTopCourseCategories(12);
+        TopCourseCategories = await CourseService.GetTopCourseCategories(12);
 
-        FeatureCourses = await GetFeatureCourses();
+        FeatureCourses = await CourseService.GetFeatureCourses();
 
-        TrendingCourses = await GetFeatureCourses();
+        TrendingCourses = await CourseService.GetFeatureCourses();
 
-        FeatureInstructors = await GetFeatureInstructors();
+        FeatureInstructors = await CourseService.GetFeatureInstructors();
     }
 
-    private async Task<List<InstructorViewDto>> GetFeatureInstructors(int take = 6)
-    {
-        var data = new List<InstructorViewDto>();
-        var response = await HttpClient.GetFromJsonAsync<ResponseBaseWithList<InstructorViewDto>>(
-            $"api/User/FeaturedInstructor/{take}", JsonCommonOptions.DefaultSerializer);
-        if (response is { IsSuccess: true } && response.Data!.Any())
-        {
-            data = response.Data!;
 
-            foreach (var item in data) item.Avatar = ApiConstants.BaseUrl + item.Avatar;
-        }
-
-        return data;
-    }
-
-    private async Task<List<CourseViewDto>> GetFeatureCourses(int take = 6)
-    {
-        var data = new List<CourseViewDto>();
-        var response = await HttpClient.GetFromJsonAsync<ResponseBaseWithList<CourseViewDto>>(
-            $"api/Course/Feature/{take}", JsonCommonOptions.DefaultSerializer);
-        if (response is { IsSuccess: true } && response.Data!.Any())
-        {
-            data = response.Data!;
-
-            foreach (var item in data)
-            {
-                item.TeacherAvatar = ApiConstants.BaseUrl + item.TeacherAvatar;
-                item.Poster = ApiConstants.BaseUrl + item.Poster;
-            }
-        }
-
-        return data;
-    }
-
-    private async Task<List<TopCourseCategoryDto>> GetTopCourseCategories(int count)
-    {
-        var data = new List<TopCourseCategoryDto>();
-        var response =
-            await HttpClient.GetFromJsonAsync<ResponseBaseWithList<TopCourseCategoryDto>>(
-                $"api/CourseCategory/Top/{count}", JsonCommonOptions.DefaultSerializer);
-        if (response is { IsSuccess: true } && response.Data!.Any())
-        {
-            data = response.Data!;
-
-            foreach (var item in data) item.Image = ApiConstants.BaseUrl + item.Image;
-        }
-
-        return data;
-    }
-
-    private async Task<int> GetCourseCount()
-    {
-        var response =
-            await HttpClient.GetFromJsonAsync<ResponseBaseWithData<int>>("api/Course/Count",
-                JsonCommonOptions.DefaultSerializer);
-
-        await HttpClient.GetFromJsonAsync<ResponseBaseWithData<int>>("api/Course/Count",
-            JsonCommonOptions.DefaultSerializer);
-        var count = response!.Data;
-
-
-        return GetLargestPart(count);
-    }
-
-    public static int GetLargestPart(int number)
-    {
-        var numDigits = (int)Math.Floor(Math.Log10(number)) + 1;
-        var largestPart = 0;
-
-        for (var i = numDigits - 1; i >= 0; i--)
-        {
-            var digit = number % 10;
-            largestPart += digit * (int)Math.Pow(10, i);
-            number /= 10;
-        }
-
-        return largestPart;
-    }
-
-    private async Task<List<CourseCategoryViewDto>> GetCourseCategories()
-    {
-        var data = new List<CourseCategoryViewDto>();
-        var response =
-            await HttpClient.GetFromJsonAsync<ResponseBaseWithList<CourseCategoryViewDto>>("api/CourseCategory",
-                JsonCommonOptions.DefaultSerializer);
-
-        if (response is { IsSuccess: true } && response.Data!.Any())
-            data = response.Data!
-                //.Where(x => x.ParentId == Guid.Empty)
-                .ToList();
-
-        return data;
-    }
 }

@@ -1,18 +1,19 @@
-﻿<section class="section trend-course">
+﻿@using EzioLearning.Wasm.Utils.Common
+<section class="section trend-course">
     <div class="container">
 
         <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
             <div class="section-sub-head">
-                <span>What’s New</span>
-                <h2>TRENDING COURSES</h2>
+                <span>@Localizer.GetString("Subtitle")</span>
+                <h2>@Localizer.GetString("Title")</h2>
             </div>
             <div class="all-btn all-category d-flex align-items-center">
-                <a href="course-list.html" class="btn btn-primary">All Courses</a>
+                <NavLink href="@RouteConstants.DevLater" class="btn btn-primary">@Localizer.GetString("More")</NavLink>
             </div>
         </Animate>
 
         <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-text">
-            <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
+            <p class="mb-0">@Localizer.GetString("Subtitle")</p>
         </Animate>
 
 
@@ -32,9 +33,9 @@
         <div class="feature-instructors">
             <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="section-header">
                 <div class="section-sub-head feature-head text-center">
-                    <h2>Featured Instructor</h2>
+                    <h2>@Localizer.GetString("FeatureInstructorsTitle")</h2>
                     <div class="section-text">
-                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget aenean accumsan bibendum gravida maecenas augue elementum et neque. Suspendisse imperdiet.</p>
+                        <p class="mb-0">@Localizer.GetString("FeatureInstructorsDescription")</p>
                     </div>
                 </div>
             </Animate>
@@ -54,7 +55,7 @@
                             <p>Web Developer</p>
                             <div class="student-count d-flex justify-content-center">
                                 <i class="fa-solid fa-user-group"></i>
-                                <span>@instructor.StudentCount Students</span>
+                                <span>@instructor.StudentCount @Localizer.GetString("StudentCount")</span>
                             </div>
                         </div>
                     </div>

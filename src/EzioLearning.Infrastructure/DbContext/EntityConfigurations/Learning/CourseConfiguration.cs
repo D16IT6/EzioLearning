@@ -9,8 +9,6 @@ internal class CourseConfiguration : IEntityTypeConfiguration<Course>
 {
     public void Configure(EntityTypeBuilder<Course> builder)
     {
-        builder.Property(x => x.Name).HasMaxLength(50).IsUnicode();
-
         builder
             .HasMany(x => x.Categories)
             .WithMany(x => x.Courses)

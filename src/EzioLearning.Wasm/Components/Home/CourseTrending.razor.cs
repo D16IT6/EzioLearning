@@ -2,6 +2,7 @@
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.User;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 
 namespace EzioLearning.Wasm.Components.Home;
@@ -16,6 +17,7 @@ public partial class CourseTrending
     [CascadingParameter] private TimeSpan AnimationDuration { get; set; }
 
     [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
+    [Inject] private IStringLocalizer<CourseTrending> Localizer { get; set; } = default!;
     private IJSObjectReference JsObjectReference { get; set; } = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

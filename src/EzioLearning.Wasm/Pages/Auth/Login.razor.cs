@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
@@ -16,6 +17,7 @@ public partial class Login
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ITokenService TokenService { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+    [Inject] private IStringLocalizer<Login> Localizer { get; set; } = default!;
 
     public async Task LoginSubmit()
     {
@@ -32,7 +34,7 @@ public partial class Login
 
             await Task.Delay(2000);
 
-            NavigationManager.NavigateTo(RouteConstants.Home, true);
+            NavigationManager.NavigateTo(RouteConstants.Index, true);
         }
         else
         {

@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 
 namespace EzioLearning.Wasm.Pages.Account
@@ -19,14 +20,15 @@ namespace EzioLearning.Wasm.Pages.Account
         public ChangeEmailConfirmDto ChangeEmailConfirmDto { get; set; } = new();
         [Inject] private HttpClient HttpClient { get; set; } = default!;
         [Inject] private ITokenService TokenService { get; set; } = default!;
-
+        [Inject] private IStringLocalizer<ChangeEmailConfirm> Localizer { get; set; } = default!;
         private bool Loading { get; set; } = true;
-        private string LoadingText { get; set; } = "Đang xử lý...";
+        private string LoadingText { get; set; } = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
+            LoadingText = Localizer.GetString("LoadingText");
             ChangeEmailConfirmDto = new ChangeEmailConfirmDto()
             {
                 Email = Email,
@@ -36,7 +38,7 @@ namespace EzioLearning.Wasm.Pages.Account
 
             await Task.Delay(1000);
 
-            var response = await HttpClient.PutAsJsonAsync("/api/Account/ChangeEmailConfirm", ChangeEmailConfirmDto);
+            var response = await HttpClient.PutAsJsonAsync("/api/AccountRoute/ChangeEmailConfirm", ChangeEmailConfirmDto);
             await using var stream = await response.Content.ReadAsStreamAsync();
             var responseData =
                 await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
@@ -44,7 +46,7 @@ namespace EzioLearning.Wasm.Pages.Account
             Loading = false;
             if (responseData!.IsSuccess)
             {
-                LoadingText = "Xử lý hoàn tất, chuẩn bị đăng nhập lại...";
+                LoadingText = Localizer.GetString("LoadingTextSuccess");
                 StateHasChanged();
                 await TokenService.DeleteToken();
                 await NavigationService.Navigate(RouteConstants.Login, responseData.Message, 1, forceLoad: true,
@@ -53,7 +55,7 @@ namespace EzioLearning.Wasm.Pages.Account
             else
             {
                 SnackBarService.ShowErrorFromResponse(responseData);
-                LoadingText = "Xử lý không thành công";
+                LoadingText = Localizer.GetString("LoadingTextFail");
                 StateHasChanged();
 
             }

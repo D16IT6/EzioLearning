@@ -41,7 +41,7 @@ public partial class ExternalLogin
             await LocalStorageService.SetItemAsStringAsync(LocalStorageConstants.AccessToken, AccessToken);
             await LocalStorageService.SetItemAsStringAsync(LocalStorageConstants.RefreshToken, RefreshToken);
 
-            NavigationManager.NavigateTo(RouteConstants.Home, true);
+            NavigationManager.NavigateTo(RouteConstants.Index, true);
         }
 
         if (BackToLogin) NavigationManager.NavigateTo(RouteConstants.Login);
