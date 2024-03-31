@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
@@ -27,6 +28,7 @@ public partial class Register
     [SupplyParameterFromForm] public RegisterRequestClientDto RegisterModel { get; set; } = new();
 
     [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
+    [Inject] private IStringLocalizer<Register> Localizer { get; set; } = default!;
     private IJSObjectReference JsObjectReference { get; set; } = default!;
 
 
@@ -39,7 +41,7 @@ public partial class Register
     [Inject] private ITokenService TokenService { get; set; } = default!;
 
     private bool DisableSubmitButton { get; set; }
-    private string SubmitButtonText { get; set; } = "Đăng ký";
+    private string SubmitButtonText { get; set; } = string.Empty;
 
     private IBrowserFile? File { get; set; }
 
@@ -55,6 +57,8 @@ public partial class Register
             $"/{nameof(Pages)}/{nameof(Auth)}/{nameof(Register)}.razor.js");
 
         await JsObjectReference.InvokeVoidAsync("hideLabelInputDateMargin");
+        SubmitButtonText = Localizer.GetString("ButtonText");
+        StateHasChanged();
     }
 
     protected override void OnInitialized()
@@ -71,12 +75,12 @@ public partial class Register
         if (!string.IsNullOrEmpty(Email))
         {
             DisabledEmail = true;
-            SnackBar.Add("Do bạn đăng nhập từ bên thứ ba nên email không thể sửa đổi", Severity.Warning,
+            SnackBar.Add(Localizer.GetString("ExternalLoginEmailMessage"), Severity.Warning,
                 option => { option.ActionColor = Color.Warning; });
         }
 
         if (!string.IsNullOrEmpty(ProviderName))
-            SnackBar.Add($"Bạn đang sử dụng {ProviderName} để xác thực, hãy hoàn tất mẫu đăng ký nhé!", Severity.Info,
+            SnackBar.Add(Localizer.GetString("ExternalLoginProviderMessage",ProviderName), Severity.Info,
                 option => { option.ActionColor = Color.Info; });
     }
 
@@ -101,7 +105,7 @@ public partial class Register
         }
 
 
-        SubmitButtonText = "Đang xử lý...";
+        SubmitButtonText = Localizer.GetString("ButtonTextProcessing");
         DisableSubmitButton = true;
         var data = await AuthService.Register(RegisterModel, File);
 
@@ -110,7 +114,7 @@ public partial class Register
             case HttpStatusCode.BadRequest:
 
                 DisableSubmitButton = false;
-                SubmitButtonText = "Đăng ký";
+                SubmitButtonText = Localizer.GetString("ButtonText");
 
                 StateHasChanged();
 
@@ -121,11 +125,11 @@ public partial class Register
 
             case HttpStatusCode.OK:
 
-                SubmitButtonText = "Đăng ký thành công!";
+                SubmitButtonText = Localizer.GetString("ButtonTextSuccess"); ;
                 StateHasChanged();
 
                 await TokenService.SaveFromResponse(data);
-                SnackBar.Add("Đăng ký tài khoản thành công!", Severity.Success, option =>
+                SnackBar.Add(data.Message, Severity.Success, option =>
                 {
                     option.ActionColor = Color.Success;
                     option.CloseAfterNavigation = true;

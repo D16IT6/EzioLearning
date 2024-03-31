@@ -1,4 +1,5 @@
-﻿<section class="section share-knowledge">
+﻿@using EzioLearning.Wasm.Utils.Common
+<section class="section share-knowledge">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -9,14 +10,14 @@
 
             <div class="col-md-6 d-flex align-items-center">
                 <Animate Animation="@AnimationType" Duration="@AnimationDuration" class="join-mentor">
-                    <h2>Want to share your knowledge? Join us a Mentor</h2>
-                    <p>High-definition video is video of higher resolution and quality than standard-definition. While there is no standardized meaning for high-definition, generally any video.</p>
+                    <h2>@Localizer.GetString("Title")</h2>
+                    <p>@Localizer.GetString("Description")</p>
                     <ul class="course-list">
-                        <li><i class="fa-solid fa-circle-check"></i>Best Courses</li>
-                        <li><i class="fa-solid fa-circle-check"></i>Top rated Instructors</li>
+                        <li><i class="fa-solid fa-circle-check"></i>@Localizer.GetString("Feature1")</li>
+                        <li><i class="fa-solid fa-circle-check"></i>@Localizer.GetString("Feature2")</li>
                     </ul>
                     <div class="all-btn all-category d-flex align-items-center">
-                        <a href="instructor-list.html" class="btn btn-primary">Read More</a>
+                        <NavLink href="@RouteConstants.DevLater" class="btn btn-primary">@Localizer.GetString("More")</NavLink>
                     </div>
                 </Animate>
 

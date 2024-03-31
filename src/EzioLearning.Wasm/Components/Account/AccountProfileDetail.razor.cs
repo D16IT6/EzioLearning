@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 
 
 namespace EzioLearning.Wasm.Components.Account
@@ -14,6 +15,7 @@ namespace EzioLearning.Wasm.Components.Account
     {
         [SupplyParameterFromForm] private AccountInfoDto AccountInfo { get; set; } = new();
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] private IStringLocalizer<AccountProfileDetail> Localizer { get; set; } = default!;
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
 
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
@@ -28,22 +30,14 @@ namespace EzioLearning.Wasm.Components.Account
             await base.OnInitializedAsync();
             await LoadJs();
 
-            var accountDto = await AccountService.GetInfo();
-            switch (accountDto.Status)
+            var accountInfoResponse = await AccountService.GetInfo();
+            if (accountInfoResponse.Status == HttpStatusCode.OK)
             {
-                case HttpStatusCode.BadRequest:
-                    SnackBarService.ShowErrorFromResponse(accountDto);
-                    await NavigateToHome();
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    await NavigateToHome("Bạn chưa xác thực");
-                    break;
-                case HttpStatusCode.Forbidden:
-                    await NavigateToHome("Bạn không có quyền truy cập chức năng này");
-                    break;
-                case HttpStatusCode.OK:
-                    AccountInfo = accountDto.Data!;
-                    break;
+                AccountInfo = accountInfoResponse.Data!;
+            }
+            else
+            {
+                await NavigateToHome(accountInfoResponse.Message);
             }
 
         }
@@ -65,7 +59,7 @@ namespace EzioLearning.Wasm.Components.Account
 
             if (response!.Status == HttpStatusCode.OK)
             {
-                Snackbar.Add("Cập nhật thông tin thành công", Severity.Success);
+                Snackbar.Add(response.Message, Severity.Success);
                 await JsObjectReference.InvokeVoidAsync("updateFullName", AccountInfo.FullName);
                 AccountInfo = response.Data!;
             }
@@ -78,7 +72,7 @@ namespace EzioLearning.Wasm.Components.Account
         {
             if (Avatar == null)
             {
-                SnackBar.Add("Cần chọn ảnh", Severity.Warning);
+                SnackBar.Add(Localizer.GetString("NeedAvatar"), Severity.Warning);
                 return;
             }
 
@@ -105,7 +99,7 @@ namespace EzioLearning.Wasm.Components.Account
             Avatar = null;
             if (response!.Status == HttpStatusCode.OK)
             {
-                Snackbar.Add("Cập nhật ảnh đại diện thành công", Severity.Success);
+                Snackbar.Add(response.Message, Severity.Success);
                 AccountInfo = response.Data!;
                 await JsObjectReference.InvokeVoidAsync("updateAvatar", ApiConstants.BaseUrl + AccountInfo.Avatar + $"?t={Guid.NewGuid()}");
                 StateHasChanged();

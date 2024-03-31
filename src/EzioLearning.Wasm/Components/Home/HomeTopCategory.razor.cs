@@ -1,6 +1,7 @@
 ﻿using BlazorAnimate;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 
 namespace EzioLearning.Wasm.Components.Home;
@@ -16,6 +17,7 @@ public partial class HomeTopCategory
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     [Inject] private IJSRuntime JsRunTime { get; set; } = default!;
+    [Inject] private IStringLocalizer<HomeTopCategory> Localizer { get; set; } = default!;
     private IJSObjectReference JsObjectReference { get; set; } = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

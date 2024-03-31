@@ -1,6 +1,7 @@
 ﻿using BlazorAnimate;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Components.Home;
 
@@ -14,8 +15,5 @@ public partial class HomeBanner
 
     [CascadingParameter] private TimeSpan AnimationDuration { get; set; }
 
-    protected override Task OnInitializedAsync()
-    {
-        return base.OnInitializedAsync();
-    }
+    [Inject] private IStringLocalizer<HomeBanner> Localizer { get; set; } = default!;
 }

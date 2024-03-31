@@ -1,4 +1,5 @@
 ﻿@using EzioLearning.Wasm.Utils.Common
+@inject IStringLocalizer<UnAuthorize> Localizer
 <div class="error-box">
     <div class="error-logo">
         <a href="index.html">
@@ -8,7 +9,7 @@
     <div class="error-box-img">
         <img src="assets/img/error-01.png" alt="" class="img-fluid">
     </div>
-    <h3 class="h2 mb-3">Ôi không!!!</h3>
-    <p class="h4 font-weight-normal">Bạn không có quyền truy cập trang này rồi!</p>
-    <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Home" class="btn btn-primary">Về trang chủ</NavLink>
+    <h3 class="h2 mb-3">@Localizer.GetString("Title")</h3>
+    <p class="h4 font-weight-normal">@Localizer.GetString("Description")</p>
+    <NavLink Match="NavLinkMatch.All" href="@RouteConstants.Home" class="btn btn-primary">@Localizer.GetString("GoHome")</NavLink>
 </div>

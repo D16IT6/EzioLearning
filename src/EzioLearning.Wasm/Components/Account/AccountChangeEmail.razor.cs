@@ -6,6 +6,7 @@ using System.Text.Json;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 
 
@@ -13,6 +14,7 @@ namespace EzioLearning.Wasm.Components.Account
 {
     public partial class AccountChangeEmail : AccountComponentBase
     {
+        [Inject] private IStringLocalizer<AccountChangeEmail> Localizer { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject] private ISnackbar SnackBar { get; set; } = default!;
@@ -38,22 +40,27 @@ namespace EzioLearning.Wasm.Components.Account
                 {
                     x=>
                         x.ContentHtml,
-                    $"Bạn muốn đổi email từ <b>{AccountInfoChangeEmail.CurrentEmail}</b> " +
-                    $"sang <b>{AccountInfoChangeEmail.NewEmail}</b> chứ?<br/>" +
-                    $"Bạn cần xác thực trong email <b>{AccountInfoChangeEmail.CurrentEmail}</b>!"
+                    Localizer.GetString(
+                        "MessageBoxContent", 
+                        AccountInfoChangeEmail.CurrentEmail,
+                        AccountInfoChangeEmail.NewEmail)
+
                 },
                 {
-                    x => x.CancelText,"Huỷ"
+                    x => x.CancelText,Localizer.GetString("MessageBoxCancelText")
                 },
                 {
-                    x=>x.SubmitText ,"Đồng ý"
+                    x=>x.SubmitText ,Localizer.GetString("MessageBoxSubmitText")
                 },
                 {
                     x=>x.SubmitColor, Color.Success
                 }
             };
 
-            var result = (await DialogService.ShowAsync<SimpleDialog>("Xác nhận đổi email", dialogParams));
+            var result = (await DialogService.ShowAsync<SimpleDialog>(
+                Localizer.GetString("MessageBoxTitle"), 
+                dialogParams)
+                );
 
             var x = await result.Result;
             if (!x.Canceled && (bool)x.Data)

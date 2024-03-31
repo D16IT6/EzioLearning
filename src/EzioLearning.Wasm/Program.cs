@@ -1,3 +1,4 @@
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,8 +13,18 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
-        await builder.Services.ConfigureServices(builder.Configuration);
+        ApiConstants.BaseUrl =
+            builder.Configuration[nameof(ApiConstants.BaseUrl)]
+            ??
+            throw new KeyNotFoundException("Cannot found baseurl");
 
-        await builder.Build().RunAsync();
+        await builder.Services.ConfigureServices(builder.Configuration);
+     
+
+        var host = builder.Build();
+
+        await host.LoadCurrentCulture();
+      
+        await host.RunAsync();
     }
 }

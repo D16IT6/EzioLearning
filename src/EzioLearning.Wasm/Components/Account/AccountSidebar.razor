@@ -67,22 +67,21 @@
 
                 <MudNavGroup Title="Cài đặt tài khoản" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="true">
                     <MudNavLink href="@RouteConstants.Account.Home" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Info">
-                        Thông tin
+                        @Localizer.GetString("Info")
                     </MudNavLink>
 
                     <MudNavLink href="@RouteConstants.Account.Security" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Security">
-                        Bảo mật
+                        @Localizer.GetString("Security")
                     </MudNavLink>
 
                     <MudNavLink href="@RouteConstants.Account.Delete" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.NoAccounts">
-                        Xoá tài khoản
+                        @Localizer.GetString("Delete account")
                     </MudNavLink>
 
 
                     <MudNavLink href="@RouteConstants.Logout" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Logout">
-                        Đăng xuất
+                        @Localizer.GetString("Logout")
                     </MudNavLink>
-
 
                 </MudNavGroup>
             </MudNavMenu>

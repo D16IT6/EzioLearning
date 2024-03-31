@@ -2,8 +2,8 @@
 @inherits AccountComponentBase
 <div class="checkout-form personal-address border-line">
     <div class="personal-info-head">
-        <h4>Địa chỉ email</h4>
-        <p>Email hiện tại của bạn: @AccountInfoMinimal.Email</p>
+        <h4>@Localizer.GetString("Title")</h4>
+        <p>@Localizer.GetString("CurrentEmail",AccountInfoMinimal.Email!)</p>
     </div>
     <EditForm Enhance="true" FormName="frmUpdateEmail" Model="AccountInfoChangeEmail" OnValidSubmit="OnSubmitChangeEmail">
         <FluentValidationValidator />
@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="col-lg-6">
                     <div class="input-block">
-                        <label class="form-label">Địa chỉ email mới</label>
+                        <label class="form-label">@Localizer.GetString("NewEmail")</label>
                         <InputText @bind-Value="AccountInfoChangeEmail.NewEmail" type="text" class="form-control" placeholder="Enter your New email address" />
                         <ValidationMessage For="() => AccountInfoChangeEmail.NewEmail" class="text-danger" />
                     </div>
@@ -23,12 +23,12 @@
                         {
                             <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
                         <Text>
-                            @(new MarkupString(@"\t Đang xử lý...")) 
+                            @(new MarkupString(@$"\t {Localizer.GetString("ProcessingText")}")) 
                         </Text>
                         }
                         else
                         {
-                            <Text>Cập nhật</text>
+                            <Text>@Localizer.GetString("UpdateText")</text>
                         }
                     </MudButton>
                 </div>

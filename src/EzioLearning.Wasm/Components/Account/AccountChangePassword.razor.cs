@@ -2,6 +2,7 @@
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using MudBlazor;
 
@@ -10,6 +11,8 @@ namespace EzioLearning.Wasm.Components.Account
     public partial class AccountChangePassword : AccountComponentBase
     {
         [SupplyParameterFromForm] public ChangePasswordDto ChangePassword { get; set; } = new();
+
+        [Inject] private IStringLocalizer<AccountChangePassword> Localizer { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         private bool DisabledButton { get; set; } = false;
 

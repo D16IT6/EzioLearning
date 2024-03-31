@@ -26,6 +26,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using Net.payOS;
 
 namespace EzioLearning.Api;
 
@@ -257,7 +258,18 @@ internal static class Startup
         var paymentSettings = new PaymentSettings();
         configuration.Bind(nameof(PaymentSettings), paymentSettings);
 
-        services.AddSingleton(_ => new PaypalClient(paymentSettings.Paypal));
+        services.AddSingleton(_ =>
+        {
+            var paypal = new PaypalClient(paymentSettings.Paypal);
+            return paypal;
+        });
+
+        services.AddSingleton(_ =>
+        {
+            var payos = paymentSettings.Payos;
+
+            return new PayOS(payos.ClientId, payos.ApiKey, payos.ChecksumKey);
+        });
 
     }
 
@@ -309,11 +321,13 @@ internal static class Startup
     internal static void Configure(this WebApplication app)
     {
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        //if (app.Environment.IsDevelopment())
+        //{
+        //    app.UseSwagger();
+        //    app.UseSwaggerUI();
+        //}
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseCors("CorsPolicy");
 
