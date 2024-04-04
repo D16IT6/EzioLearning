@@ -38,7 +38,7 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
-        CourseCategories = await CourseCategoryService.GetCourseCategories();
+        CourseCategories = (await CourseCategoryService.GetCourseCategories()).Where(x=>x.ParentId == null).ToList();
 
         CourseCount = await CourseService.GetCourseCount();
 

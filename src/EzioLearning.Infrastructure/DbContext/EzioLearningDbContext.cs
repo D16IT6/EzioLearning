@@ -2,6 +2,7 @@
 using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Domain.Entities.System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,13 +12,15 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
 {
     #region Tables
 
-    public DbSet<Course> Courses { get; set; }
-    public DbSet<CourseCategory> CourseCategories { get; set; }
-    public DbSet<CourseRating> CourseRatings { get; set; }
-    public DbSet<CourseLesson> CourseLessons { get; set; }
-    public DbSet<LessonComment> LessonComments { get; set; }
-    public DbSet<Student> Students { get; set; }
-    public DbSet<AppPermission> Permissions { get; set; }
+    public DbSet<Course> Courses { get; set; } = default!;
+    public DbSet<CourseCategory> CourseCategories { get; set; } = default!;
+    public DbSet<CourseRating> CourseRatings { get; set; } = default!;
+    public DbSet<CourseLesson> CourseLessons { get; set; } = default!;
+    public DbSet<LessonComment> LessonComments { get; set; } = default!;
+    public DbSet<Student> Students { get; set; } = default!;
+    public DbSet<AppPermission> Permissions { get; set; } = default!;
+    public DbSet<Culture> Cultures { get; set; } = default!;
+
 
     #endregion
 

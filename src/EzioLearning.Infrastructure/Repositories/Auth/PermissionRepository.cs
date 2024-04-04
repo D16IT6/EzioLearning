@@ -1,9 +1,9 @@
-﻿using EzioLearning.Core.Repositories;
+﻿using EzioLearning.Core.Repositories.Auth;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.SeedWorks;
 
-namespace EzioLearning.Infrastructure.Repositories
+namespace EzioLearning.Infrastructure.Repositories.Auth
 {
     public class PermissionRepository(EzioLearningDbContext context) :
         RepositoryBase<AppPermission, Guid>(context), IPermissionRepository

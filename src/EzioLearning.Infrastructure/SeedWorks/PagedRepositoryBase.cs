@@ -11,9 +11,20 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
     : RepositoryBase<T, TKey>(context), IPagedRepository<T, TKey>
     where T : class
 {
-    public async Task<PageResult<TDto>> GetPage<TDto>(Expression<Func<T, bool>>? expression, int pageNumber = 1,
-        int pageSize = 10) where TDto : class
+    public async Task<PageResult<TDto>> GetPage<TDto>(
+        Expression<Func<T, bool>>? expression, 
+        string[]? includes = null, 
+        int pageNumber = 1,
+        int pageSize = 10
+        ) where TDto : class
     {
+        if (includes != null && includes.Any())
+        {
+            foreach (var include in includes)
+            {
+                DbSet.Include(include);
+            }
+        }
         var query = DbSet.AsQueryable();
         if (expression != null) query = query.Where(expression);
 
@@ -27,8 +38,18 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
         };
     }
 
-    public async Task<IEnumerable<TDto>> GetAllWithDto<TDto>(Expression<Func<T, bool>>? expression = default)
+    public async Task<IEnumerable<TDto>> GetAllWithDto<TDto>(
+        Expression<Func<T, bool>>? expression = default, 
+        string[]? includes = null
+        ) where TDto : class
     {
+        if (includes != null && includes.Any())
+        {
+            foreach (var include in includes)
+            {
+                DbSet.Include(include);
+            }
+        }
         var query = DbSet.AsQueryable();
         if (expression != null) query = query.Where(expression);
 

@@ -4,7 +4,7 @@ using EzioLearning.Domain.Entities.Identity;
 
 namespace EzioLearning.Domain.Entities.Learning;
 
-[Table("Students", Schema = "Learning")]
+[Table(nameof(Student) + "s", Schema = SchemaConstants.Learning)]
 public class Student : AuditableTimeOnlyEntity
 {
     public Guid Id { get; set; }

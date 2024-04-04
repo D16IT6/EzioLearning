@@ -13,7 +13,7 @@ namespace EzioLearning.Wasm.Pages.Course
 
 		[Inject] private ICourseCategoryService CourseCategoryService { get; set; } = default!;
         private ICollection<CourseCategoryViewDto> CourseCategories { get; set; } = new List<CourseCategoryViewDto>();
-        private IEnumerable<CourseCategoryViewDto> SelectedCourseCategories { get; set; }
+        private IEnumerable<CourseCategoryViewDto> SelectedCourseCategories { get; set; } = [];
         private CourseCategoryViewDto SelectedCourseCategory { get; set; } = new();
 
         private RenderFragment? CourseCategoriesRenderFragment { get; set; }

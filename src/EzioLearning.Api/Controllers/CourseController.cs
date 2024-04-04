@@ -3,6 +3,7 @@ using AutoMapper;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Repositories;
+using EzioLearning.Core.Repositories.Learning;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
@@ -139,7 +140,13 @@ public class CourseController(
         var result = new List<CourseCategory>();
         foreach (var courseCategoryId in courseCreateDto.CourseCategoryIds)
         {
-            var insertItem = await courseCategoryRepository.GetByIdAsync(courseCategoryId);
+            var insertItem =
+                (
+                    await courseCategoryRepository
+                        .Find(x=> x.Id == courseCategoryId)
+                )
+                .FirstOrDefault();
+
             if (insertItem != null)
                 result.Add(insertItem);
         }

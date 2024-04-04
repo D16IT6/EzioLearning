@@ -11,19 +11,32 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
 
     protected readonly DbSet<T> DbSet = context.Set<T>();
 
-    public virtual async Task<T?> GetByIdAsync(TKey key)
+    public virtual async Task<IEnumerable<T>> GetAllAsync(string[]? includes = null)
     {
-        return await DbSet.FindAsync(key);
+        var query = DbSet.AsQueryable();
+
+        if (includes != null && includes.Any())
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+        return await query.AsNoTracking().ToListAsync();
     }
 
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression, string[]? includes = null)
     {
-        return await DbSet.AsNoTracking().ToListAsync();
-    }
+        var query = DbSet.AsQueryable();
 
-    public virtual IEnumerable<T> Find(Expression<Func<T, bool>> expression)
-    {
-        return DbSet.Where(expression);
+        if (includes != null && includes.Any())
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+        return await query.Where(expression).ToListAsync();
     }
 
     public virtual void Add(T entity)

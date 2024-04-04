@@ -117,22 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CourseCategoryCreateFail" xml:space="preserve">
-    <value>Không tạo được danh mục khoá học</value>
+  <data name="CourseCategoryNotFound" xml:space="preserve">
+    <value>Không tìm thấy danh mục khoá học</value>
   </data>
-  <data name="CourseCategoryCreateSuccess" xml:space="preserve">
-    <value>Tạo mới danh mục khoá học thành công</value>
+  <data name="CultureNotFound" xml:space="preserve">
+    <value>Ngôn ngữ không hợp lệ</value>
   </data>
-  <data name="CourseCategoryGetSuccess" xml:space="preserve">
-    <value>Lấy danh mục khoá học thành công</value>
-  </data>
-  <data name="CourseCategoryTopGetSuccess" xml:space="preserve">
-    <value>Lấy danh mục khoá học nổi bật thành công</value>
-  </data>
-  <data name="ImageExtensionNotAllow" xml:space="preserve">
-    <value>Định dạng ảnh đầu vào không hợp lệ, vui lòng chọn định dạng khác</value>
-  </data>
-  <data name="NotFoundCourseCategory" xml:space="preserve">
-    <value>Không tìm được danh mục khoá học</value>
+  <data name="ExistedCultureInCourseCategory" xml:space="preserve">
+    <value>Danh mục khoá học này đã được dịch</value>
   </data>
 </root>

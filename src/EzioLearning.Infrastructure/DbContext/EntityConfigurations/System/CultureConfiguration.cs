@@ -11,8 +11,7 @@ namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations.System
             builder.ToTable($"{nameof(Culture)}s", nameof(System));
 
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).HasMaxLength(4).IsUnicode(false);
-            builder.Property(x => x.Name).HasMaxLength(50).IsUnicode(false);
+            builder.Property(x => x.Id).HasMaxLength(5).IsUnicode(false);
         }
     }
 }

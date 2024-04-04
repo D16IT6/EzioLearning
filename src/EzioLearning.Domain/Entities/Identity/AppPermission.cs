@@ -1,9 +1,10 @@
 ﻿
 using System.ComponentModel.DataAnnotations.Schema;
+using EzioLearning.Domain.Common;
 
 namespace EzioLearning.Domain.Entities.Identity
 {
-    [Table(nameof(AppPermission) + "s", Schema = "Auth")]
+    [Table(nameof(AppPermission) + "s", Schema = SchemaConstants.Auth)]
     public class AppPermission
     {
         public Guid Id { get; set; }

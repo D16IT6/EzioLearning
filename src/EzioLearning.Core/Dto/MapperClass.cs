@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using EzioLearning.Core.Dto.Auth;
 using EzioLearning.Core.Dto.Learning.Course;
 using EzioLearning.Core.Dto.Learning.CourseCategory;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Domain.Entities.System;
 using EzioLearning.Share.Dto.Account;
+using EzioLearning.Share.Dto.Culture;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
@@ -16,20 +19,34 @@ public class MapperClass : Profile
 
     public MapperClass()
     {
+
+        CreateMap<Culture, CultureViewDto>().ForMember(x=>x.ImageUrl,cfg =>cfg.Ignore());
+
+
         CreateMap<CourseCreateApiDto, Course>();
         CreateMap<CourseCategoryViewDto, CourseCategory>();
 
         CreateMap<CourseCategory, CourseCategoryViewDto>()
             .ForMember(dest => dest.ParentName,
                 otp =>
-                    otp.MapFrom(src => src.Parent!.Name));
+                    otp.MapFrom(src => src.Parent!.CourseCategoryTranslations.First(x=> CultureInfo.CurrentCulture.Name == x.CultureId).Name))
+            .ForMember(dest => dest.Name,
+                otp =>
+                    otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
 
-        CreateMap<TopCourseCategoryDto, CourseCategory>().ReverseMap();
+        CreateMap<TopCourseCategoryDto, CourseCategory>().ReverseMap()
+            .ForMember(dest => dest.Name,
+                otp =>
+                    otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
+
         CreateMap<CourseCategoryCreateApiDto, CourseCategory>().ForMember(x => x.Image, opt =>
             opt.Ignore());
 
         CreateMap<CourseCategory, CourseCategoryCreateApiDto>().ForMember(x => x.Image, opt =>
-            opt.Ignore());
+            opt.Ignore())
+            .ForMember(dest => dest.Name,
+                otp =>
+                    otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
 
         CreateMap<CourseCreateDto, Course>();
 

@@ -2,8 +2,7 @@
 {
     public class CultureViewDto
     {
-        public int Id { get; set; }
-        public string Culture { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
     }
 }

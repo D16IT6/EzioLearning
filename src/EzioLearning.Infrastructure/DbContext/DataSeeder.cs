@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Reflection;
 using EzioLearning.Core.SeedWorks.Constants;
+using EzioLearning.Domain.Entities.System;
 
 namespace EzioLearning.Infrastructure.DbContext;
 
@@ -21,6 +22,27 @@ public class DataSeeder
         var users = context.Users;
         if (!(await users.AnyAsync())) await AddUser(context, adminGuid);
 
+        var cultures = context.Cultures;
+
+        if (!(await cultures.AnyAsync())) await AddCultures(context);
+
+    }
+
+    private async Task AddCultures(EzioLearningDbContext context)
+    {
+        var defaultCulture = new Culture()
+        {
+            Id = "vi-VN",
+            IsDefault = true,
+            SortOrder = 1
+        };
+        var culture = new Culture()
+        {
+            Id = "en-US",
+            SortOrder = 2
+        };
+        await context.Cultures.AddRangeAsync([defaultCulture, culture]);
+        await context.SaveChangesAsync();
     }
 
     private async Task AddPermissions(EzioLearningDbContext context)
@@ -121,7 +143,9 @@ public class DataSeeder
             LockoutEnabled = false,
             EmailConfirmed = true,
             PhoneNumber = "0988344814",
-            PhoneNumberConfirmed = true
+            PhoneNumberConfirmed = true,
+            DateOfBirth = new DateTime(2003,07,17),
+            
         };
         var passwordHasher = new PasswordHasher<AppUser>();
         user.PasswordHash = passwordHasher.HashPassword(user, "TalonEzio177!@#");

@@ -9,7 +9,5 @@ namespace EzioLearning.Core.Dto.Learning.CourseCategory
         public IFormFile? Image { get; init; }
         public bool IsActive { get; init; }
         public Guid? ParentId { get; init; }
-
-
     }
 }

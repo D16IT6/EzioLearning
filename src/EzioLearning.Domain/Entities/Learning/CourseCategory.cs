@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using EzioLearning.Domain.Common;
+using EzioLearning.Domain.Entities.Translation;
 
 namespace EzioLearning.Domain.Entities.Learning;
 
-[Table("CourseCategories", Schema = "Learning")]
+[Table("CourseCategories", Schema = SchemaConstants.Learning)]
 public class CourseCategory : AuditableEntity
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
     public string? Image { get; set; }
     public bool IsActive { get; set; }
 
@@ -15,5 +15,6 @@ public class CourseCategory : AuditableEntity
 
     public CourseCategory? Parent { get; set; }
 
-    public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
+    public virtual ICollection<Course> Courses { get; set; } = [];
+    public virtual ICollection<CourseCategoryTranslation> CourseCategoryTranslations { get; set; } = [];
 }

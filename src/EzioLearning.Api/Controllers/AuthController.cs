@@ -4,7 +4,6 @@ using EzioLearning.Api.Models.Auth;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Auth;
-using EzioLearning.Core.Repositories;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
@@ -19,6 +18,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Web;
 using Microsoft.Extensions.Localization;
+using EzioLearning.Core.Repositories.Auth;
 
 namespace EzioLearning.Api.Controllers;
 

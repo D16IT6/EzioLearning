@@ -59,7 +59,7 @@ public partial class Header : AccountComponentBase
         var responseData = await CultureService.GetCultures();
         if (responseData.Data != null && responseData.Data.Any())
         {
-            SelectedCulture = responseData.Data.First(x => x.Culture.Equals(CultureInfo.CurrentCulture.Name)).Culture;
+            SelectedCulture = responseData.Data.First(x => x.Id.Equals(CultureInfo.CurrentCulture.Name)).Id;
             Cultures.AddRange(responseData.Data.ToList());
         }
 

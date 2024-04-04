@@ -1,7 +1,7 @@
 ﻿using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 
-namespace EzioLearning.Core.Repositories
+namespace EzioLearning.Core.Repositories.Auth
 {
     public interface IPermissionRepository : IRepository<AppPermission, Guid>
     {

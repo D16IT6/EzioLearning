@@ -1,4 +1,4 @@
-﻿using EzioLearning.Core.Repositories;
+﻿using EzioLearning.Core.Repositories.Auth;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Identity;

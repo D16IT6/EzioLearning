@@ -4,12 +4,12 @@ using EzioLearning.Api.Models.Auth;
 using EzioLearning.Api.Models.Payment;
 using EzioLearning.Api.Services;
 using EzioLearning.Core.Dto;
-using EzioLearning.Core.Repositories;
+using EzioLearning.Core.Repositories.Learning;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Core.Validators;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Infrastructure.DbContext;
-using EzioLearning.Infrastructure.Repositories;
+using EzioLearning.Infrastructure.Repositories.Learning;
 using EzioLearning.Infrastructure.SeedWorks;
 using EzioLearning.Share.Models.Token;
 using EzioLearning.Share.Utils;
@@ -23,10 +23,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Net.payOS;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using Net.payOS;
 
 namespace EzioLearning.Api;
 
@@ -245,13 +245,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    //private static void MigrateData(this WebApplication app)
-    //{
-    //    using var scope = app.Services.CreateScope();
-    //    using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-    //    context.Database.Migrate();
-    //    new DataSeeder().SeedAsync(context).Wait();
-    //}
+    private static async Task MigrateData(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+        await context.Database.MigrateAsync();
+        await new DataSeeder().SeedAsync(context);
+    }
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -347,6 +347,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        //app.MigrateData();
+        app.MigrateData().Wait();
     }
 }

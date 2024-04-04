@@ -1,4 +1,4 @@
-﻿using EzioLearning.Core.Repositories;
+﻿using EzioLearning.Core.Repositories.Learning;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Share.Dto.Learning.Course;
 using FluentValidation;

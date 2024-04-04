@@ -3,7 +3,7 @@ using EzioLearning.Domain.Common;
 
 namespace EzioLearning.Domain.Entities.Learning;
 
-[Table("CourseLessons", Schema = "Learning")]
+[Table(nameof(CourseLesson) + "s", Schema = SchemaConstants.Learning)]
 public class CourseLesson : AuditableEntity
 {
     public Guid Id { get; set; }

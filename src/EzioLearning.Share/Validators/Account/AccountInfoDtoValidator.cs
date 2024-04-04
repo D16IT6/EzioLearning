@@ -33,8 +33,6 @@ namespace EzioLearning.Share.Validators.Account
                 .NotEmpty().WithMessage(localizer.GetString("DateOfBirthEmpty"))
                 .Must(x => x.BeValidDate(10, 100))
                 .WithMessage(localizer.GetString("DateOfBirthRange", minYear, maxYear));
-
-
         }
     }
 }

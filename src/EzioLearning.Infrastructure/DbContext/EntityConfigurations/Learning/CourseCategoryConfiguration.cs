@@ -8,7 +8,6 @@ internal class CourseCategoryConfiguration : IEntityTypeConfiguration<CourseCate
 {
     public void Configure(EntityTypeBuilder<CourseCategory> builder)
     {
-        builder.Property(x => x.Name).HasMaxLength(50).IsUnicode();
         builder.Property(x => x.Image).HasMaxLength(250).IsUnicode();
     }
 }
