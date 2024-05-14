@@ -36,4 +36,5 @@ public class CacheService
     {
         _memoryCache.Remove(GenerateKey(key, prefix));
     }
+
 }

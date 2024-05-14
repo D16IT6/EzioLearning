@@ -19,6 +19,7 @@ using System.Text;
 using System.Web;
 using Microsoft.Extensions.Localization;
 using EzioLearning.Core.Repositories.Auth;
+using EzioLearning.Share.Models.ExternalLogin;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -34,7 +35,7 @@ public class AuthController(
     IMapper mapper,
     MailService mailService,
     PermissionService permissionService,
-    IPermissionRepository permissionRepository,IStringLocalizer<AuthController> localizer)
+    IPermissionRepository permissionRepository, IStringLocalizer<AuthController> localizer)
     : ControllerBase
 {
     private static readonly string PrefixCache = CacheConstant.AccessToken;
@@ -99,7 +100,7 @@ public class AuthController(
                 return Ok(new ResponseBaseWithData<TokenResponse>
                 {
                     Status = HttpStatusCode.OK,
-                    Message = localizer.GetString("AccountCreateAndLinkSuccess",model.ProviderName!),
+                    Message = localizer.GetString("AccountCreateAndLinkSuccess", model.ProviderName!),
                     Data = await GenerateAndCacheToken(newUser)
                 });
 
@@ -334,7 +335,7 @@ public class AuthController(
             Errors = (Dictionary<string, string[]>)result.Errors
                 .Select(x =>
                     new KeyValuePair<string, string[]>(
-                        x.Code, [localizer.GetString("RefreshTokenFail"),x.Description]
+                        x.Code, [localizer.GetString("RefreshTokenFail"), x.Description]
                     )
                 )
         });
@@ -438,98 +439,105 @@ public class AuthController(
     public async Task<IActionResult> CallBack(string? returnUrl = null)
     {
         if (string.IsNullOrEmpty(returnUrl))
+        {
             return BadRequest(new ResponseBase
             {
                 Message = localizer.GetString("ReturnUrlNotFound"),
                 Status = HttpStatusCode.BadRequest
             });
-
+        }
         var uriBuilder = new UriBuilder(returnUrl);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
-        //Không tìm thấy thông tin đăng nhập từ dịch vụ bên ngoài
-        var info = await signInManager.GetExternalLoginInfoAsync();
-        if (info == null) query["BackToLogin"] = true.ToString();
+        var externalLoginInfo = await signInManager.GetExternalLoginInfoAsync();
 
-        //Kiểm tra thông tin trong db, không tự tạo user
-        var externalLoginResult = await signInManager
-            .ExternalLoginSignInAsync(
-                info!.LoginProvider,
-                info.ProviderKey,
-                false,
-                true
-            );
+        if (externalLoginInfo == null)
+        {
+            return BadRequest(new ResponseBase()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = localizer.GetString("ExternalLoginNotFound")
+            });
+        }
 
-        var claims = info.Principal.Claims.Select(x => new { x.Type, x.Value });
+        var externalLoginResult = await signInManager.ExternalLoginSignInAsync(
+            externalLoginInfo.LoginProvider,
+            externalLoginInfo.ProviderKey,
+            false,
+            true);
 
-        var fullName = info.Principal.Identity!.Name;
+        var email = externalLoginInfo.Principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value!;
 
-        var email = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)!.Value;
-
-        //đã có user
+        ExternalLoginCacheInfo info;
         if (externalLoginResult.Succeeded)
         {
-            var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            if (user != null)
-            {
-                var token = await GenerateAndCacheToken(user);
-                query[nameof(token.AccessToken)] = token.AccessToken;
-                query[nameof(token.RefreshToken)] = token.RefreshToken;
-
-                query["UserId"] = user.Id.ToString();
-
-                uriBuilder.Query = query.ToString();
-                return Redirect(uriBuilder.ToString());
-            }
+            var user = await userManager.FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+            info = await HandleExistingUser(user, email, externalLoginInfo);
         }
         else
         {
             var user = await userManager.FindByEmailAsync(email);
-            if (user != null)
-            {
-                var token = await GenerateAndCacheToken(user);
-                query[nameof(token.AccessToken)] = token.AccessToken;
-                query[nameof(token.RefreshToken)] = token.RefreshToken;
-                await userManager.AddLoginAsync(user, info);
-
-                uriBuilder.Query = query.ToString();
-                return Redirect(uriBuilder.ToString());
-            }
+            info = await HandleExistingUser(user, email, externalLoginInfo);
         }
 
-        //chưa có user
-        var userId = Guid.NewGuid();
+        var cacheKey = Guid.NewGuid().ToString();
+        query[nameof(cacheKey)] = cacheKey;
 
-        var lastSpaceIndex = fullName!.LastIndexOf(' ');
-
-        var firstName = fullName.Substring(0, lastSpaceIndex);
-
-        var lastName = fullName.Substring(lastSpaceIndex + 1);
-
-        var userName = email.Substring(0, email.IndexOf("@", StringComparison.Ordinal));
-
-        var loginProvider = info.LoginProvider;
-        var providerKey = info.ProviderKey;
-        var providerName = info.ProviderDisplayName;
-
-
-        query[nameof(userId)] = userId.ToString();
-        query[nameof(email)] = email;
-        query[nameof(firstName)] = firstName;
-        query[nameof(lastName)] = lastName;
-        query[nameof(userName)] = userName;
-
-        query[nameof(loginProvider)] = loginProvider;
-        query[nameof(providerKey)] = providerKey;
-        query[nameof(providerName)] = providerName;
-
-        query["NeedRegister"] = true.ToString();
-
+        cacheService.Set(cacheKey, info, TimeSpan.FromMinutes(1));
 
         uriBuilder.Query = query.ToString();
         return Redirect(uriBuilder.ToString());
     }
 
+    private async Task<ExternalLoginCacheInfo> HandleExistingUser(AppUser? user, string email,ExternalLoginInfo externalLoginInfo)
+    {
+        if (user == null) return HandleNewUser(email, externalLoginInfo);
+
+        var externalLoginCache = new ExternalLoginCacheInfo
+        {
+            Token = await GenerateAndCacheToken(user)
+        };
+        return externalLoginCache;
+
+    }
+
+    private ExternalLoginCacheInfo HandleNewUser(string email, ExternalLoginInfo externalLoginInfo)
+    {
+        var userId = Guid.NewGuid();
+        var fullName = externalLoginInfo.Principal.Identity!.Name ?? "No Name";
+        var lastSpaceIndex = fullName.LastIndexOf(' ');
+        var firstName = fullName[..lastSpaceIndex];
+        var lastName = fullName[(lastSpaceIndex + 1)..];
+        var userName = email[..email.IndexOf("@", StringComparison.OrdinalIgnoreCase)];
+
+        var externalLoginCache = new ExternalLoginCacheInfo
+        {
+            UserId = userId,
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            UserName = userName,
+            LoginProvider = externalLoginInfo.LoginProvider,
+            ProviderKey = externalLoginInfo.ProviderKey,
+            ProviderName = externalLoginInfo.ProviderDisplayName ?? string.Empty,
+            NeedRegister = true
+        };
+
+        return externalLoginCache;
+    }
+
+    [HttpGet]
+    [Route("ExternalLoginInfo")]
+    public Task<IActionResult> GetExternalLoginInfo(string cacheKey)
+    {
+        var info = cacheService.Get<ExternalLoginCacheInfo>(cacheKey);
+
+        return Task.FromResult<IActionResult>(Ok(new ResponseBaseWithData<ExternalLoginCacheInfo>()
+        {
+            Status = HttpStatusCode.OK,
+            Data = info
+        }));
+    }
     #endregion
 
     #region Support Method

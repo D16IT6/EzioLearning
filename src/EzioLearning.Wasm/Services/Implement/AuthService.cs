@@ -3,14 +3,12 @@ using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
 using EzioLearning.Wasm.Utils.Common;
 using EzioLearning.Wasm.Utils.Extensions;
-using Azure;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
+using System.Net.Http.Json;
+using EzioLearning.Share.Models.ExternalLogin;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
@@ -95,6 +93,13 @@ public class AuthService(
             JsonCommonOptions.DefaultSerializer);
 
         return await response.GetResponse<ResponseBase>();
-
+    }
+    public async Task<ResponseBaseWithData<ExternalLoginCacheInfo>> GetExternalLoginInfo(string cacheKey)
+    {
+        var response =
+            await httpClient
+                .GetFromJsonAsync<ResponseBaseWithData<ExternalLoginCacheInfo>>(
+                    $"/api/Auth/ExternalLoginInfo?cacheKey={cacheKey}", JsonCommonOptions.DefaultSerializer);
+        return response!;
     }
 }

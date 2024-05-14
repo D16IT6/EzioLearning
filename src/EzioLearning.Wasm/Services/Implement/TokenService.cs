@@ -1,17 +1,15 @@
 ﻿using Blazored.LocalStorage;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
-using System.Text.Json;
 using EzioLearning.Wasm.Services.Interface;
-using System.Net.Http.Headers;
 using EzioLearning.Wasm.Utils.Common;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
-public class TokenService(ILocalStorageService localStorageService,HttpClient httpClient) : ITokenService
+public class TokenService(ILocalStorageService localStorageService, HttpClient httpClient) : ITokenService
 {
     public async Task SaveFromResponse(ResponseBase response)
     {
@@ -75,7 +73,6 @@ public class TokenService(ILocalStorageService localStorageService,HttpClient ht
 
         var jwtToken = jwtHandler.ReadJwtToken(accessToken);
         var expiration = jwtToken.ValidTo;
-        var utcNow = DateTime.UtcNow;
         return expiration < DateTime.UtcNow;
     }
 }

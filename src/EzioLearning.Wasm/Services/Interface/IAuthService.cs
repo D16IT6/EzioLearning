@@ -1,4 +1,5 @@
 ﻿using EzioLearning.Share.Dto.Auth;
+using EzioLearning.Share.Models.ExternalLogin;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
 using Microsoft.AspNetCore.Components.Forms;
@@ -13,4 +14,6 @@ public interface IAuthService: IServiceBase
 
     public Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto);
     public Task<ResponseBase?> ConfirmPassword(ConfirmPasswordDto confirmPasswordDto);
+
+    public Task<ResponseBaseWithData<ExternalLoginCacheInfo>> GetExternalLoginInfo(string cacheKey);
 }

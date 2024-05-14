@@ -27,70 +27,12 @@ using Net.payOS;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace EzioLearning.Api;
 
 internal static class Startup
 {
-    internal static void ConfigureBuilder(this WebApplicationBuilder builder)
-    {
-        var services = builder.Services;
-        var configuration = builder.Configuration;
-
-
-        services.AddControllers().AddJsonOptions(x =>
-            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
-
-        services.AddCors(option =>
-        {
-            option.AddPolicy("CorsPolicy",
-                policyBuilder => { policyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); });
-        });
-
-        services.AddDbContext<EzioLearningDbContext>(option =>
-        {
-            option.UseSqlServer(configuration.GetConnectionString(nameof(EzioLearning)));
-        });
-
-        services.ConfigureValidator();
-
-        services.ConfigureIdentity();
-
-        services.ConfigureRepository();
-
-        services.AddAutoMapper(typeof(MapperClass));
-
-        services.ConfigureAuthentication(configuration);
-
-
-        services.ConfigureAuthorization(configuration);
-
-        services.AddTransient(_ =>
-        {
-            var jwtConfiguration = new JwtConfiguration
-            {
-                PrivateKey = "Default if cannot bind configuration @#!^%&"
-            };
-            configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
-            return jwtConfiguration;
-        });
-
-        services.AddMemoryCache();
-
-        services.ConfigureLocalService(configuration);
-
-        services.ConfigureCustomMiddleware();
-
-        services.ConfigurePayments(configuration);
-
-        services.ConfigureLogs(configuration);
-
-        services.ConfigureMultiLanguages(configuration);
-    }
-
     private static void ConfigureLocalService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<CacheService>();
@@ -207,9 +149,27 @@ internal static class Startup
                     ValidIssuer = jwtConfiguration.Issuer,
                     ValidAudience = jwtConfiguration.Audience,
                     IssuerSigningKey = new JwtService(jwtConfiguration).SecurityKey
+
                 };
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/TestHub")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             }).AddGoogle(options =>
             {
                 options.ClientId = externalAuthentication.Google.ClientId;
@@ -318,6 +278,78 @@ internal static class Startup
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
     }
 
+
+    internal static void ConfigureBuilder(this WebApplicationBuilder builder)
+    {
+        var services = builder.Services;
+        var configuration = builder.Configuration;
+
+
+        services.AddControllers().AddJsonOptions(x =>
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+
+        services.AddCors(option =>
+        {
+            option.AddPolicy("CorsPolicy",
+                policyBuilder => { policyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); }
+            );
+        });
+
+        services.AddDbContext<EzioLearningDbContext>(option =>
+        {
+            option.UseSqlServer(configuration.GetConnectionString(nameof(EzioLearning)));
+        });
+
+        services.ConfigureValidator();
+
+        services.ConfigureIdentity();
+
+        services.ConfigureRepository();
+
+        services.AddAutoMapper(typeof(MapperClass));
+
+        services.ConfigureAuthentication(configuration);
+
+
+        services.ConfigureAuthorization(configuration);
+
+        services.AddTransient(_ =>
+        {
+            var jwtConfiguration = new JwtConfiguration
+            {
+                PrivateKey = "Default if cannot bind configuration @#!^%&"
+            };
+            configuration.Bind(nameof(JwtConfiguration), jwtConfiguration);
+            return jwtConfiguration;
+        });
+
+        services.AddMemoryCache();
+
+        services.ConfigureLocalService(configuration);
+
+        services.ConfigureCustomMiddleware();
+
+        services.ConfigurePayments(configuration);
+
+        services.ConfigureLogs(configuration);
+
+        services.ConfigureMultiLanguages(configuration);
+
+        services.AddResponseCompression(opts =>
+        {
+            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                ["application/octet-stream"]);
+        });
+
+        services.AddSignalR(options =>
+        {
+            options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+        }).AddMessagePackProtocol();
+    }
+
     internal static void Configure(this WebApplication app)
     {
 
@@ -337,6 +369,9 @@ internal static class Startup
         app.UseStaticFiles();
 
         app.UseRequestLocalization();
+
+        app.UseResponseCompression();
+
 
         app.UseAuthentication();
         app.UseMiddleware<Custom401ResponseMiddleware>();

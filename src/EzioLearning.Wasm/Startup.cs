@@ -1,11 +1,13 @@
 ﻿using System.Globalization;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using EzioLearning.Wasm.Hubs;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
@@ -39,11 +41,10 @@ namespace EzioLearning.Wasm
 
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
-
             services.AddMudExtensions();
 
 
-			services.AddScoped(_ =>
+            services.AddScoped(_ =>
             {
                 var httpClient = new HttpClient
                 {
@@ -62,7 +63,12 @@ namespace EzioLearning.Wasm
 
             services.ConfigureMultiLanguages();
 
+
             services.AddSingleton<ILogger>(log);
+
+            services.AddScoped<HubConnectionManager>();
+
+
         }
 
         private static void ConfigureMultiLanguages(this IServiceCollection services)
@@ -94,7 +100,6 @@ namespace EzioLearning.Wasm
             }
         }
 
-
         public static async Task LoadCurrentCulture(this WebAssemblyHost host)
         {
 
@@ -112,5 +117,6 @@ namespace EzioLearning.Wasm
             httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
             httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(currentCultureName));
         }
+        
     }
 }

@@ -7,37 +7,22 @@ using MudExtensions;
 
 namespace EzioLearning.Wasm.Pages.Course
 {
-	public partial class CourseCreate
-	{
-		[Inject] private IStringLocalizer<CourseCreate> Localizer { get; set; } = default!;
+    public partial class CourseCreate
+    {
+        [Inject] private IStringLocalizer<CourseCreate> Localizer { get; set; } = default!;
 
-		[Inject] private ICourseCategoryService CourseCategoryService { get; set; } = default!;
+        [Inject] private ICourseCategoryService CourseCategoryService { get; set; } = default!;
         private ICollection<CourseCategoryViewDto> CourseCategories { get; set; } = new List<CourseCategoryViewDto>();
         private IEnumerable<CourseCategoryViewDto> SelectedCourseCategories { get; set; } = [];
         private CourseCategoryViewDto SelectedCourseCategory { get; set; } = new();
 
         private RenderFragment? CourseCategoriesRenderFragment { get; set; }
 
-		protected override async Task OnInitializedAsync()
-		{
-			CourseCategories = (await CourseCategoryService.GetCourseCategories());
-            
-            CourseCategoriesRenderFragment = RecursiveSelect(CourseCategories.ToList());
-        }
-
-        List<CourseCategoryViewDto> FlattenCourseCategories(List<CourseCategoryViewDto> categories, Guid? parentId = null)
+        protected override async Task OnInitializedAsync()
         {
-            var flattenedCategories = new List<CourseCategoryViewDto>();
+            CourseCategories = (await CourseCategoryService.GetCourseCategories());
 
-            foreach (var category in categories.Where(x => x.ParentId == parentId))
-            {
-                flattenedCategories.Add(category);
-
-                var subCategories = FlattenCourseCategories(categories, category.Id);
-
-                flattenedCategories.AddRange(subCategories);
-            }
-            return flattenedCategories;
+            CourseCategoriesRenderFragment = RecursiveSelect(CourseCategories.ToList());
         }
         protected RenderFragment RecursiveSelect(List<CourseCategoryViewDto> categories, Guid? parentId = null)
         {
@@ -49,6 +34,7 @@ namespace EzioLearning.Wasm.Pages.Course
 
                 foreach (var childCategory in childCategories)
                 {
+                    var paddingText = $"{childCategory.Name}";
                     var subChildCategories = categories
                         .Where(x => x.ParentId == childCategory.Id).ToList();
 
@@ -56,10 +42,10 @@ namespace EzioLearning.Wasm.Pages.Course
                     {
                         builder.OpenComponent<MudSelectItemGroupExtended<CourseCategoryViewDto>>(0);
                         builder.AddAttribute(1, "T", typeof(CourseCategoryViewDto));
-                        builder.AddAttribute(2, "Text", childCategory.Name);
-                        builder.AddAttribute(3,"Nested",true);
+                        builder.AddAttribute(2, "Text", paddingText);
+                        builder.AddAttribute(3, "Nested", true);
                         builder.AddAttribute(4, "Sticky", true);
-                        builder.AddAttribute(5, "InitiallyExpanded", true);
+                        builder.AddAttribute(5, "InitiallyExpanded", false);
                         builder.AddAttribute(6, "ChildContent", RecursiveSelect(categories, childCategory.Id));
                         builder.CloseComponent();
 
@@ -68,7 +54,7 @@ namespace EzioLearning.Wasm.Pages.Course
                     {
                         builder.OpenComponent<MudSelectItemExtended<CourseCategoryViewDto>>(0);
                         builder.AddAttribute(1, "T", typeof(CourseCategoryViewDto));
-                        builder.AddAttribute(2, "Text", childCategory.Name);
+                        builder.AddAttribute(2, "Text", paddingText);
                         builder.AddAttribute(3, "Value", childCategory);
                         builder.CloseComponent();
 
@@ -77,11 +63,6 @@ namespace EzioLearning.Wasm.Pages.Course
                 }
 
             };
-        }
-
-        private bool SearchCourseCategories(CourseCategoryViewDto value, string inputText)
-        {
-            return value.Name!.ToLower().Contains(inputText.ToLower());
         }
     }
 }

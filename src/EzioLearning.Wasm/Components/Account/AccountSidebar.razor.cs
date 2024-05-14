@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using EzioLearning.Share.Dto.Account;
 using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Components.Account

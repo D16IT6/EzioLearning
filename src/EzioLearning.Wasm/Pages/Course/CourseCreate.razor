@@ -1,5 +1,4 @@
 ﻿@using EzioLearning.Share.Dto.Learning.CourseCategory
-@using MudExtensions.Enums
 @attribute [Route(RouteConstants.CourseRoute.Create)]
 
 <!-- New Course -->
@@ -59,12 +58,14 @@
                                             </div>
                                             <div class="input-block">
                                                 <MudSelectExtended T="CourseCategoryViewDto"
-                                                    Label="Danh mục khoá học"
-                                                    AnchorOrigin="Origin.BottomCenter"
-                                                    @bind-Value="SelectedCourseCategory"
-                                                    @bind-SelectedValues="SelectedCourseCategories"
-                                                    MultiSelection="true">
+                                                                   Label="Danh mục khoá học"
+                                                                   AnchorOrigin="Origin.BottomCenter"
+                                                                   @bind-Value="SelectedCourseCategory"
+                                                                   @bind-SelectedValues="SelectedCourseCategories"
+                                                                   MultiSelection="true">
+
                                                     @CourseCategoriesRenderFragment
+
                                                 </MudSelectExtended>
                                             </div>
                                             <div class="input-block">

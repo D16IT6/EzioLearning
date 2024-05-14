@@ -150,6 +150,9 @@
   <data name="EmailSendSuccess" xml:space="preserve">
     <value>Gửi email khôi phục mật khẩu thành công</value>
   </data>
+  <data name="ExternalLoginNotFound" xml:space="preserve">
+    <value>Không tim thấy thông tin đăng nhập từ dịch vụ bên ngoài</value>
+  </data>
   <data name="LoginSuccess" xml:space="preserve">
     <value>Đăng nhập thành công</value>
   </data>

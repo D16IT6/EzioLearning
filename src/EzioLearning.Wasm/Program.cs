@@ -24,7 +24,7 @@ public class Program
         var host = builder.Build();
 
         await host.LoadCurrentCulture();
-      
+
         await host.RunAsync();
     }
 }

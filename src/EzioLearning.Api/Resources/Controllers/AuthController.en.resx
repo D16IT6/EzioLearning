@@ -150,6 +150,9 @@
   <data name="EmailSendSuccess" xml:space="preserve">
     <value>Password recovery email sent successfully</value>
   </data>
+  <data name="ExternalLoginNotFound" xml:space="preserve">
+    <value>External login information not found</value>
+  </data>
   <data name="LoginSuccess" xml:space="preserve">
     <value>Logged in successfully</value>
   </data>
