@@ -16,9 +16,11 @@
         </Found>
         <NotFound>
             <PageTitle>@Localizer.GetString("NotFound")</PageTitle>
+            
             <LayoutView Layout="@typeof(EmptyLayout)">
                 <EzioLearning.Wasm.Components.Error.NotFound/>
             </LayoutView>
+
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

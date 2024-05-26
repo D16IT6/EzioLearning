@@ -1,4 +1,4 @@
-﻿@using EzioLearning.Wasm.Utils.Common
+﻿
 <!-- Footer -->
 <footer class="footer">
 
@@ -28,21 +28,28 @@
                     <div class="footer-widget footer-menu">
                         <h2 class="footer-title">@Localizer.GetString("InstructorTitle")</h2>
                         <ul>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Instructor")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
-                            </li>
+                            @if (IsAuthenticated)
+                            {
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Instructor")</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
+                                </li>
+                            }
+                           else
+                           {
+                               <li>
+                                   <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
+                               </li>
+                               <li>
+                                   <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
+                               </li>
+                           }
                         </ul>
                     </div>
                     <!-- /Footer Widget -->
@@ -55,21 +62,29 @@
                     <div class="footer-widget footer-menu">
                         <h2 class="footer-title">@Localizer.GetString("StudentTitle")</h2>
                         <ul>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Student")</NavLink>
-                            </li>
-                            <li>
-                                <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
-                            </li>
+                            @if (IsAuthenticated)
+                            {
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.AccountRoute.Home">@Localizer.GetString("Profile")</NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater">@Localizer.GetString("Student")</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.DevLater"> @Localizer.GetString("Dashboard")</NavLink>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.Login">@Localizer.GetString("Login")</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink Match=NavLinkMatch.All href="@RouteConstants.Register">@Localizer.GetString("Signup")</NavLink>
+                                </li>
+                            }
+                          
                         </ul>
                     </div>
                     <!-- /Footer Widget -->

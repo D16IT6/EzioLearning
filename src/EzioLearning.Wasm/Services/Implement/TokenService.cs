@@ -1,11 +1,15 @@
 ﻿using Blazored.LocalStorage;
+using EzioLearning.Share.Dto.Auth;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
+using EzioLearning.Wasm.Utils.Extensions;
 
 namespace EzioLearning.Wasm.Services.Implement;
 
@@ -32,9 +36,22 @@ public class TokenService(ILocalStorageService localStorageService, HttpClient h
         await localStorageService.RemoveItemAsync(LocalStorageConstants.RefreshToken);
     }
 
-    public async Task<IEnumerable<Claim>> ParseClaimsFromJwt(string? accessToken)
+    public async Task<DateTime> GetTokenExpiredTime()
     {
-        accessToken ??= await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
+        var accessToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
+
+        var jwtHandler = new JwtSecurityTokenHandler();
+
+        if (!jwtHandler.CanReadToken(accessToken)) return DateTime.Now;
+
+        var jwtToken = jwtHandler.ReadJwtToken(accessToken);
+        return jwtToken.ValidTo;
+    }
+
+
+    public async Task<IEnumerable<Claim>> ParseClaimsFromJwt()
+    {
+        var accessToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
 
         var jwtTokenHandler = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
 
@@ -47,11 +64,35 @@ public class TokenService(ILocalStorageService localStorageService, HttpClient h
         var refreshToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.RefreshToken);
         return new TokenResponse
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
+            AccessToken = accessToken!,
+            RefreshToken = refreshToken!
         };
     }
 
+    public async Task<TokenResponse?> GenerateNewToken()
+    {
+        var token = await GetTokenFromLocalStorage();
+        var userName = (await ParseClaimsFromJwt())
+            .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!
+            .Value;
+
+        if (string.IsNullOrEmpty(userName)) return null;
+
+
+        var requestModel = new RequestNewTokenDto
+        {
+            UserName = userName,
+            RefreshToken = token.RefreshToken
+        };
+
+        var response = await httpClient.PostAsJsonAsync("api/Auth/NewToken", requestModel);
+
+        var data = await response.GetResponse<ResponseBaseWithData<TokenResponse>>();
+        if (response.StatusCode == HttpStatusCode.OK) await SaveFromResponse(data);
+
+        return data.Data;
+
+    }
     public async Task<bool> IsLiveToken()
     {
         var accessToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
@@ -59,13 +100,15 @@ public class TokenService(ILocalStorageService localStorageService, HttpClient h
 
         var response = await httpClient.PostAsync("/api/Auth/TestToken", null);
 
-        return response.IsSuccessStatusCode;
+        var success = response.IsSuccessStatusCode;
+        var isTokenExpired = await IsTokenExpired();
 
+        return success && !isTokenExpired;
     }
 
-    public async Task<bool> IsTokenExpired(string? accessToken)
+    public async Task<bool> IsTokenExpired()
     {
-        accessToken ??= await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
+        var accessToken = await localStorageService.GetItemAsStringAsync(LocalStorageConstants.AccessToken);
 
         var jwtHandler = new JwtSecurityTokenHandler();
 

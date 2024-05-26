@@ -48,7 +48,6 @@ namespace EzioLearning.Wasm.Pages.Course
                         builder.AddAttribute(5, "InitiallyExpanded", false);
                         builder.AddAttribute(6, "ChildContent", RecursiveSelect(categories, childCategory.Id));
                         builder.CloseComponent();
-
                     }
                     else
                     {
@@ -57,7 +56,6 @@ namespace EzioLearning.Wasm.Pages.Course
                         builder.AddAttribute(2, "Text", paddingText);
                         builder.AddAttribute(3, "Value", childCategory);
                         builder.CloseComponent();
-
                     }
 
                 }

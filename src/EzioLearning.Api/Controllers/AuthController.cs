@@ -489,7 +489,7 @@ public class AuthController(
         return Redirect(uriBuilder.ToString());
     }
 
-    private async Task<ExternalLoginCacheInfo> HandleExistingUser(AppUser? user, string email,ExternalLoginInfo externalLoginInfo)
+    private async Task<ExternalLoginCacheInfo> HandleExistingUser(AppUser? user, string email, ExternalLoginInfo externalLoginInfo)
     {
         if (user == null) return HandleNewUser(email, externalLoginInfo);
 
@@ -553,7 +553,7 @@ public class AuthController(
         var permissions = await permissionRepository.GetByUserId(user.Id);
         var expiredTime = user.RefreshTokenExpiryTime;
         var roleList = await userManager.GetRolesAsync(user);
-        var jwtSecurityToken = jwtService.GenerateAccessToken(user, roleList.ToList(), permissions.ToList());
+        var jwtSecurityToken = jwtService.GenerateAccessToken(user, roleList, permissions);
 
         if (string.IsNullOrEmpty(user.RefreshToken) || expiredTime < DateTime.UtcNow)
         {

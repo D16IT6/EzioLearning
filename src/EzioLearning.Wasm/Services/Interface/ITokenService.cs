@@ -9,9 +9,11 @@ public interface ITokenService : IServiceBase
     Task SaveFromResponse(ResponseBase response);
     Task SaveToken(TokenResponse token);
     Task DeleteToken();
-    Task<bool> IsTokenExpired(string? accessToken = null);
-    Task<IEnumerable<Claim>> ParseClaimsFromJwt(string? accessToken = null);
+    Task<bool> IsTokenExpired();
+    Task<DateTime> GetTokenExpiredTime();
+    Task<IEnumerable<Claim>> ParseClaimsFromJwt();
     Task<TokenResponse> GetTokenFromLocalStorage();
 
+    Task<TokenResponse?> GenerateNewToken();
     Task<bool> IsLiveToken();
 }

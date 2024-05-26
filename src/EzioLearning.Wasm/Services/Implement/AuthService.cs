@@ -27,7 +27,6 @@ public class AuthService(
 
         return await response.GetResponse<ResponseBaseWithData<TokenResponse>>();
     }
-
     public async Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto model, IBrowserFile? avatar)
     {
         var multipartContent = new MultipartFormDataContent();

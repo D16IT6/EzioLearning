@@ -1,7 +1,7 @@
 ﻿namespace EzioLearning.Wasm.Utils.Common
 {
-    public record HubConnectionEndpoints
+    public enum HubConnectionEndpoints
     {
-        public static string Test = $"{nameof(Test)}Hub";
+        Test
     }
 }

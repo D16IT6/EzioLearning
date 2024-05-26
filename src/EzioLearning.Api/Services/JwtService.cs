@@ -13,7 +13,7 @@ public class JwtService(JwtConfiguration jwtConfiguration)
 {
     public readonly SymmetricSecurityKey SecurityKey = new(Encoding.Unicode.GetBytes(jwtConfiguration.PrivateKey));
 
-    public JwtSecurityToken GenerateAccessToken(AppUser user, IList<string> roleList, List<AppPermission> permissions)
+    public JwtSecurityToken GenerateAccessToken(AppUser user, IEnumerable<string> roleList, IEnumerable<AppPermission> permissions)
     {
         var credentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
 
@@ -32,11 +32,11 @@ public class JwtService(JwtConfiguration jwtConfiguration)
                 role))
         );
 
-        claims.AddRange(permissions
-            .Select(permission => new Claim(
-                CustomClaimTypes.Permissions,
-                permission.Name))
-        );
+        //claims.AddRange(permissions
+        //    .Select(permission => new Claim(
+        //        CustomClaimTypes.Permissions,
+        //        permission.Name))
+        //);
 
         var tempExpiredAccessTokenTime = DateTime.UtcNow.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
         //var tempExpiredAccessTokenTime = DateTime.UtcNow.AddSeconds(30);//Test token

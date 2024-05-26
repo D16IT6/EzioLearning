@@ -1,10 +1,5 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text.Json;
-using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Share.Models.Response;
 using EzioLearning.Share.Models.Token;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
@@ -15,6 +10,7 @@ namespace EzioLearning.Wasm.Providers;
 public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService tokenService)
     : AuthenticationStateProvider
 {
+    private static readonly SemaphoreSlim SemaphoreSlim = new(1);
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var emptyAuthenticationState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
@@ -24,75 +20,50 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
         if (string.IsNullOrWhiteSpace(token.AccessToken))
             return emptyAuthenticationState;
 
+        await SemaphoreSlim.WaitAsync();
+
+        if (await tokenService.IsLiveToken())
+        {
+            return await SetTokenAuthenticated(token);
+        }
         try
         {
-            var isLive = await tokenService.IsLiveToken();
-            if (!isLive)
+            var newTokenResponse = await tokenService.GenerateNewToken();
+            if (newTokenResponse == null
+                || string.IsNullOrWhiteSpace(newTokenResponse.AccessToken))
             {
-                if (await GenerateNewToken(token) is not ResponseBaseWithData<TokenResponse> newTokenResponse
-                    || string.IsNullOrWhiteSpace(newTokenResponse.Data?.AccessToken))
-                    return emptyAuthenticationState;
-
-                token.AccessToken = newTokenResponse.Data.AccessToken;
-
+                return emptyAuthenticationState;
             }
 
-            var claims = await tokenService.ParseClaimsFromJwt(token.AccessToken);
-            var identity = new ClaimsIdentity(claims, ApiConstants.ApiAuthenticationType);
-            var authenticatedState = new AuthenticationState(new ClaimsPrincipal(identity));
+            token.AccessToken = newTokenResponse.AccessToken;
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
-            return authenticatedState;
+            return await SetTokenAuthenticated(token);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"ErrorRoute occurred while validating authentication state: {ex.Message}");
             return emptyAuthenticationState;
         }
-    }
-
-    private async Task<ResponseBase?> GenerateNewToken(TokenResponse token)
-    {
-        var userName = (await tokenService.ParseClaimsFromJwt(token.AccessToken))
-            .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!
-            .Value;
-
-        if (string.IsNullOrEmpty(userName)) return null;
-
-
-        var requestModel = new RequestNewTokenDto
+        finally
         {
-            UserName = userName,
-            RefreshToken = token.RefreshToken!
-        };
-
-        var response = await httpClient.PostAsJsonAsync("api/Auth/NewToken", requestModel);
-
-        var stream = await response.Content.ReadAsStreamAsync();
-        ResponseBase? data = await JsonSerializer.DeserializeAsync<ResponseBaseWithData<TokenResponse>>(stream,
-            JsonCommonOptions.DefaultSerializer);
-        if (response.StatusCode == HttpStatusCode.OK) await tokenService.SaveFromResponse(data!);
-
-        return data;
+            SemaphoreSlim.Release();
+        }
     }
 
-    public void MarkUserAsAuthenticated(string userName)
+    private async Task<AuthenticationState> SetTokenAuthenticated(TokenResponse token)
     {
-        var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name,
-                    userName)
-            },
-            ApiConstants.ApiAuthenticationType));
-        var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
-        NotifyAuthenticationStateChanged(authState);
-    }
+        var claims = await tokenService.ParseClaimsFromJwt();
+        var identity = new ClaimsIdentity(claims, ApiConstants.ApiAuthenticationType);
+        var authenticatedState = new AuthenticationState(new ClaimsPrincipal(identity));
 
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+        return authenticatedState;
+    }
+    
     public void MarkUserAsLoggedOut()
     {
         var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
-        var authState = Task.FromResult(new AuthenticationState(anonymousUser));
-        NotifyAuthenticationStateChanged(authState);
+        var emptyAuthState = Task.FromResult(new AuthenticationState(anonymousUser));
+        NotifyAuthenticationStateChanged(emptyAuthState);
     }
 }

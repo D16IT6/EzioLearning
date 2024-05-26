@@ -18,18 +18,19 @@ public class VerifyToken : ActionFilterAttribute
         var sessionId = context.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Sid)?.Value ??
                         string.Empty;
 
-        var localizer = context.HttpContext.RequestServices.GetService<IStringLocalizer<VerifyToken>>();
+        var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<VerifyToken>>();
 
         var token = memoryCache?.Get<string>(sessionId, CacheConstant.AccessToken);
 
+        var tokenFakeMessage = localizer.GetString("TokenFake");
         if (string.IsNullOrEmpty(sessionId) || string.IsNullOrEmpty(token))
             context.Result = new BadRequestObjectResult(new ResponseBase
             {
-                Message = localizer?.GetString("TokenFake") ?? "",
+                Message = tokenFakeMessage,
                 Status = HttpStatusCode.BadRequest,
                 Errors = new Dictionary<string, string[]>
                 {
-                    { "Token", [localizer?.GetString("TokenFake") ?? ""] }
+                    { "Token", [tokenFakeMessage] }
                 }
             });
         base.OnActionExecuting(context);

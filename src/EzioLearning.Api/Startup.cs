@@ -27,6 +27,7 @@ using Net.payOS;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using EzioLearning.Api.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 
 namespace EzioLearning.Api;
@@ -94,7 +95,7 @@ internal static class Startup
         //services.AddFluentValidationClientsideAdapters();
     }
 
-    private static void ConfigureRepository(this IServiceCollection services)
+    private static void ConfigureRepositories(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
 
@@ -194,7 +195,7 @@ internal static class Startup
             config.AddPolicy("AdminOnly", policy => { policy.RequireRole(RoleConstants.Admin); });
         });
 
-        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     }
 
@@ -205,13 +206,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    private static async Task MigrateData(this WebApplication app)
-    {
-        using var scope = app.Services.CreateScope();
-        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-        await context.Database.MigrateAsync();
-        await new DataSeeder().SeedAsync(context);
-    }
+    //private static async Task MigrateData(this WebApplication app)
+    //{
+    //    using var scope = app.Services.CreateScope();
+    //    await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+    //    await context.Database.MigrateAsync();
+    //    await new DataSeeder().SeedAsync(context);
+    //}
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -226,9 +227,9 @@ internal static class Startup
 
         services.AddSingleton(_ =>
         {
-            var payos = paymentSettings.Payos;
+            var payOs = paymentSettings.Payos;
 
-            return new PayOS(payos.ClientId, payos.ApiKey, payos.ChecksumKey);
+            return new PayOS(payOs.ClientId, payOs.ApiKey, payOs.ChecksumKey);
         });
 
     }
@@ -307,7 +308,7 @@ internal static class Startup
 
         services.ConfigureIdentity();
 
-        services.ConfigureRepository();
+        services.ConfigureRepositories();
 
         services.AddAutoMapper(typeof(MapperClass));
 
@@ -347,6 +348,7 @@ internal static class Startup
         services.AddSignalR(options =>
         {
             options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+            options.KeepAliveInterval = TimeSpan.FromSeconds(30);
         }).AddMessagePackProtocol();
     }
 
@@ -373,6 +375,8 @@ internal static class Startup
         app.UseResponseCompression();
 
 
+        app.MapHub<TestHub>("/TestHub");
+
         app.UseAuthentication();
         app.UseMiddleware<Custom401ResponseMiddleware>();
         app.UseMiddleware<Custom403ResponseMiddleware>();
@@ -382,6 +386,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        app.MigrateData().Wait();
+        //app.MigrateData().Wait();
     }
 }

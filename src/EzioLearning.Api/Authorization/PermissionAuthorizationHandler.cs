@@ -1,10 +1,11 @@
-﻿using EzioLearning.Domain.Common;
+﻿using System.Security.Claims;
+using EzioLearning.Core.Repositories.Auth;
 using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EzioLearning.Api.Authorization;
 
-public class PermissionAuthorizationHandler
+public class PermissionAuthorizationHandler(IPermissionRepository permissionRepository)
     : AuthorizationHandler<PermissionRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -22,13 +23,15 @@ public class PermissionAuthorizationHandler
 
         var permission = requirement.Permission;
 
-        var permissionClaims = context.User.Claims
-            .Where(x => x.Type.Equals(CustomClaimTypes.Permissions)).ToList();
-        if (permissionClaims.Count == 0) return Task.CompletedTask;
+        //var permissionClaims = context.User.Claims
+        //    .Where(x => x.Type.Equals(CustomClaimTypes.Permissions)).ToList();
 
-        var userPermissions = permissionClaims.Select(x => x.Value).ToArray();
+        var permissionClaim = permissionRepository.GetByUserId(
+            Guid.Parse(context.User.Claims.First(x => x.Type.Equals(ClaimTypes.Sid)).Value)).Result.
+                FirstOrDefault(x => x.Name.Equals(permission));
+        if (permissionClaim == null) return Task.CompletedTask;
 
-        if (userPermissions.Contains(permission)) context.Succeed(requirement);
+        context.Succeed(requirement);
         return Task.CompletedTask;
     }
 }
