@@ -72,6 +72,13 @@ namespace EzioLearning.Wasm.Services.Implement
 			return data;
 		}
 
+		public async Task<bool> CreateNewCourse(CourseCreateDto courseCreateDto)
+		{
+			var response = await httpClient.PostAsJsonAsync("/api/Course/Create", courseCreateDto);
+
+			return true;
+		}
+
 		static int GetLargestPart(int number)
 		{
 			var numDigits = (int)Math.Floor(Math.Log10(number)) + 1;
@@ -86,5 +93,7 @@ namespace EzioLearning.Wasm.Services.Implement
 
 			return largestPart;
 		}
+
+
 	}
 }

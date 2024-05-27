@@ -19,15 +19,16 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
 
         if (string.IsNullOrWhiteSpace(token.AccessToken))
             return emptyAuthenticationState;
-
-        await SemaphoreSlim.WaitAsync();
-
-        if (await tokenService.IsLiveToken())
-        {
-            return await SetTokenAuthenticated(token);
-        }
+        
         try
         {
+            await SemaphoreSlim.WaitAsync();
+
+            if (await tokenService.IsLiveToken())
+            {
+                return await SetTokenAuthenticated(token);
+            }
+
             var newTokenResponse = await tokenService.GenerateNewToken();
             if (newTokenResponse == null
                 || string.IsNullOrWhiteSpace(newTokenResponse.AccessToken))
@@ -39,9 +40,8 @@ public class ApiAuthenticationStateProvider(HttpClient httpClient, ITokenService
 
             return await SetTokenAuthenticated(token);
         }
-        catch (Exception ex)
+        catch 
         {
-            Console.WriteLine($"ErrorRoute occurred while validating authentication state: {ex.Message}");
             return emptyAuthenticationState;
         }
         finally

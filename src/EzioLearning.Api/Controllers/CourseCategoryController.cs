@@ -33,11 +33,13 @@ public class CourseCategoryController(
     [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
-        var currentCulture = CultureInfo.CurrentCulture.Name;
         var data =
             await categoryRepository
                 .GetAllWithDto<CourseCategoryViewDto>(
-                    x => x.IsActive && x.CourseCategoryTranslations.Select(x=>x.CultureId).Contains(CultureInfo.CurrentCulture.Name),
+                    x => x.IsActive && 
+                         x.CourseCategoryTranslations
+                             .Select(courseCategoryTranslation => courseCategoryTranslation.CultureId)
+                             .Contains(CultureInfo.CurrentCulture.Name),
                     [nameof(CourseCategory.CourseCategoryTranslations)]
                     );
 
@@ -99,7 +101,7 @@ public class CourseCategoryController(
 
         var courseCategoryTranslation = new CourseCategoryTranslation()
         {
-            Culture = (await cultureRepository.Find(x=> x.Id.Equals(CultureInfo.CurrentCulture.Name))).First(),
+            Culture = (await cultureRepository.Find(x => x.Id.Equals(CultureInfo.CurrentCulture.Name))).First(),
             Name = courseCategoryCreateDto.Name,
             CourseCategoryId = newCourseCategory.Id,
         };
@@ -125,7 +127,7 @@ public class CourseCategoryController(
             { { "CourseCategoryCreateFail",[localizer.GetString("CourseCategoryCreateFail")] }}
         });
     }
-    
+
     [HttpPut("Translation")]
     //[VerifyToken]
     public async Task<IActionResult> CreateTranslation([FromForm] CourseCategoryTranslationCreateApiDto model)
@@ -146,7 +148,7 @@ public class CourseCategoryController(
         }
         var courseCategoryTranslation = new CourseCategoryTranslation()
         {
-            Culture = (await cultureRepository.Find(x=> x.Id.Equals(model.Culture))).First(),
+            Culture = (await cultureRepository.Find(x => x.Id.Equals(model.Culture))).First(),
             Name = model.Name!,
             CourseCategoryId = currentCourseCategory.Id,
         };

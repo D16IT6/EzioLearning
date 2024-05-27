@@ -1,9 +1,8 @@
-﻿namespace EzioLearning.Core.Dto.Account
+﻿using EzioLearning.Share.Dto.Account;
+
+namespace EzioLearning.Core.Dto.Account
 {
-    public class ChangeEmailConfirmApiDto
+    public class ChangeEmailConfirmApiDto : ChangeEmailConfirmDto
     {
-        public string VerifyCode { get; set; } = string.Empty;
-        public string UserId { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
     }
 }

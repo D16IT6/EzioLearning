@@ -20,7 +20,7 @@ namespace EzioLearning.Wasm
 {
     public static class Startup
     {
-        public static async Task ConfigureServices(this IServiceCollection services, IConfiguration configuration)
+        public static Task ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddBlazoredLocalStorage();
             services.AddMudServices(config =>
@@ -55,7 +55,7 @@ namespace EzioLearning.Wasm
                 return httpClient;
             });
 
-            await using var log = new LoggerConfiguration()
+            using var log = new LoggerConfiguration()
                 .WriteTo.File("Logs/log.txt")
                 .CreateLogger();
 
@@ -71,7 +71,7 @@ namespace EzioLearning.Wasm
 
             services.AddLogging();
 
-
+            return Task.CompletedTask;
         }
 
         private static void ConfigureMultiLanguages(this IServiceCollection services)

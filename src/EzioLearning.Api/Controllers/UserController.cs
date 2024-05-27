@@ -4,7 +4,6 @@ using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Auth;
 using EzioLearning.Domain.Entities.Identity;
-using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

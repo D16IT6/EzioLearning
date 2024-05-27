@@ -2,7 +2,6 @@
 using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Services.Interface;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components.Forms;
 using EzioLearning.Wasm.Utils.Common;
 using EzioLearning.Wasm.Utils.Extensions;
@@ -20,17 +19,20 @@ namespace EzioLearning.Wasm.Services.Implement
         public async Task<ResponseBaseWithData<AccountInfoMinimalDto>> GetMinimalInfo()
         {
             var response = await httpClient.GetAsync("api/Account/MinimalInfo");
-            await using var stream = await response.Content.ReadAsStreamAsync();
 
-            return (await response.GetResponse<ResponseBaseWithData<AccountInfoMinimalDto>>());
+            var responseData = (await response.GetResponse<ResponseBaseWithData<AccountInfoMinimalDto>>());
+
+            if (responseData.Data != null && !string.IsNullOrWhiteSpace(responseData.Data.Avatar))
+            {
+                responseData.Data.Avatar = ApiConstants.BaseUrl + responseData.Data.Avatar + $"?t={Guid.NewGuid()}";
+            }
+            return responseData;
         }
 
 
         public async Task<ResponseBaseWithData<AccountInfoDto>?> UpdateInfo(AccountInfoDto newInfo)
         {
             var response = await httpClient.PutAsJsonAsync("api/Account/Info", newInfo);
-
-            await using var stream = await response.Content.ReadAsStreamAsync();
 
             return await response.GetResponse<ResponseBaseWithData<AccountInfoDto>>();
         }            

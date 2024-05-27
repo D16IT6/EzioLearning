@@ -1,6 +1,5 @@
 ﻿export function loadComponents() {
     // Login Slide
-    console.log('called from login slide');
     if ($('.owl-carousel.login-slide').length > 0) {
         var owl = $('.owl-carousel.login-slide');
         owl.owlCarousel({

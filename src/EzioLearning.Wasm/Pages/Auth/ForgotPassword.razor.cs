@@ -1,21 +1,18 @@
 ﻿using EzioLearning.Share.Dto.Auth;
-using EzioLearning.Wasm.Services;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
+using EzioLearning.Wasm.Utils.Extensions;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
-public partial class ForgotPassword
+public partial class ForgotPassword : AuthComponentBase
 {
     [SupplyParameterFromForm] public ForgotPasswordDto ForgotPasswordDto { get; set; } = new();
 
-    [Inject] private IAuthService AuthService { get; set; } = default!;
-
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
     [Inject] private IStringLocalizer<ForgotPassword> Localizer { get; set; } = default!;
@@ -23,12 +20,14 @@ public partial class ForgotPassword
     private bool DisableSubmitButton { get; set; }
     private string SubmitButtonText { get; set; } = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         var confirmUrl = NavigationManager.ToAbsoluteUri(RouteConstants.ConfirmPassword);
 
         ForgotPasswordDto.ClientConfirmUrl = confirmUrl.AbsoluteUri;
     }
+
 
     public async Task SubmitForgotPasswordForm()
     {

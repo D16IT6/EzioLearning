@@ -4,20 +4,29 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
-public partial class Login
+public partial class Login : AuthComponentBase
 {
     [SupplyParameterFromForm] public LoginRequestDto LoginRequest { get; set; } = new();
 
-    [Inject] private IAuthService AuthService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ITokenService TokenService { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+
     [Inject] private IStringLocalizer<Login> Localizer { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateTask;
+        if (authState.User.Identity is { IsAuthenticated: true })
+        {
+            NavigationManager.NavigateTo(RouteConstants.Index);
+        }
+    }
 
     public async Task LoginSubmit()
     {

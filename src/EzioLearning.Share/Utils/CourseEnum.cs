@@ -9,7 +9,7 @@
 
     public enum CourseLevel
     {
-        AllLevel,
+        All,
         Beginner,
         Intermediate,
         Expert

@@ -7,7 +7,6 @@ namespace EzioLearning.Wasm.Hubs
 {
     public class HubConnectionManager(ITokenService tokenService, AuthenticationStateProvider authenticationStateProvider)
     {
-
         private static readonly Dictionary<HubConnectionEndpoints, HubConnection> HubConnections = new();
 
         public async Task<HubConnection?> GetHubConnectionAsync(HubConnectionEndpoints hubConnectionEndpoint, bool needAuthenticate)
@@ -24,10 +23,11 @@ namespace EzioLearning.Wasm.Hubs
             if (HubConnections.TryGetValue(hubConnectionEndpoint, out var hubConnection)) return hubConnection;
 
             var accessToken = (await tokenService.GetTokenFromLocalStorage()).AccessToken;
+
             hubConnection = new HubConnectionBuilder()
                 .WithUrl(hubUrl, options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                    options.AccessTokenProvider = () => Task.FromResult(accessToken)!;
                 })
                 .AddMessagePackProtocol()
                 .Build();

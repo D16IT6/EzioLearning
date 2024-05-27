@@ -15,7 +15,7 @@ public class RegisterRequestClientDto
 
     public DateTime? DateOfBirth { get; set; } = DateTime.UtcNow.AddYears(-10);
 
-    public IBrowserFile? Avatar { get; set; }
+    protected IBrowserFile? Avatar { get; set; }
 
     public string? LoginProvider { get; set; }
     public string? ProviderName { get; set; }

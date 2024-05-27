@@ -1,6 +1,8 @@
-﻿using EzioLearning.Share.Dto.Learning.CourseCategory;
+﻿using EzioLearning.Share.Dto.Learning.Course;
+using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Wasm.Services.Interface;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 using MudExtensions;
 
@@ -17,6 +19,8 @@ namespace EzioLearning.Wasm.Pages.Course
         private CourseCategoryViewDto SelectedCourseCategory { get; set; } = new();
 
         private RenderFragment? CourseCategoriesRenderFragment { get; set; }
+
+        [SupplyParameterFromForm] private CourseCreateDto CourseCreateDto { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -61,6 +65,12 @@ namespace EzioLearning.Wasm.Pages.Course
                 }
 
             };
+        }
+
+        private async Task CreateNewCourseSubmit()
+        {
+            await Task.CompletedTask;
+
         }
     }
 }

@@ -4,26 +4,25 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
-public partial class ConfirmPassword
+public partial class ConfirmPassword : AuthComponentBase
 {
     [SupplyParameterFromForm] private ConfirmPasswordDto ConfirmPasswordDto { get; set; } = new();
 
-    [Inject] private IAuthService AuthService { get; set; } = default!;
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IStringLocalizer<ConfirmPassword> Localizer { get; set; } = default!;
-
     [SupplyParameterFromQuery] private string VerifyCode { get; set; } = string.Empty;
 
     [SupplyParameterFromQuery] private string Email { get; set; } = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await  base.OnInitializedAsync();
         ConfirmPasswordDto.VerifyCode = VerifyCode;
         ConfirmPasswordDto.Email = Email;
     }

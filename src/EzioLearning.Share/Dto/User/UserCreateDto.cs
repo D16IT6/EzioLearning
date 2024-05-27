@@ -15,7 +15,7 @@ public class UserCreateDto
 
     public DateTime? DateOfBirth { get; init; } = DateTime.UtcNow.AddYears(-10);
 
-    public IBrowserFile? Avatar { get; init; }
+    protected IBrowserFile? Avatar { get; init; }
 
     public string? LoginProvider { get; init; }
     public string? ProviderName { get; init; }

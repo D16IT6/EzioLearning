@@ -10,5 +10,7 @@ namespace EzioLearning.Wasm.Services.Interface
 		Task<List<TopCourseCategoryDto>> GetTopCourseCategories(int count);
 		Task<int> GetCourseCount();
 		Task<List<InstructorViewDto>> GetFeatureInstructors(int take = 6);
+
+		Task<bool> CreateNewCourse(CourseCreateDto courseCreateDto);
 	}
 }

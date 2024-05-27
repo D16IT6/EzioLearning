@@ -13,10 +13,6 @@
 		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.4" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\User\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<EmbeddedResource Update="Resources\Validators\Account\AccountInfoDtoValidator.en.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>

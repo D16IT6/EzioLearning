@@ -1,15 +1,13 @@
-﻿using EzioLearning.Domain.Entities.Identity;
+﻿using System.Text.RegularExpressions;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Validators.Common;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using System.Text.RegularExpressions;
 
-namespace EzioLearning.Core.Validators.User;
+namespace EzioLearning.Share.Validators.User;
 
 public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
 {
-    public UserCreateDtoValidator(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
+    public UserCreateDtoValidator()
     {
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("Họ không được để trống")
@@ -26,30 +24,17 @@ public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
             .Must(s =>
             {
                 Regex regex = new("^[a-zA-Z0-9]+$");
-                if (s == null)
-                    return false;
-
-                return regex.IsMatch(s);
+                return s != null && regex.IsMatch(s);
             }).WithMessage("Tài khoản chỉ chấp nhận chữ cái và số")
             .MaximumLength(32).WithMessage("Họ không được quá 50 ký tự")
-            .Must(userName =>
-            {
-                if (string.IsNullOrEmpty(userName)) return false;
-                var user = userManager.FindByNameAsync(userName).Result;
-                return user == null;
-            }).WithMessage("Tên tài khoản đã tồn tại, vui lòng thử lại")
+           
             .MaximumLength(32).WithMessage("Họ không được quá 50 ký tự");
 
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email không được để trống")
-            .EmailAddress().WithMessage("Định dạng email không hợp lệ")
-            .Must(email =>
-            {
-                if (string.IsNullOrEmpty(email)) return false;
-                var user = userManager.FindByEmailAsync(email).Result;
-                return user == null;
-            }).WithMessage("Email đã tồn tại, vui lòng thử lại");
+            .EmailAddress().WithMessage("Định dạng email không hợp lệ");
+            
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Mật khẩu không được để trống")
@@ -61,16 +46,15 @@ public class UserCreateDtoValidator : AbstractValidator<UserCreateDto>
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("Số điện thoại không được để trống.");
-        int minYear = 10, maxYear = 100;
+        const int minYear = 10;
+        const int maxYear = 100;
 
         RuleFor(x => x.DateOfBirth)
             .NotEmpty().WithMessage("Ngày sinh không được để trống.")
             .Must(x => x.BeValidDate(minYear, maxYear)).WithMessage("Người dùng tuổi chỉ từ 10 tới 100.");
 
-        var actuallyRoleListIds = roleManager.Roles.Select(x => x.Id).ToList();
+
         RuleFor(x => x.RoleIds)
-            .NotEmpty().WithMessage("Quyền không được để trống")
-            .Must(roleList => !roleList.Except(actuallyRoleListIds).Any())
-            .WithMessage("Có role không tồn tại trong hệ thống, vui lòng xem lại");
+            .NotEmpty().WithMessage("Quyền không được để trống");
     }
 }

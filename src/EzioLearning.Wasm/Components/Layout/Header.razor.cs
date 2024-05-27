@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using EzioLearning.Share.Dto.Culture;
-using EzioLearning.Wasm.Components.Account;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Localization;
@@ -43,7 +43,7 @@ public partial class Header : AccountComponentBase
 
     private async Task Logout()
     {
-        var data = await AuthService!.Logout();
+        var data = await AuthService.Logout();
         if (data != null)
         {
             Snackbar.Add("Đăng xuất thành công", Severity.Info);
@@ -55,12 +55,12 @@ public partial class Header : AccountComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-        var responseData = await CultureService.GetCultures();
-        if (responseData.Data != null && responseData.Data.Any())
+        await base.OnInitializedAsync(isHeader: true);
+        var cultures = await CultureService.GetCultures();
+        if (cultures.Any())
         {
-            SelectedCulture = responseData.Data.First(x => x.Id.Equals(CultureInfo.CurrentCulture.Name)).Id;
-            Cultures.AddRange(responseData.Data.ToList());
+            SelectedCulture = cultures.First(x => x.Id.Equals(CultureInfo.CurrentCulture.Name)).Id;
+            Cultures.AddRange(cultures.ToList());
         }
 
     }

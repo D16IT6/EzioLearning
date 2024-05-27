@@ -13,7 +13,7 @@ namespace EzioLearning.Share.Validators.Account
             RuleFor(x => x.VerifyCode)
                 .NotEmpty().WithMessage(localizer.GetString("VerifyCodeEmpty"));
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email hiện tại không được để trống")
+                .NotEmpty().WithMessage(localizer.GetString("EmailNotValid"))
                 .EmailAddress().WithMessage(localizer.GetString("EmailNotValid"));
         }
     }

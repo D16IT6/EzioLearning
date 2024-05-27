@@ -1,20 +1,18 @@
 ﻿using Blazored.LocalStorage;
-using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
-using Microsoft.IdentityModel.Tokens;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
-public partial class ExternalLogin
+public partial class ExternalLogin : AuthComponentBase
 {
     [SupplyParameterFromQuery] public string CacheKey { get; set; } = string.Empty;
     [Inject] private ILocalStorageService LocalStorageService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-    [Inject] private IAuthService AuthService { get; set; } = default!;
-
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         var request = await AuthService.GetExternalLoginInfo(CacheKey);
 
         var cacheInfoData = request.Data;

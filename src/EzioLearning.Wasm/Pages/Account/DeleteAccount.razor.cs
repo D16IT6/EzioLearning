@@ -1,7 +1,7 @@
-﻿using EzioLearning.Wasm.Components.Account;
-using EzioLearning.Wasm.Components.Common;
+﻿using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;

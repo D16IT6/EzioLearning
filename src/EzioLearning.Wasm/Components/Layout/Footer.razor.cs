@@ -12,14 +12,14 @@ public partial class Footer
     [CascadingParameter] private TimeSpan AnimationDuration { get; set; }
     [Inject] private IStringLocalizer<Footer> Localizer { get; set; } = default!;
 
-    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; } = default!;
 
 
     private bool IsAuthenticated { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authenticationState = await AuthenticationState;
 
         if (authenticationState.User.Identity != null)
             IsAuthenticated = authenticationState.User.Identity.IsAuthenticated;

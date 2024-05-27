@@ -6,9 +6,9 @@ using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Share.Validators.Auth;
 
-public class RegisterRequestClientValidator : AbstractValidator<RegisterRequestClientDto>
+public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestClientDto>
 {
-    public RegisterRequestClientValidator(IStringLocalizer<RegisterRequestClientValidator> localizer)
+    public RegisterRequestDtoValidator(IStringLocalizer<RegisterRequestDtoValidator> localizer)
     {
         const int nameMaxLength = 50;
         RuleFor(x => x.FirstName)

@@ -5,6 +5,6 @@ namespace EzioLearning.Wasm.Services.Interface
 {
     public interface ICultureService : IServiceBase
     {
-        Task<ResponseBaseWithList<CultureViewDto>> GetCultures();
+        Task<List<CultureViewDto>> GetCultures();
     }
 }

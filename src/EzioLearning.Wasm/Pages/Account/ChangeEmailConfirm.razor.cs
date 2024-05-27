@@ -1,6 +1,5 @@
 ﻿using EzioLearning.Share.Dto.Account;
 using EzioLearning.Share.Models.Response;
-using EzioLearning.Wasm.Components.Account;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net.Http.Json;
@@ -8,6 +7,7 @@ using System.Text.Json;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
+using EzioLearning.Wasm.Utils.Extensions;
 
 
 namespace EzioLearning.Wasm.Pages.Account

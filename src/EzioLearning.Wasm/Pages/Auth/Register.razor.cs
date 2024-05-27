@@ -7,10 +7,11 @@ using MudBlazor;
 using System.Net;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
+using EzioLearning.Wasm.Utils.Extensions;
 
 namespace EzioLearning.Wasm.Pages.Auth;
 
-public partial class Register
+public partial class Register : AuthComponentBase
 {
 
     private string[] AcceptTypes => FileConstants.AcceptTypes;
@@ -36,8 +37,6 @@ public partial class Register
 
     [Inject] private ISnackbar SnackBar { get; set; } = default!;
     [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
-    [Inject] private IAuthService AuthService { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ITokenService TokenService { get; set; } = default!;
 
     private bool DisableSubmitButton { get; set; }
@@ -53,6 +52,8 @@ public partial class Register
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         JsObjectReference = await JsRunTime.InvokeAsync<IJSObjectReference>("import",
             $"/{nameof(Pages)}/{nameof(Auth)}/{nameof(Register)}.razor.js");
 

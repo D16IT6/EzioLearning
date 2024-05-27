@@ -265,7 +265,7 @@ public class AuthController(
                 Data = new TokenResponse
                 {
                     AccessToken = memoryToken,
-                    RefreshToken = user.RefreshToken
+                    RefreshToken = user.RefreshToken!
                 },
                 Message = localizer.GetString("LoginSuccess"),
                 Status = HttpStatusCode.OK

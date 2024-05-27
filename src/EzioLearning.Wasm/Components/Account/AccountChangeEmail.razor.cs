@@ -8,6 +8,7 @@ using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using EzioLearning.Wasm.Utils.Extensions;
 
 
 namespace EzioLearning.Wasm.Components.Account

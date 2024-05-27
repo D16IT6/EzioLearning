@@ -1,4 +1,4 @@
-﻿using EzioLearning.Wasm.Components.Account;
+﻿using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
