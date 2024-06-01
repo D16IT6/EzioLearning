@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EzioLearning.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_Multi_Languages : Migration
+    public partial class InitDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -314,10 +314,9 @@ namespace EzioLearning.Infrastructure.Migrations
                     Poster = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Price = table.Column<double>(type: "float", nullable: false),
                     PromotionPrice = table.Column<double>(type: "float", nullable: false),
-                    SortOrder = table.Column<int>(type: "int", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CultureId = table.Column<string>(type: "varchar(5)", nullable: false),
+                    CultureId = table.Column<string>(type: "varchar(5)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -337,8 +336,7 @@ namespace EzioLearning.Infrastructure.Migrations
                         column: x => x.CultureId,
                         principalSchema: "System",
                         principalTable: "Cultures",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -369,36 +367,6 @@ namespace EzioLearning.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseLessons",
-                schema: "Learning",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    VideoPath = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    SlidePath = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Attachment = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    SortOrder = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseLessons", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CourseLessons_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalSchema: "Learning",
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CourseRatings",
                 schema: "Learning",
                 columns: table => new
@@ -416,6 +384,31 @@ namespace EzioLearning.Infrastructure.Migrations
                     table.PrimaryKey("PK_CourseRatings", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CourseRatings_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalSchema: "Learning",
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseSections",
+                schema: "Learning",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseSections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseSections_Courses_CourseId",
                         column: x => x.CourseId,
                         principalSchema: "Learning",
                         principalTable: "Courses",
@@ -476,6 +469,36 @@ namespace EzioLearning.Infrastructure.Migrations
                         column: x => x.CourseId,
                         principalSchema: "Learning",
                         principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseLessons",
+                schema: "Learning",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    VideoPath = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    SlidePath = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Attachment = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CourseSectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseLessons", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseLessons_CourseSections_CourseSectionId",
+                        column: x => x.CourseSectionId,
+                        principalSchema: "Learning",
+                        principalTable: "CourseSections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -544,10 +567,10 @@ namespace EzioLearning.Infrastructure.Migrations
                 column: "CoursesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseLessons_CourseId",
+                name: "IX_CourseLessons_CourseSectionId",
                 schema: "Learning",
                 table: "CourseLessons",
-                column: "CourseId");
+                column: "CourseSectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseRatings_CourseId",
@@ -566,6 +589,12 @@ namespace EzioLearning.Infrastructure.Migrations
                 schema: "Learning",
                 table: "Courses",
                 column: "CultureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseSections_CourseId",
+                schema: "Learning",
+                table: "CourseSections",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LessonComments_CourseId",
@@ -652,12 +681,16 @@ namespace EzioLearning.Infrastructure.Migrations
                 schema: "Learning");
 
             migrationBuilder.DropTable(
-                name: "Courses",
+                name: "CourseSections",
                 schema: "Learning");
 
             migrationBuilder.DropTable(
                 name: "AppPermissions",
                 schema: "Auth");
+
+            migrationBuilder.DropTable(
+                name: "Courses",
+                schema: "Learning");
 
             migrationBuilder.DropTable(
                 name: "AppUsers",

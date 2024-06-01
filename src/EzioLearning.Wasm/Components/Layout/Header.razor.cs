@@ -47,7 +47,7 @@ public partial class Header : AccountComponentBase
         if (data != null)
         {
             Snackbar.Add("Đăng xuất thành công", Severity.Info);
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
             NavigationManager.NavigateTo(RouteConstants.Login, true);
         }
     }

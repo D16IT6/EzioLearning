@@ -26,7 +26,7 @@ public class CourseCreateApiDtoValidator : AbstractValidator<CourseCreateApiDto>
             .Must(inputCourseCategories => !inputCourseCategories.Except(availableCourseCategoriesIds).Any())
             .WithMessage("Danh mục không tồn tại");
 
-        RuleFor(x => x.CreatedBy)
-            .Must(x => availableUserIds.Contains(x)).WithMessage("Giáo viên không tồn tại");
+        //RuleFor(x => x.CreatedBy)
+        //    .Must(x => availableUserIds.Contains(x)).WithMessage("Giáo viên không tồn tại");
     }
 }

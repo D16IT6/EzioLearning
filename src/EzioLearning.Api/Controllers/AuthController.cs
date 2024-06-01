@@ -550,7 +550,7 @@ public class AuthController(
 
     private async Task<TokenResponse> GenerateAndCacheToken(AppUser user)
     {
-        var permissions = await permissionRepository.GetByUserId(user.Id);
+        var permissions = (await permissionRepository.GetByUserId(user.Id)).ToList();
         var expiredTime = user.RefreshTokenExpiryTime;
         var roleList = await userManager.GetRolesAsync(user);
         var jwtSecurityToken = jwtService.GenerateAccessToken(user, roleList, permissions);

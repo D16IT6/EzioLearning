@@ -46,10 +46,6 @@ namespace EzioLearning.Wasm.Services.Implement
             {
                 formContent.Add(new StreamContent(avatar.OpenReadStream()), nameof(AccountInfoDto.Avatar), avatar.Name);
             }
-            else
-            {
-                formContent.Add(new StringContent("Test"), "Test");
-            }
 
             var response = await httpClient.PutAsync("/api/Account/Avatar", formContent);
             

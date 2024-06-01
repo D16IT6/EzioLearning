@@ -1,19 +1,23 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using AutoMapper;
+using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Utils;
+using EzioLearning.Core.Dto.Learning.Course;
 using EzioLearning.Core.Repositories.Learning;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Share.Common;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using CourseCreateApiDto = EzioLearning.Core.Dto.Learning.Course.CourseCreateApiDto;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -63,28 +67,31 @@ public class CourseController(
 	[HttpGet("Feature/{take:int?}")]
     public async Task<IActionResult> GetFeaturedCourses([FromRoute] int take = 12)
     {
-        var data = await courseRepository.GetAllAsync();
-        data = data.OrderByDescending(x => x.Students.Count).ThenByDescending(x => x.CreatedDate)
-            .Take(take);
+        var data = await courseRepository.GetFeaturedCourses(take);
+     
+        var resultData = mapper.ProjectTo<CourseViewDto>(data.AsQueryable());
 
-        var resultData = mapper.Map<List<Course>, List<CourseViewDto>>(data.ToList());
-
-        await UpdateCourseViewDto(resultData);
+        //await UpdateCourseViewDto(resultData);
 
         return Ok(new ResponseBaseWithList<CourseViewDto>
         {
             Status = HttpStatusCode.OK,
             Message = localizer.GetString("CourseFeatureGetSuccess"),
-            Data = resultData
+            Data = resultData.ToList()
         });
     }
 
     [HttpPost]
+    [Authorize(Permissions.Courses.Create)]
+    [VerifyToken]
     public async Task<IActionResult> CreateNewCourse([FromForm] CourseCreateApiDto model)
     {
-        var newCourse = mapper.Map<Course>(model);
+        var userId = User.Claims.First(x => x.Type.Equals(ClaimTypes.PrimarySid)).Value;
 
-        newCourse.Id = Guid.NewGuid();
+        model.CreatedBy = Guid.Parse(userId);
+        model.Id = Guid.NewGuid();
+        
+        var newCourse = mapper.Map<Course>(model);
 
         var imagePath = ImageConstants.DefaultCoursePoster;
 
@@ -103,18 +110,19 @@ public class CourseController(
 
         newCourse.Poster = imagePath;
 
-
         newCourse.Categories = (ICollection<CourseCategory>)await GetInsertCourseCategories(model);
 
         courseRepository.Add(newCourse);
 
         var result = await unitOfWork.CompleteAsync();
         if (result > 0)
-            return Ok(new ResponseBase
+            return Ok(new ResponseBaseWithData<CourseCreateDto>()
             {
                 Message = localizer.GetString("CourseCreateSuccess"),
-                Status = HttpStatusCode.OK
+                Status = HttpStatusCode.OK,
+                Data = model
             });
+
         return BadRequest(new ResponseBase
         {
             Message = localizer.GetString("CourseCreateFail"),

@@ -6,4 +6,5 @@ namespace EzioLearning.Core.Repositories.Learning;
 public interface ICourseRepository : IPagedRepository<Course, Guid>
 {
     Task<int> CountCourses();
+    Task<IEnumerable<Course>> GetFeaturedCourses(int take = 12);
 }

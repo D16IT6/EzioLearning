@@ -9,7 +9,7 @@ namespace EzioLearning.Wasm.Services.Interface;
 public interface IAuthService: IServiceBase
 {
     public Task<ResponseBaseWithData<TokenResponse>> Login(LoginRequestDto loginRequestDto);
-    public Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto registerRequestClientDto, IBrowserFile? avatar = null);
+    public Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto registerRequestClientDto);
     public Task<ResponseBase?> Logout();
 
     public Task<ResponseBase?> ForgotPassword(ForgotPasswordDto forgotPasswordDto);

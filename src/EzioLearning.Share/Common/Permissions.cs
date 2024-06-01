@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EzioLearning.Core.SeedWorks.Constants
+namespace EzioLearning.Share.Common
 {
     public static class Permissions
     {

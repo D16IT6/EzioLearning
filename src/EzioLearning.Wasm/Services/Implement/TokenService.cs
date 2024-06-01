@@ -42,7 +42,7 @@ public class TokenService(ILocalStorageService localStorageService, HttpClient h
 
         var jwtHandler = new JwtSecurityTokenHandler();
 
-        if (!jwtHandler.CanReadToken(accessToken)) return DateTime.Now;
+        if (!jwtHandler.CanReadToken(accessToken)) return DateTime.UtcNow;
 
         var jwtToken = jwtHandler.ReadJwtToken(accessToken);
         return jwtToken.ValidTo;

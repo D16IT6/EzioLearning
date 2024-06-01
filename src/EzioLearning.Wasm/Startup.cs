@@ -1,11 +1,14 @@
 ﻿using System.Globalization;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using EzioLearning.Share.Utils;
+using EzioLearning.Wasm.Authorization;
 using EzioLearning.Wasm.Hubs;
 using EzioLearning.Wasm.Pages;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -14,6 +17,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using MudExtensions.Services;
 using Serilog;
+using Syncfusion.Blazor;
 using ILogger = Serilog.ILogger;
 
 namespace EzioLearning.Wasm
@@ -22,6 +26,10 @@ namespace EzioLearning.Wasm
     {
         public static Task ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
+
+
+            services.AddSyncfusionBlazor();
+
             services.AddBlazoredLocalStorage();
             services.AddMudServices(config =>
             {
@@ -35,7 +43,14 @@ namespace EzioLearning.Wasm
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
+
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+
             services.AddAuthorizationCore();
+
+
+
             services.AddCascadingAuthenticationState();
 
             services.ScanLocalServices();
@@ -111,8 +126,7 @@ namespace EzioLearning.Wasm
 
             var culture = new CultureInfo(currentCultureName);
 
-            CultureInfo.DefaultThreadCurrentCulture = culture;
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             //Header accept language
             var httpClient = host.Services.GetRequiredService<HttpClient>();

@@ -76,7 +76,7 @@
                             <div class="input-block">
                                 <label class="form-label">@Localizer.GetString("AvatarLabel")</label>
                                 <InputFile 
-                                    @bind-Value="RegisterModel.Avatar" 
+                                    @bind-Value="RegisterModel.BrowserFile" 
                                     OnChange="LoadFile" accept="@string.Join(',', AcceptTypes)" 
                                     class="pt-3 form-control"/>
                             </div>

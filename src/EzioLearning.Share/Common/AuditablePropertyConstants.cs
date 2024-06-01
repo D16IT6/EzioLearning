@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Domain.Common;
+﻿namespace EzioLearning.Share.Common;
 
 public static class AuditablePropertyConstants
 {

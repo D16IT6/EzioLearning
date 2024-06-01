@@ -1,14 +1,17 @@
-﻿using System.Net.Http.Json;
+﻿using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.Json;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Utils.Extensions;
 
 namespace EzioLearning.Wasm.Services.Implement
 {
-	public class CourseService(HttpClient httpClient) :ICourseService
+	public class CourseService(HttpClient httpClient) : ICourseService
 	{
 		public async Task<List<CourseViewDto>> GetFeatureCourses(int take = 6)
 		{
@@ -72,12 +75,14 @@ namespace EzioLearning.Wasm.Services.Implement
 			return data;
 		}
 
-		public async Task<bool> CreateNewCourse(CourseCreateDto courseCreateDto)
+		public async Task<ResponseBaseWithData<CourseCreateDto>> CreateNewCourse(CourseCreateDto courseCreateDto)
 		{
-			var response = await httpClient.PostAsJsonAsync("/api/Course/Create", courseCreateDto);
+			var content = new MultipartFormDataContent().CreateFormContent(courseCreateDto, "Poster");
+			
+			var response = await httpClient.PostAsync("api/Course", content);
 
-			return true;
-		}
+			return await response.GetResponse<ResponseBaseWithData<CourseCreateDto>>();
+        }
 
 		static int GetLargestPart(int number)
 		{

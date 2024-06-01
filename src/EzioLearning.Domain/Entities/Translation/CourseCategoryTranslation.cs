@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Domain.Entities.System;
+using EzioLearning.Share.Common;
 
 namespace EzioLearning.Domain.Entities.Translation
 {

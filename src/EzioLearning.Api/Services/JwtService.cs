@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
+using EzioLearning.Share.Common;
 using EzioLearning.Share.Models.Token;
 using Microsoft.IdentityModel.Tokens;
 
@@ -32,14 +32,13 @@ public class JwtService(JwtConfiguration jwtConfiguration)
                 role))
         );
 
-        //claims.AddRange(permissions
-        //    .Select(permission => new Claim(
-        //        CustomClaimTypes.Permissions,
-        //        permission.Name))
-        //);
+        claims.AddRange(permissions
+            .Select(permission => new Claim(
+                CustomClaimTypes.Permissions,
+                permission.Name))
+        );
 
         var tempExpiredAccessTokenTime = DateTime.UtcNow.AddMinutes(jwtConfiguration.ExpiredAfterMinutes);
-        //var tempExpiredAccessTokenTime = DateTime.UtcNow.AddSeconds(30);//Test token
 
         var naturalExpiredTokenTime =
             user.RefreshTokenExpiryTime < tempExpiredAccessTokenTime && user.RefreshTokenExpiryTime != null

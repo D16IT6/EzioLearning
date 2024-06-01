@@ -159,6 +159,9 @@
   <data name="PhoneNumberEmpty" xml:space="preserve">
     <value>Phone number can not be left blank</value>
   </data>
+  <data name="PhoneNumberExist" xml:space="preserve">
+    <value>Phone number already exists</value>
+  </data>
   <data name="UserNameEmpty" xml:space="preserve">
     <value>Username cannot be blank</value>
   </data>

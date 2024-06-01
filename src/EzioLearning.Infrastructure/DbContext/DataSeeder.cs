@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Reflection;
-using EzioLearning.Core.SeedWorks.Constants;
 using EzioLearning.Domain.Entities.System;
+using EzioLearning.Share.Common;
 
 namespace EzioLearning.Infrastructure.DbContext;
 

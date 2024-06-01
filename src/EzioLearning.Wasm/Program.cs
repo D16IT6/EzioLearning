@@ -9,6 +9,9 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MTMxM0AzMjM1MkUzMTJFMzlKK2QyalU0d1EyVUgxN0FFdUVENGdDYmY4UWEyZ2poeEhoSWlUcmFSd2JjPQ==");
+
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -25,7 +28,7 @@ public class Program
 
         await host.LoadCurrentCulture();
 
-        await host.ConnectToHub();
+        //await host.ConnectToHub();
 
         await host.RunAsync();
     }

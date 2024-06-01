@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
-using EzioLearning.Domain.Common;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Domain.Entities.Resources;
 using EzioLearning.Domain.Entities.System;
+using EzioLearning.Share.Common;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,13 +16,14 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
     public DbSet<Course> Courses { get; set; } = default!;
     public DbSet<CourseCategory> CourseCategories { get; set; } = default!;
     public DbSet<CourseRating> CourseRatings { get; set; } = default!;
-    public DbSet<CourseLesson> CourseLessons { get; set; } = default!;
+    public DbSet<CourseLecture> CourseLectures { get; set; } = default!;
     public DbSet<LessonComment> LessonComments { get; set; } = default!;
     public DbSet<Student> Students { get; set; } = default!;
     public DbSet<AppPermission> Permissions { get; set; } = default!;
     public DbSet<Culture> Cultures { get; set; } = default!;
-
-
+    public DbSet<Video> Videos { get; set; } = default!;
+    public DbSet<VideoStream> VideoStreams { get; set; } = default!;
+    public DbSet<Attachment> Attachments { get; set; } = default!;
     #endregion
 
     #region Model Creating
@@ -66,20 +68,20 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
         UpdateAuditableProperty(
             EntityState.Added,
             AuditablePropertyConstants.CreatedDate,
-            DateTime.Now
+            DateTime.UtcNow
         );
 
         UpdateAuditableProperty(
             EntityState.Modified,
             AuditablePropertyConstants.ModifiedDate,
-            DateTime.Now
+            DateTime.UtcNow
         );
 
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
 
-    private void UpdateAuditableProperty(EntityState state, string propertyName, object value)
+    private void UpdateAuditableProperty(EntityState state, string propertyName, DateTime value)
     {
         var entities = ChangeTracker.Entries().Where(x => x.State == state);
 

@@ -1,5 +1,5 @@
-﻿using EzioLearning.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using EzioLearning.Share.Common;
 
 namespace EzioLearning.Domain.Entities.System
 {

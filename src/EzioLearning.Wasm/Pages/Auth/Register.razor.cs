@@ -42,11 +42,10 @@ public partial class Register : AuthComponentBase
     private bool DisableSubmitButton { get; set; }
     private string SubmitButtonText { get; set; } = string.Empty;
 
-    private IBrowserFile? File { get; set; }
 
     private Task LoadFile(InputFileChangeEventArgs e)
     {
-        File = e.File;
+        RegisterModel.BrowserFile = e.File;
         return Task.CompletedTask;
     }
 
@@ -57,9 +56,15 @@ public partial class Register : AuthComponentBase
         JsObjectReference = await JsRunTime.InvokeAsync<IJSObjectReference>("import",
             $"/{nameof(Pages)}/{nameof(Auth)}/{nameof(Register)}.razor.js");
 
-        await JsObjectReference.InvokeVoidAsync("hideLabelInputDateMargin");
         SubmitButtonText = Localizer.GetString("ButtonText");
         StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) return;
+        await JsObjectReference.InvokeVoidAsync("hideLabelInputDateMargin");
+
     }
 
     protected override void OnInitialized()
@@ -87,10 +92,11 @@ public partial class Register : AuthComponentBase
 
     private async Task OnValidSubmitRegisterForm()
     {
-        if (File != null)
+        var file = RegisterModel.BrowserFile;
+        if (file != null)
         {
-            var fileExtension = Path.GetExtension(File.Name);
-            if (File.Size > FileConstants.UploadLimit)
+            var fileExtension = Path.GetExtension(file.Name);
+            if (file.Size > FileConstants.UploadLimit)
             {
                 SnackBar.Add(FileConstants.FileTooLargeMessage, Severity.Error, config => { config.ActionColor = Color.Warning; });
                 return;
@@ -100,7 +106,7 @@ public partial class Register : AuthComponentBase
             {
                 SnackBar.Add(FileConstants.FileNowAllowExtensionMessage, Severity.Error,
                     config => { config.ActionColor = Color.Warning; });
-                RegisterModel.Avatar = null;
+                RegisterModel.BrowserFile = null;
                 return;
             }
         }
@@ -108,9 +114,9 @@ public partial class Register : AuthComponentBase
 
         SubmitButtonText = Localizer.GetString("ButtonTextProcessing");
         DisableSubmitButton = true;
-        var data = await AuthService.Register(RegisterModel, File);
+        var data = await AuthService.Register(RegisterModel);
 
-        switch (data!.Status)
+        switch (data.Status)
         {
             case HttpStatusCode.BadRequest:
 
@@ -121,12 +127,11 @@ public partial class Register : AuthComponentBase
 
                 SnackBarService.ShowErrorFromResponse(data);
 
-                File = null;
                 break;
 
             case HttpStatusCode.OK:
 
-                SubmitButtonText = Localizer.GetString("ButtonTextSuccess"); ;
+                SubmitButtonText = Localizer.GetString("ButtonTextSuccess"); 
                 StateHasChanged();
 
                 await TokenService.SaveFromResponse(data);
@@ -139,7 +144,5 @@ public partial class Register : AuthComponentBase
                 NavigationManager.NavigateTo(RouteConstants.Index, true);
                 break;
         }
-
-        
     }
 }

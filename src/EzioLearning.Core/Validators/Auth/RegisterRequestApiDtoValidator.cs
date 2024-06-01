@@ -17,6 +17,10 @@ public class RegisterRequestApiDtoValidator : AbstractValidator<RegisterRequestA
     {
         Include(registerRequestDtoValidator);
 
+        var phoneNumbers = userManager.Users
+            .Where(x => !x.IsDeleted && !x.PhoneNumberConfirmed && !x.IsDeleted)
+            .Select(x => x.PhoneNumber);
+
         RuleFor(x => x.UserName)
             .NotEmpty().WithMessage(localizer.GetString("UserNameEmpty"))
             .Must(s =>
@@ -40,6 +44,10 @@ public class RegisterRequestApiDtoValidator : AbstractValidator<RegisterRequestA
                 var user = userManager.FindByEmailAsync(email).Result;
                 return user == null;
             }).WithMessage(localizer.GetString("EmailExist"));
+
+        RuleFor(x => x.PhoneNumber)
+            .Must(phoneNumber => !phoneNumbers.Any() ||(!string.IsNullOrWhiteSpace(phoneNumber) && phoneNumbers.Contains(phoneNumber)))
+            .WithMessage(localizer.GetString("PhoneNumberExist"));
 
     }
 }

@@ -206,13 +206,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    //private static async Task MigrateData(this WebApplication app)
-    //{
-    //    using var scope = app.Services.CreateScope();
-    //    await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-    //    await context.Database.MigrateAsync();
-    //    await new DataSeeder().SeedAsync(context);
-    //}
+    private static async Task MigrateData(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+        //await context.Database.MigrateAsync();
+        await new DataSeeder().SeedAsync(context);
+    }
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -386,6 +386,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        //app.MigrateData().Wait();
+        app.MigrateData().Wait();
     }
 }

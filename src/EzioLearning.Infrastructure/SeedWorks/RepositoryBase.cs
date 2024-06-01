@@ -11,7 +11,7 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
 
     protected readonly DbSet<T> DbSet = context.Set<T>();
 
-    public virtual async Task<IEnumerable<T>> GetAllAsync(string[]? includes = null)
+    public virtual Task<IEnumerable<T>> GetAllAsync(string[]? includes = null)
     {
         var query = DbSet.AsQueryable();
 
@@ -22,7 +22,7 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
                 query = query.Include(include);
             }
         }
-        return await query.AsNoTracking().ToListAsync();
+        return Task.FromResult<IEnumerable<T>>(query.AsNoTracking());
     }
 
     public virtual async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression, string[]? includes = null)

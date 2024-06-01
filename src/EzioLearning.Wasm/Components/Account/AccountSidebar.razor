@@ -1,6 +1,5 @@
 ﻿@using System.Security.Claims
 @using EzioLearning.Share.Utils;
-@using EzioLearning.Wasm.Utils.Extensions
 @inherits EzioLearning.Wasm.Utils.Extensions.AccountComponentBase
 <!-- sidebar -->
 <div class="col-xl-3 col-md-4 theiaStickySidebar">
@@ -32,9 +31,16 @@
                         <p>@string.Join(",", roles)</p>
                     }
                 </div>
-                @*  <div class="go-dashboard text-center">
-                <a href="deposit-student-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                </div> *@
+                @if (roles.Contains(RoleConstants.Teacher) || roles.Contains(RoleConstants.Admin))
+                {
+                    <div class="go-dashboard text-center">
+                        <NavLink Match="NavLinkMatch.All"
+                                 href="@RouteConstants.CourseRoute.Create"
+                                 class="btn btn-primary">
+                            Tạo khoá học
+                        </NavLink>
+                    </div>
+                }
             </div>
         </div>
     </div>

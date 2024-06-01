@@ -20,16 +20,15 @@ public class MapperClass : Profile
     public MapperClass()
     {
 
-        CreateMap<Culture, CultureViewDto>().ForMember(x=>x.ImageUrl,cfg =>cfg.Ignore());
+        CreateMap<Culture, CultureViewDto>().ForMember(x => x.ImageUrl, cfg => cfg.Ignore());
 
 
-        CreateMap<CourseCreateApiDto, Course>();
         CreateMap<CourseCategoryViewDto, CourseCategory>();
 
         CreateMap<CourseCategory, CourseCategoryViewDto>()
             .ForMember(dest => dest.ParentName,
                 otp =>
-                    otp.MapFrom(src => src.Parent!.CourseCategoryTranslations.First(x=> CultureInfo.CurrentCulture.Name == x.CultureId).Name))
+                    otp.MapFrom(src => src.Parent!.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name))
             .ForMember(dest => dest.Name,
                 otp =>
                     otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
@@ -48,7 +47,15 @@ public class MapperClass : Profile
                 otp =>
                     otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
 
-        CreateMap<CourseCreateDto, Course>();
+        CreateMap<CourseCreateApiDto, Course>();
+        CreateMap<Course, CourseViewDto>()
+            .ForMember(x => x.TeacherAvatar,
+            otp
+                => otp.MapFrom(u => u.User!.Avatar))
+            .ForMember(x => x.TeacherName,
+                otp
+                    => otp.MapFrom(u => u.User!.FullName))
+            .ReverseMap();
 
         CreateMap<AppUser, InstructorViewDto>()
             .ForMember(x => x.Name, cfg => cfg.MapFrom(x => $"{x.FirstName} {x.LastName}"))
@@ -61,7 +68,7 @@ public class MapperClass : Profile
         CreateMap<RegisterRequestApiDto, AppUser>()
             .ForMember(x => x.Avatar, cfg => cfg.Ignore());
         CreateMap<AppUser, RegisterRequestApiDto>()
-            .ForMember(x => x.Avatar, cfg => cfg.Ignore());
+            .ForMember(x => x.BrowserFile, cfg => cfg.Ignore());
         CreateMap<AppUser, AccountInfoMinimalDto>();
         CreateMap<AppUser, AccountInfoDto>().ForMember(x => x.FullName, opt => opt.Ignore());
     }

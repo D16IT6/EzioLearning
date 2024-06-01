@@ -4,13 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EzioLearning.Infrastructure.DbContext.EntityConfigurations.Learning;
 
-internal class CourseLessonConfiguration : IEntityTypeConfiguration<CourseLesson>
+internal class CourseLessonConfiguration : IEntityTypeConfiguration<CourseLecture>
 {
-    public void Configure(EntityTypeBuilder<CourseLesson> builder)
+    public void Configure(EntityTypeBuilder<CourseLecture> builder)
     {
-        builder.Property(x => x.Name).HasMaxLength(50).IsUnicode();
-        builder.Property(x => x.VideoPath).HasMaxLength(250).IsUnicode();
-        builder.Property(x => x.SlidePath).HasMaxLength(250).IsUnicode();
-        builder.Property(x => x.Attachment).HasMaxLength(250).IsUnicode();
+        builder.Property(x => x.Name).HasMaxLength(250).IsUnicode();
     }
 }

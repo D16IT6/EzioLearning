@@ -16,6 +16,9 @@ public class PermissionPolicyProvider(IOptions<AuthorizationOptions> options)
 
         var policy = new AuthorizationPolicyBuilder();
         policy.AddRequirements(new PermissionRequirement(policyName));
+
         return Task.FromResult(policy.Build())!;
     }
+
+    public override bool AllowsCachingPolicies => true;
 }

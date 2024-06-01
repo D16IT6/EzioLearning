@@ -18,8 +18,6 @@ namespace EzioLearning.Share.Validators.Learning.Course
                 .MinimumLength(10).WithMessage("Tên không được ngắn hơn 10 ký tự")
                 .MaximumLength(250).WithMessage("Tên không dài quá 250 ký tự");
 
-            RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Nội dung không được để trống");
         }
 
     }

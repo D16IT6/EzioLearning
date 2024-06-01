@@ -2,16 +2,16 @@
 {
     public enum CourseStatus
     {
-        Ready,
-        Upcoming,
-        Cancelled
+        Ready = 1,
+        Upcoming = 2,
+        Cancelled = 3
     }
 
     public enum CourseLevel
     {
-        All,
-        Beginner,
-        Intermediate,
-        Expert
+        All = 0,
+        Beginner = 1,
+        Intermediate = 2,
+        Expert = 3
     }
 }
