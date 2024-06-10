@@ -59,6 +59,13 @@ namespace EzioLearning.Wasm.Services.Implement
             return await response.GetResponse<ResponseBase>();
         }
 
+        public async Task<ResponseBase?> ChangeEmail(ChangeEmailDto model)
+        {
+            var response = await httpClient.PutAsJsonAsync("/api/AccountRoute/ChangeEmail", model);
+            var responseData = await response.GetResponse<ResponseBase>();
+            return responseData;
+        }
+
         public async Task<ResponseBase?> Delete()
         {
             var response = await httpClient.DeleteAsync("api/Account");

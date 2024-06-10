@@ -7,6 +7,5 @@ namespace EzioLearning.Core.Dto.Learning.Course
     {
         public IFormFile? Poster { get; set; }
 
-
     }
 }

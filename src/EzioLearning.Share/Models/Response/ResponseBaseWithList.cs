@@ -2,5 +2,5 @@
 
 public class ResponseBaseWithList<TItem> : ResponseBase
 {
-    public List<TItem>? Data { get; init; } = new();
+    public IEnumerable<TItem> Data { get; init; } = [];
 }

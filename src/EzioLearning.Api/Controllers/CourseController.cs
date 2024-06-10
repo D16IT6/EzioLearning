@@ -16,7 +16,6 @@ using EzioLearning.Share.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
 namespace EzioLearning.Api.Controllers;
@@ -29,7 +28,7 @@ public class CourseController(
     IUnitOfWork unitOfWork,
     FileService fileService,
     ICourseCategoryRepository courseCategoryRepository,
-    UserManager<AppUser> userManager,IStringLocalizer<CourseController> localizer) : ControllerBase
+    UserManager<AppUser> userManager, IStringLocalizer<CourseController> localizer) : ControllerBase
 {
     private static readonly string FolderPath = "Uploads/Images/Courses/";
 
@@ -40,44 +39,40 @@ public class CourseController(
         return Ok(new ResponseBaseWithData<int>
         {
             Status = HttpStatusCode.OK,
-            Message =localizer.GetString("CourseCountSuccess"),
+            Message = localizer.GetString("CourseCountSuccess"),
             Data = count
         });
     }
 
     [HttpGet("FeaturedInstructor/{take:int?}")]
-    public async Task<IActionResult> GetFeatureInstructors([FromRoute] int take = 12)
+    public Task<IActionResult> GetFeatureInstructors([FromRoute] int take = 12)
     {
-	    ArgumentOutOfRangeException.ThrowIfNegative(take);
+        ArgumentOutOfRangeException.ThrowIfNegative(take);
 
-	    var userList = userManager.Users
-		    .OrderByDescending(x => x.Students.Count)
-		    .ThenByDescending(x => x.Courses.Count)
-		    .Take(take);
-	    var data = mapper.ProjectTo<InstructorViewDto>(userList);
-	    return Ok(new ResponseBaseWithList<InstructorViewDto>
-	    {
-		    Status = HttpStatusCode.OK,
-		    Message = localizer.GetString("FeatureInstructorsGetSuccess"),
-		    Data = await data.ToListAsync()
-	    });
+        var userList = userManager.Users
+            .OrderByDescending(x => x.Students.Count)
+            .ThenByDescending(x => x.Courses.Count)
+            .Take(take);
+        return Task.FromResult<IActionResult>(Ok(new ResponseBaseWithList<InstructorViewDto>
+        {
+            Status = HttpStatusCode.OK,
+            Message = localizer.GetString("FeatureInstructorsGetSuccess"),
+            Data = mapper.ProjectTo<InstructorViewDto>(userList)
+        }));
     }
 
 
-	[HttpGet("Feature/{take:int?}")]
+    [HttpGet("Feature/{take:int?}")]
     public async Task<IActionResult> GetFeaturedCourses([FromRoute] int take = 12)
     {
-        var data = await courseRepository.GetFeaturedCourses(take);
-     
-        var resultData = mapper.ProjectTo<CourseViewDto>(data.AsQueryable());
-
-        //await UpdateCourseViewDto(resultData);
+        ArgumentOutOfRangeException.ThrowIfNegative(take);
+        var data = (await courseRepository.GetFeaturedCourses(take)).AsQueryable();
 
         return Ok(new ResponseBaseWithList<CourseViewDto>
         {
             Status = HttpStatusCode.OK,
             Message = localizer.GetString("CourseFeatureGetSuccess"),
-            Data = resultData.ToList()
+            Data = mapper.ProjectTo<CourseViewDto>(data)
         });
     }
 
@@ -90,7 +85,7 @@ public class CourseController(
 
         model.CreatedBy = Guid.Parse(userId);
         model.Id = Guid.NewGuid();
-        
+
         var newCourse = mapper.Map<Course>(model);
 
         var imagePath = ImageConstants.DefaultCoursePoster;
@@ -110,11 +105,12 @@ public class CourseController(
 
         newCourse.Poster = imagePath;
 
-        newCourse.Categories = (ICollection<CourseCategory>)await GetInsertCourseCategories(model);
+        newCourse.Categories = await GetInsertCourseCategories(model);
 
         courseRepository.Add(newCourse);
 
         var result = await unitOfWork.CompleteAsync();
+
         if (result > 0)
             return Ok(new ResponseBaseWithData<CourseCreateDto>()
             {
@@ -130,34 +126,15 @@ public class CourseController(
         });
     }
 
-    private async Task UpdateCourseViewDto(IEnumerable<CourseViewDto> listCourseViewDto)
+    private async Task<ICollection<CourseCategory>> GetInsertCourseCategories(CourseCreateApiDto courseCreateDto)
     {
-        foreach (var courseViewDto in listCourseViewDto)
-        {
-            var trainer = await userManager.FindByIdAsync(courseViewDto.CreatedBy.ToString());
-            if (trainer == null) continue;
-            courseViewDto.TeacherName = trainer.FullName;
-            courseViewDto.TeacherAvatar = trainer.Avatar;
-        }
-    }
 
-    private async Task<IEnumerable<CourseCategory>> GetInsertCourseCategories(
-        CourseCreateApiDto courseCreateDto)
-    {
-        var result = new List<CourseCategory>();
-        foreach (var courseCategoryId in courseCreateDto.CourseCategoryIds)
-        {
-            var insertItem =
-                (
-                    await courseCategoryRepository
-                        .Find(x=> x.Id == courseCategoryId)
-                )
-                .FirstOrDefault();
+        var result =
+            await courseCategoryRepository
+                .Find(x =>
+                    courseCreateDto.CourseCategoryIds.Contains(x.Id)
+                    );
+        return result.ToList();
 
-            if (insertItem != null)
-                result.Add(insertItem);
-        }
-
-        return result;
     }
 }

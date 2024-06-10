@@ -22,21 +22,21 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
                 query = query.Include(include);
             }
         }
-        return Task.FromResult<IEnumerable<T>>(query.AsNoTracking());
+
+        return Task.FromResult(query.AsEnumerable());
     }
 
-    public virtual async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression, string[]? includes = null)
+    public virtual Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression, string[]? includes = null)
     {
         var query = DbSet.AsQueryable();
 
         if (includes != null && includes.Any())
         {
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
         }
-        return await query.Where(expression).ToListAsync();
+
+        query = query.Where(expression);
+        return Task.FromResult(query.AsEnumerable());
     }
 
     public virtual void Add(T entity)

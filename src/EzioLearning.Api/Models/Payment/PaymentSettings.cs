@@ -4,14 +4,14 @@
     {
         public PaypalSettings Paypal { get; set; } = new();
 
-        public PayosSettings Payos { get; set; } = new();
+        public PayOsSettings PayOs { get; set; } = new();
         public class PaypalSettings
         {
             public string ClientId { get; set; } = string.Empty;
             public string ClientSecret { get; set; } = string.Empty;
             public bool IsDevelop { get; set; }
         }
-        public class PayosSettings
+        public class PayOsSettings
         {
             public string ClientId { get; set; } = string.Empty;
             public string ApiKey { get; set; } = string.Empty;

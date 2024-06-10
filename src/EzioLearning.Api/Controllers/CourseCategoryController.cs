@@ -45,7 +45,7 @@ public class CourseCategoryController(
 
         return Ok(new ResponseBaseWithList<CourseCategoryViewDto>
         {
-            Data = data.ToList(),
+            Data = data,
             Message = localizer.GetString("CourseCategoryGetSuccess"),
             Status = HttpStatusCode.OK
         });
@@ -61,7 +61,7 @@ public class CourseCategoryController(
 
         return Ok(new ResponseBaseWithList<TopCourseCategoryDto>
         {
-            Data = data.ToList(),
+            Data = data,
             Message = localizer.GetString("CourseCategoryTopGetSuccess"),
             Status = HttpStatusCode.OK
         });

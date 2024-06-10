@@ -1,16 +1,22 @@
-﻿using EzioLearning.Domain.Entities.Identity;
+﻿using AutoMapper;
+using EzioLearning.Domain.Entities.Identity;
+using EzioLearning.Share.Dto.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EzioLearning.Api.Hubs
 {
-    public class TestHub : Hub
+    public class TestHub(UserManager<AppUser> userManager,IMapper mapper) : Hub<ITestHubClient>
     {
-        public async Task SendUserCount(UserManager<AppUser> userManager)
+        private Task<IEnumerable<UserDto>> GetUsers()
         {
-            var count = userManager.Users.Count(x => !x.IsDeleted);
+            return Task.FromResult<IEnumerable<UserDto>>(mapper.ProjectTo<UserDto>(userManager.Users));
+        }
 
-            await Clients.Caller.SendAsync("ReceiveUserCount", count);
+        public async Task SendUsers()
+        {
+            var users = await GetUsers();
+            await Clients.All.ReceiveUsers(users.ToList());
         }
     }
 }

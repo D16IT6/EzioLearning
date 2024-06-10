@@ -150,4 +150,7 @@
   <data name="StudentTitle" xml:space="preserve">
     <value>Cho học viên</value>
   </data>
+  <data name="NewsLetter" xml:space="preserve">
+    <value>Tin tức</value>
+  </data>
 </root>

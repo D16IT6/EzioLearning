@@ -48,14 +48,16 @@ public class MapperClass : Profile
                     otp.MapFrom(src => src.CourseCategoryTranslations.First(x => CultureInfo.CurrentCulture.Name == x.CultureId).Name));
 
         CreateMap<CourseCreateApiDto, Course>();
-        CreateMap<Course, CourseViewDto>()
+
+        CreateProjection<Course, CourseViewDto>()
             .ForMember(x => x.TeacherAvatar,
             otp
                 => otp.MapFrom(u => u.User!.Avatar))
             .ForMember(x => x.TeacherName,
                 otp
-                    => otp.MapFrom(u => u.User!.FullName))
-            .ReverseMap();
+                    => otp.MapFrom(u => u.User!.FullName));
+
+        CreateProjection<AppUser, UserDto>();
 
         CreateMap<AppUser, InstructorViewDto>()
             .ForMember(x => x.Name, cfg => cfg.MapFrom(x => $"{x.FirstName} {x.LastName}"))

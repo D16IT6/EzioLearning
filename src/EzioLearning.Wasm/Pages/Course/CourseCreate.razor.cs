@@ -1,11 +1,14 @@
 ﻿using Blazored.LocalStorage;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
+using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudExtensions;
 using Syncfusion.Blazor.RichTextEditor;
@@ -22,6 +25,7 @@ namespace EzioLearning.Wasm.Pages.Course
         [Inject] private ICourseService CourseService { get; set; } = default!;
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
         [Inject] private ISnackBarService SnackBarService { get; set; } = default!;
+        [Inject] private IDialogService DialogService { get; set; } = default!;
         private ICollection<CourseCategoryViewDto> CourseCategories { get; set; } = new List<CourseCategoryViewDto>();
         private IEnumerable<CourseCategoryViewDto> SelectedCourseCategories { get; set; } = [];
 
@@ -43,6 +47,8 @@ namespace EzioLearning.Wasm.Pages.Course
 
             new ToolbarItemModel() { Command = ToolbarCommand.Formats },
             new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+            new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+            new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
             new ToolbarItemModel() { Command = ToolbarCommand.Separator },
 
             new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
@@ -59,22 +65,25 @@ namespace EzioLearning.Wasm.Pages.Course
             new ToolbarItemModel() { Command = ToolbarCommand.Redo },
             new ToolbarItemModel() { Command = ToolbarCommand.Separator },
         ];
+
         public string? ImagePreviewUrl { get; set; }
 
+        private string? CourseSectionTitle { get; set; } = string.Empty;
+
         private int ActiveTab { get; set; }
+        private bool BaseInfoSuccess { get; set; }
+
+        private List<CourseSectionDto> CourseSections { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {
-          
             CourseCategories = (await CourseCategoryService.GetCourseCategories());
 
             CourseCategoriesRenderFragment = RecursiveSelect(CourseCategories.ToList());
 
-
             await RestoreModel();
 
         }
-
 
         private async Task RestoreModel()
         {
@@ -85,7 +94,6 @@ namespace EzioLearning.Wasm.Pages.Course
                 .Where(x => CourseCreateDto.CourseCategoryIds.Contains(x.Id))
                 .ToArray();
         }
-
 
         private RenderFragment RecursiveSelect(List<CourseCategoryViewDto> categories, Guid? parentId = null)
         {
@@ -126,7 +134,6 @@ namespace EzioLearning.Wasm.Pages.Course
             };
         }
 
-
         private void ResetCourseCategories()
         {
             SelectedCourseCategories = [];
@@ -137,12 +144,13 @@ namespace EzioLearning.Wasm.Pages.Course
         private async Task CreateNewCourseSubmit()
         {
             CourseCreateDto.CourseCategoryIds = SelectedCourseCategories.Select(x => x.Id).ToArray();
-            
+
             var response = await CourseService.CreateNewCourse(CourseCreateDto);
             if (response.IsSuccess)
             {
                 await LocalStorageService.RemoveItemAsync(nameof(CourseCreateDto));
                 Snackbar.Add(response.Message, Severity.Success);
+                BaseInfoSuccess = true;
                 ActiveTab = 1;
             }
             else
@@ -150,8 +158,6 @@ namespace EzioLearning.Wasm.Pages.Course
                 SnackBarService.ShowErrorFromResponse(response);
             }
         }
-
-
 
         private async Task LoadFile(InputFileChangeEventArgs file)
         {
@@ -174,11 +180,48 @@ namespace EzioLearning.Wasm.Pages.Course
 
             StateHasChanged();
         }
+
+
+
+        private void CreateNewCourseSection()
+        {
+            CourseSections.Add(new CourseSectionDto()
+            {
+                Id = Guid.NewGuid(),
+                Name = CourseSectionTitle
+            });
+            CourseSectionTitle = string.Empty;
+            StateHasChanged();
+
+        }
+
+        private void CreateNewLesson(CourseSectionDto section)
+        {
+            section.CourseLessons.Add(new CourseLessonDto()
+            {
+                Name = "Test Lesson 1"
+            });
+
+        }
         public async ValueTask DisposeAsync()
         {
             CourseCreateDto.CourseCategoryIds = SelectedCourseCategories.Select(x => x.Id).ToArray();
 
             await LocalStorageService.SetItemAsync(nameof(CourseCreateDto), CourseCreateDto);
         }
+
+    }
+
+    class CourseSectionDto
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string? Name { get; set; } = "Test Section";
+        public List<CourseLessonDto> CourseLessons { get; set; } = new();
+    }
+
+    class CourseLessonDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

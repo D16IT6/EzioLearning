@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Net.Http.Json;
-using System.Text.Json;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
@@ -13,14 +12,14 @@ namespace EzioLearning.Wasm.Services.Implement
 {
 	public class CourseService(HttpClient httpClient) : ICourseService
 	{
-		public async Task<List<CourseViewDto>> GetFeatureCourses(int take = 6)
+		public async Task<IEnumerable<CourseViewDto>> GetFeatureCourses(int take = 6)
 		{
 			var data = new List<CourseViewDto>();
 			var response = await httpClient.GetFromJsonAsync<ResponseBaseWithList<CourseViewDto>>(
 				$"api/Course/Feature/{take}", JsonCommonOptions.DefaultSerializer);
-			if (response is { IsSuccess: true } && response.Data!.Any())
+			if (response is { IsSuccess: true } && response.Data.Any())
 			{
-				data = response.Data!;
+				data = response.Data.ToList();
 
 				foreach (var item in data)
 				{
@@ -32,18 +31,16 @@ namespace EzioLearning.Wasm.Services.Implement
 			return data;
 		}
 
-		public async Task<List<TopCourseCategoryDto>> GetTopCourseCategories(int count)
+		public async Task<IEnumerable<TopCourseCategoryDto>> GetTopCourseCategories(int count)
 		{
 			var data = new List<TopCourseCategoryDto>();
 			var response =
 				await httpClient.GetFromJsonAsync<ResponseBaseWithList<TopCourseCategoryDto>>(
 					$"api/CourseCategory/Top/{count}", JsonCommonOptions.DefaultSerializer);
-			if (response is { IsSuccess: true } && response.Data!.Any())
-			{
-				data = response.Data!;
+			if (response is not { IsSuccess: true } || !response.Data.Any()) return data;
+			data = response.Data.ToList();
 
-				foreach (var item in data) item.Image = ApiConstants.BaseUrl + item.Image;
-			}
+			foreach (var item in data) item.Image = ApiConstants.BaseUrl + item.Image;
 
 			return data;
 		}
@@ -60,14 +57,14 @@ namespace EzioLearning.Wasm.Services.Implement
 			return GetLargestPart(count);
 		}
 		
-		public async Task<List<InstructorViewDto>> GetFeatureInstructors(int take = 6)
+		public async Task<IEnumerable<InstructorViewDto>> GetFeatureInstructors(int take = 6)
 		{
 			var data = new List<InstructorViewDto>();
 			var response = await httpClient.GetFromJsonAsync<ResponseBaseWithList<InstructorViewDto>>(
 				$"api/Course/FeaturedInstructor/{take}", JsonCommonOptions.DefaultSerializer);
-			if (response is { IsSuccess: true } && response.Data!.Any())
+			if (response is { IsSuccess: true } && response.Data.Any())
 			{
-				data = response.Data!;
+				data = response.Data.ToList();
 
 				foreach (var item in data) item.Avatar = ApiConstants.BaseUrl + item.Avatar;
 			}

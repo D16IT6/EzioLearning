@@ -30,6 +30,7 @@ using System.Text.Json.Serialization;
 using EzioLearning.Api.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 
+
 namespace EzioLearning.Api;
 
 internal static class Startup
@@ -168,6 +169,7 @@ internal static class Startup
                             // Read the token out of the query string
                             context.Token = accessToken;
                         }
+
                         return Task.CompletedTask;
                     }
                 };
@@ -206,13 +208,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    private static async Task MigrateData(this WebApplication app)
-    {
-        using var scope = app.Services.CreateScope();
-        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-        //await context.Database.MigrateAsync();
-        await new DataSeeder().SeedAsync(context);
-    }
+    //private static async Task MigrateData(this WebApplication app)
+    //{
+    //    using var scope = app.Services.CreateScope();
+    //    await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+    //    await context.Database.MigrateAsync();
+    //    await new DataSeeder().SeedAsync(context);
+    //}
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -227,7 +229,7 @@ internal static class Startup
 
         services.AddSingleton(_ =>
         {
-            var payOs = paymentSettings.Payos;
+            var payOs = paymentSettings.PayOs;
 
             return new PayOS(payOs.ClientId, payOs.ApiKey, payOs.ChecksumKey);
         });
@@ -272,10 +274,7 @@ internal static class Startup
             };
         });
 
-        services.AddLocalization(options =>
-        {
-            options.ResourcesPath = "Resources";
-        });
+        services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
     }
 
@@ -299,7 +298,7 @@ internal static class Startup
             );
         });
 
-        services.AddDbContext<EzioLearningDbContext>(option =>
+        services.AddDbContextPool<EzioLearningDbContext>(option =>
         {
             option.UseSqlServer(configuration.GetConnectionString(nameof(EzioLearning)));
         });
@@ -350,16 +349,16 @@ internal static class Startup
             options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
             options.KeepAliveInterval = TimeSpan.FromSeconds(30);
         }).AddMessagePackProtocol();
+
+
+
+
     }
 
     internal static void Configure(this WebApplication app)
     {
 
-        //if (app.Environment.IsDevelopment())
-        //{
-        //    app.UseSwagger();
-        //    app.UseSwaggerUI();
-        //}
+        
 
         app.UseSwagger();
         app.UseSwaggerUI();
@@ -375,7 +374,10 @@ internal static class Startup
         app.UseResponseCompression();
 
 
+
         app.MapHub<TestHub>("/TestHub");
+
+
 
         app.UseAuthentication();
         app.UseMiddleware<Custom401ResponseMiddleware>();
@@ -386,6 +388,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        app.MigrateData().Wait();
+        //app.MigrateData().Wait();
     }
 }

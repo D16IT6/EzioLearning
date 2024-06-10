@@ -13,10 +13,10 @@ namespace EzioLearning.Wasm.Services.Implement
             if (Cultures.Any()) return Cultures;
             var response = await httpClient.GetAsync("/api/Culture");
 
-            var responseData = await response.GetResponse<ResponseBaseWithList<CultureViewDto>>();
-            if (responseData.Data != null && responseData.Data.Any())
+            var cultureResponseWithList = await response.GetResponse<ResponseBaseWithList<CultureViewDto>>();
+            if (cultureResponseWithList.Data != null && cultureResponseWithList.Data.Any())
             {
-                Cultures.AddRange(responseData.Data);
+                Cultures.AddRange(cultureResponseWithList.Data);
             }
 
             return Cultures;

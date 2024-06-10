@@ -77,7 +77,7 @@ public class UserController(
         return BadRequest(new ResponseBaseWithList<IdentityError>
         {
             Status = HttpStatusCode.BadRequest,
-            Data = result.Errors.ToList(),
+            Data = result.Errors,
             Message = localizer.GetString("UserCreateFail")
         });
     }

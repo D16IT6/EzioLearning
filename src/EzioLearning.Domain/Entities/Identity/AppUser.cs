@@ -6,13 +6,13 @@ namespace EzioLearning.Domain.Entities.Identity;
 
 public class AppUser : IdentityUser<Guid>
 {
-    [PersonalData] public required string FirstName { get; set; }
+    [PersonalData] public string FirstName { get; set; } = string.Empty;
 
-    [PersonalData] public required string LastName { get; set; }
+    [PersonalData] public string LastName { get; set; } = string.Empty;
 
     [ProtectedPersonalData] public DateTime? DateOfBirth { get; set; }
 
-    [PersonalData] public required string Avatar { get; set; }
+    [PersonalData] public string Avatar { get; set; } = string.Empty;
 
     public string? RefreshToken { get; set; }
 

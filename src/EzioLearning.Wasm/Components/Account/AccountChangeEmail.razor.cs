@@ -69,11 +69,7 @@ namespace EzioLearning.Wasm.Components.Account
                 DisabledButton = true;
                 StateHasChanged();
 
-                var response = await HttpClient.PutAsJsonAsync("/api/AccountRoute/ChangeEmail", AccountInfoChangeEmail);
-                await using var stream = await response.Content.ReadAsStreamAsync();
-
-                var responseData = await JsonSerializer.DeserializeAsync<ResponseBase>(stream, JsonCommonOptions.DefaultSerializer);
-
+                var responseData = await AccountService.ChangeEmail(AccountInfoChangeEmail);
                 if (responseData!.Status == HttpStatusCode.OK)
                 {
                     SnackBar.Add(responseData.Message, Severity.Success);

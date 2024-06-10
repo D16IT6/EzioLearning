@@ -43,9 +43,15 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
     {
         builder.Entity<AppUser>().HasQueryFilter(user => user.IsDeleted == false);
 
+        builder
+            .Entity<AppUser>()
+                .ToTable(tb =>
+                {
+                    tb.UseSqlOutputClause(false);
+                });
     }
 
-    public void ConfigureIdentity(ModelBuilder builder, string prefix = "App", string schema = "Auth")
+    public void ConfigureIdentity(ModelBuilder builder, string prefix = "App", string schema = SchemaConstants.Auth)
     {
         foreach (var entityType in builder.Model.GetEntityTypes())
         {

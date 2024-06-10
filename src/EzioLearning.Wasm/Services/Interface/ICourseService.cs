@@ -7,10 +7,10 @@ namespace EzioLearning.Wasm.Services.Interface
 {
 	public interface ICourseService :IServiceBase
 	{
-		Task<List<CourseViewDto>> GetFeatureCourses(int take = 6);
-		Task<List<TopCourseCategoryDto>> GetTopCourseCategories(int count);
+		Task<IEnumerable<CourseViewDto>> GetFeatureCourses(int take = 6);
+		Task<IEnumerable<TopCourseCategoryDto>> GetTopCourseCategories(int count);
 		Task<int> GetCourseCount();
-		Task<List<InstructorViewDto>> GetFeatureInstructors(int take = 6);
+		Task<IEnumerable<InstructorViewDto>> GetFeatureInstructors(int take = 6);
 
 		Task<ResponseBaseWithData<CourseCreateDto>> CreateNewCourse(CourseCreateDto courseCreateDto);
 	}

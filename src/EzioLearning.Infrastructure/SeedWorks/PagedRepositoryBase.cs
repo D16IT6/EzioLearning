@@ -31,14 +31,14 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
         query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         return new PageResult<TDto>
         {
-            Data = await mapper.ProjectTo<TDto>(query).ToListAsync(),
+            Data = mapper.ProjectTo<TDto>(query),
             CurrentPage = pageNumber,
             PageSize = pageSize,
             RowCount = await query.CountAsync()
         };
     }
 
-    public async Task<IEnumerable<TDto>> GetAllWithDto<TDto>(
+    public Task<IEnumerable<TDto>> GetAllWithDto<TDto>(
         Expression<Func<T, bool>>? expression = default, 
         string[]? includes = null
         ) where TDto : class
@@ -53,6 +53,6 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
         var query = DbSet.AsQueryable();
         if (expression != null) query = query.Where(expression);
 
-        return await mapper.ProjectTo<TDto>(query).ToListAsync();
+        return Task.FromResult<IEnumerable<TDto>>(mapper.ProjectTo<TDto>(query));
     }
 }

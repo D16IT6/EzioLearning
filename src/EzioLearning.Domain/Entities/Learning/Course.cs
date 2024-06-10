@@ -12,7 +12,7 @@ public class Course : AuditableEntity
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
+    public string? Content { get; set; } = string.Empty;
     public string? Poster { get; set; }
     public double Price { get; set; } = 0;
     public double PromotionPrice { get; set; }

@@ -1,6 +1,8 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Utils;
 using EzioLearning.Wasm.Authorization;
 using EzioLearning.Wasm.Hubs;
@@ -137,9 +139,9 @@ namespace EzioLearning.Wasm
 
         public static async Task ConnectToHub(this WebAssemblyHost host)
         {
-            var logger = host.Services.GetRequiredService<ILogger<Home>>();
 
             var hubConnectionManager = host.Services.GetRequiredService<HubConnectionManager>();
+            var localStorage = host.Services.GetRequiredService<ILocalStorageService>();
 
             var testHub = await hubConnectionManager.GetHubConnectionAsync(HubConnectionEndpoints.Test,needAuthenticate:false);
 
@@ -150,27 +152,16 @@ namespace EzioLearning.Wasm
                     await testHub.StartAsync();
                 }
 
-                logger.LogInformation($"Đã kết nối tới {nameof(HubConnectionEndpoints.Test)}");
+                Debug.WriteLine($"Đã kết nối tới {nameof(HubConnectionEndpoints.Test)}");
 
-                testHub.On<int>("ReceiveUserCount", async userCount =>
+                testHub.On<IEnumerable<UserDto>>("ReceiveUsers", async users =>
                 {
-                    var localStorageService = host.Services.GetRequiredService<ILocalStorageService>();
-
-                    await localStorageService.SetItemAsync("UserCount", userCount);
-                    logger.LogInformation($"Danh sách người dùng: {userCount}");
-
+                    await localStorage.SetItemAsync("Users", users);
                 });
 
-                await testHub.InvokeAsync("SendUserCount");
+                await testHub.InvokeAsync("SendUsers");
 
             }
-            else
-            {
-                logger.LogError("User chưa xác thực!");
-            }
-
-            
-
         }
 
     }

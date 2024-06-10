@@ -10,16 +10,16 @@
             <div class="col-md-12">
                 <div class="add-course-header">
                     <h2>Add New Course</h2>
-                    <div class="add-course-btns">
-                        <ul class="nav">
-                            <li>
-                                <NavLink href="@RouteConstants.AccountRoute.Home" class="btn btn-black">Back to Course</NavLink>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="btn btn-success-dark">Save</a>
-                            </li>
-                        </ul>
-                    </div>
+                    @* <div class="add-course-btns">
+                    <ul class="nav">
+                    <li>
+                    <NavLink href="@RouteConstants.AccountRoute.Home" class="btn btn-black">Back to Course</NavLink>
+                    </li>
+                    <li>
+                    <a href="javascript:void(0);" class="btn btn-success-dark">Save</a>
+                    </li>
+                    </ul>
+                    </div> *@
                 </div>
             </div>
         </div>
@@ -33,65 +33,65 @@
 
                             <MudTabPanel Text="Thông tin cơ bản" ToolTip="Thông tin cơ bản">
                                 <div class="add-course-form">
-
                                     <EditForm Enhance="true" Model="CourseCreateDto"
                                               FormName="FrmCreateNewCourse"
                                               OnValidSubmit="CreateNewCourseSubmit">
-
                                         <FluentValidationValidator />
+                                        <div class="row">
 
-                                        <MudTextField T="string" Label="Tên khoá học" @bind-Value="CourseCreateDto.Name"/>
+                                            <div class="col-lg-6">
+                                                <MudTextField T="string" Label="Tên khoá học" @bind-Value="CourseCreateDto.Name" />
+                                                <ValidationMessage For="() => CourseCreateDto.Name" class="text-danger" />
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <MudNumericField Immediate="false"
+                                                                 Label="Giá tiền (VNĐ)"
+                                                                 Format="N0"
+                                                                 Culture="@CultureInfo.CurrentCulture"
+                                                                 T="double" @bind-Value="@CourseCreateDto.Price" Step="500" />
+                                                <ValidationMessage For="() => CourseCreateDto.Price" class="text-danger" />
+                                            </div>
 
-                                        <ValidationMessage For="() => CourseCreateDto.Name" class="text-danger"/>
+                                            <div class="input-block my-2">
+                                                <MudField Label="Nội dung">
 
-                                        <MudNumericField Immediate="false"
-                                                         Label="Giá tiền (VNĐ)"
-                                                         Format="N0"
-                                                         Culture="@CultureInfo.CurrentCulture"
-                                                         T="double" @bind-Value="@CourseCreateDto.Price" Step="500" />
-                                        <ValidationMessage For="() => CourseCreateDto.Price" class="text-danger"/>
+                                                    <SfRichTextEditor EditorMode="EditorMode.HTML"
+                                                                      @bind-Value="@CourseCreateDto.Content"
+                                                                      Height="300">
 
-                                        <div class="input-block my-2">
-                                            <MudField Label="Nội dung">
+                                                        <RichTextEditorToolbarSettings Items="@Tools" />
+                                                        <RichTextEditorImageSettings SaveFormat="SaveFormat.Base64" />
+                                                    </SfRichTextEditor>
 
-                                                <SfRichTextEditor EditorMode="EditorMode.HTML"
-                                                                  @bind-Value="@CourseCreateDto.Content"
-                                                                  Height="300">
+                                                </MudField>
 
-                                                    <RichTextEditorToolbarSettings Items="@Tools"/>
-                                                    <RichTextEditorImageSettings SaveFormat="SaveFormat.Base64"/>
-                                                </SfRichTextEditor>
+                                                <ValidationMessage For="() => CourseCreateDto.Content" class="text-danger" />
 
-                                            </MudField>
+                                            </div>
 
-                                            <ValidationMessage For="() => CourseCreateDto.Content" class="text-danger"/>
+                                            <div class="input-block">
+                                                <MudField Label="Ảnh bìa ">
+                                                    <InputFile @bind-Value="CourseCreateDto.PosterImage"
+                                                               OnChange="LoadFile" accept="@string.Join(',', FileConstants.AcceptTypes)"
+                                                               class="pt-3 form-control" />
+                                                    @if (!string.IsNullOrWhiteSpace(ImagePreviewUrl))
+                                                    {
+                                                        <div class="row justify-content-center">
+                                                            <MudImage Src="@ImagePreviewUrl"
+                                                                      Height="400"
+                                                                      Class="col rounded-lg"
+                                                                      Elevation="25"
+                                                                      ObjectPosition="ObjectPosition.Center" />
+                                                        </div>
+                                                    }
+                                                </MudField>
+                                                <ValidationMessage For="() => CourseCreateDto.PosterImage" class="text-danger" />
 
-                                        </div>
-
-                                        <div class="input-block">
-                                            <MudField Label="Ảnh bìa ">
-                                                <InputFile @bind-Value="CourseCreateDto.PosterImage"
-                                                           OnChange="LoadFile" accept="@string.Join(',', FileConstants.AcceptTypes)"
-                                                           class="pt-3 form-control"/>
-                                                @if (!string.IsNullOrWhiteSpace(ImagePreviewUrl))
-                                                {
-                                                    <div class="row justify-content-center">
-                                                        <MudImage
-                                                            Src="@ImagePreviewUrl"
-                                                            Height="400"
-                                                            Class="col rounded-lg"
-                                                            Elevation="25"
-                                                            ObjectPosition="ObjectPosition.Center"/>
-                                                    </div>
-                                                }
-                                            </MudField>
-                                            <ValidationMessage For="() => CourseCreateDto.PosterImage" class="text-danger"/>
-
-                                        </div>
+                                            </div>
 
 
-                                        <div class="input-block">
-                                            <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="input-block">
                                                     <MudSelectExtended T="CourseCategoryViewDto"
                                                                        Label="Danh mục khoá học"
                                                                        AnchorOrigin="Origin.BottomCenter"
@@ -99,32 +99,90 @@
                                                                        MultiSelection="true">
                                                         @CourseCategoriesRenderFragment
                                                     </MudSelectExtended>
+                                                    <ValidationMessage For="() => CourseCreateDto.CourseCategoryIds" class="text-danger" />
+                                                </div>
                                             </div>
-                                            <ValidationMessage For="() => CourseCreateDto.CourseCategoryIds" class="text-danger"/>
 
-                                        </div>
-                                        <div class="input-block">
-                                            <MudSelect T="CourseLevel" Label="Trình độ" @bind-Value="@CourseCreateDto.Level">
-                                                @foreach (var value in Enum.GetValues<CourseLevel>())
-                                                {
-                                                    <MudSelectItem Value="value">@value</MudSelectItem>
-                                                }
-                                            </MudSelect>
-                                            <ValidationMessage For="() => CourseCreateDto.Level" class="text-danger"/>
+                                            <div class="col-lg-6">
+                                                <div class="input-block">
+                                                    <MudSelect T="CourseLevel" Label="Trình độ" @bind-Value="@CourseCreateDto.Level">
+                                                        @foreach (var value in Enum.GetValues<CourseLevel>())
+                                                        {
+                                                            <MudSelectItem Value="value">@value</MudSelectItem>
+                                                        }
+                                                    </MudSelect>
+                                                    <ValidationMessage For="() => CourseCreateDto.Level" class="text-danger" />
 
+                                                </div>
+                                            </div>
+                                            <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" Disabled="BaseInfoSuccess" Variant="Variant.Filled" Class="p-2">
+                                                Tạo mới
+                                            </MudButton>
                                         </div>
-                                        <div class="d-grid">
-                                            <button class="btn btn-primary btn-start" type="submit">@Localizer.GetString("ButtonText")</button>
-                                        </div>
+
                                     </EditForm>
+                                </div>
+                            </MudTabPanel>
+                            @* Disabled="!BaseInfoSuccess" *@
+                            <MudTabPanel Text="Nội dung khoá học"
+                                         ToolTip="Nội dung khoá học">
 
+                                <div class="row mb-3 justify-content-center align-items-end">
+                                    <div class="col-lg-8">
+                                        <MudTextField @bind-Value="CourseSectionTitle" Label="Tên phần" Variant="Variant.Text"></MudTextField>
+                                    </div>
+
+                                    <div class="col-lg-auto">
+                                        <MudButton ButtonType="ButtonType.Button"
+                                                   Color="Color.Info"
+                                                   Disabled="BaseInfoSuccess"
+                                                   Variant="Variant.Outlined"
+                                                   OnClick="CreateNewCourseSection">
+                                            Tạo phần mới
+                                        </MudButton>
+                                    </div>
                                 </div>
 
-                            </MudTabPanel>
+                                <MudExpansionPanels>
+                                    @foreach (var courseSectionDto in CourseSections)
+                                    {
+                                        <MudExpansionPanel Text="@courseSectionDto.Name">
+                                            <TitleContent>
+                                                <MudGrid Spacing="3" class="align-items-center px-3">
+                                                    <MudItem xs="6" class="d-flex align-items-center">
+                                                        <h4 class="h4">
+                                                            @courseSectionDto.Name
+                                                        </h4>
+                                                    </MudItem>
+                                                    <MudItem xs="6" class="d-flex justify-content-end">
+                                                        <MudButton ButtonType="ButtonType.Button"
+                                                                   Color="Color.Info"
+                                                                   Disabled="BaseInfoSuccess"
+                                                                   Variant="Variant.Outlined"
+                                                                   OnClick="() => CreateNewLesson(courseSectionDto)">
+                                                            Tạo bài học
+                                                        </MudButton>
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </TitleContent>
+                                            <ChildContent>
+                                                @if (courseSectionDto.CourseLessons.Any())
+                                                {
+                                                    foreach (var courseLessonDto in courseSectionDto.CourseLessons)
+                                                    {
+                                                        <MudText>@courseSectionDto.Name</MudText>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div>chưa có gì</div>
+                                                }
+                                            </ChildContent>
+                                            
+                                        </MudExpansionPanel>
+                                    }
+                                </MudExpansionPanels>
 
-                            <MudTabPanel Text="Nội dung khoá học" ToolTip="Nội dung khoá học" 
-                                         Disabled="CourseCreateDto.Id != Guid.Empty && CourseCreateDto.CreatedBy != Guid.Empty">
-                                <MudText>Item Two</MudText>
                             </MudTabPanel>
 
                         </MudTabs>

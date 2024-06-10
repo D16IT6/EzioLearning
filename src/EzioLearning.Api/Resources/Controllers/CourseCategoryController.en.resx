@@ -129,4 +129,10 @@
   <data name="ImageExtensionNotAllow" xml:space="preserve">
     <value>Invalid image format, please select another format</value>
   </data>
+  <data name="CourseCategoryCreateFail" xml:space="preserve">
+    <value>Cannot create course category</value>
+  </data>
+  <data name="NotFoundCourseCategory" xml:space="preserve">
+    <value>Can't find the course category</value>
+  </data>
 </root>

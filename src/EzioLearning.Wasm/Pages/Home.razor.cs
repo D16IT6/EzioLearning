@@ -13,14 +13,14 @@ public partial class Home
     [Inject] private ICourseService CourseService { get; set; } = default!;
 
 
-    private List<CourseCategoryViewDto> CourseCategories { get; set; } = new();
+    private IEnumerable<CourseCategoryViewDto> CourseCategories { get; set; } = [];
     private int CourseCount { get; set; }
 
-    private List<TopCourseCategoryDto> TopCourseCategories { get; set; } = new();
+    private IEnumerable<TopCourseCategoryDto> TopCourseCategories { get; set; } = [];
 
-    private List<CourseViewDto> FeatureCourses { get; set; } = new();
-    private List<CourseViewDto> TrendingCourses { get; set; } = new();
-    private List<InstructorViewDto> FeatureInstructors { get; set; } = new();
+    private IEnumerable<CourseViewDto> FeatureCourses { get; set; } = [];
+    private IEnumerable<CourseViewDto> TrendingCourses { get; set; } = [];
+    private IEnumerable<InstructorViewDto> FeatureInstructors { get; set; } = [];
     private IAnimation? AnimationType { get; set; }
     private TimeSpan AnimationDuration { get; set; }
 
