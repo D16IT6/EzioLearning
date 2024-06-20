@@ -11,7 +11,7 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
     : RepositoryBase<T, TKey>(context), IPagedRepository<T, TKey>
     where T : class
 {
-    public async Task<PageResult<TDto>> GetPage<TDto>(
+    public async Task<PageResult<TDto>> GetPageWithDto<TDto>(
         Expression<Func<T, bool>>? expression, 
         string[]? includes = null, 
         int pageNumber = 1,
@@ -31,7 +31,7 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
         query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         return new PageResult<TDto>
         {
-            Data = mapper.ProjectTo<TDto>(query),
+            Data = await mapper.ProjectTo<TDto>(query).ToListAsync(),
             CurrentPage = pageNumber,
             PageSize = pageSize,
             RowCount = await query.CountAsync()

@@ -73,6 +73,26 @@ public class MapperClass : Profile
             .ForMember(x => x.BrowserFile, cfg => cfg.Ignore());
         CreateMap<AppUser, AccountInfoMinimalDto>();
         CreateMap<AppUser, AccountInfoDto>().ForMember(x => x.FullName, opt => opt.Ignore());
+
+
+        CreateMap<CourseSectionCreateApiDto, CourseSection>();
+        CreateMap<CourseLectureCreateApiDto, CourseLecture>();
+
+        CreateProjection<Course, CourseInGridViewDto>()
+            .ForMember(x => x.Duration,
+                cfg => cfg.MapFrom(
+                    c => c.Sections
+                        .SelectMany(s => s.CourseLectures)
+                        .Sum(l =>l.Video != null ? l.Video.Duration : 0)))
+            .ForMember(x => x.Rating, cfg => cfg.MapFrom(
+                x => x.Ratings.Any() ? x.Ratings.Average(r => r.Point) : 0))
+            .ForMember(x => x.RatingCount, cfg => cfg.MapFrom(
+                r => r.Ratings.Count()))
+            .ForMember(x => x.LessonCount, cfg => cfg.MapFrom(
+                x => x.Sections.SelectMany(section => section.CourseLectures).Count()))
+            .ForMember(x => x.TeacherId, cfg => cfg.MapFrom(x => x.CreatedBy))
+            .ForMember(x => x.TeacherAvatar, cfg => cfg.MapFrom(x => x.User!.Avatar))
+            ;
     }
 
 }

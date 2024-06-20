@@ -6,7 +6,6 @@ using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Json;
 using EzioLearning.Share.Models.ExternalLogin;
 
@@ -16,7 +15,7 @@ public class AuthService(
     HttpClient httpClient,
     ITokenService tokenService,
     AuthenticationStateProvider stateProvider
-) : IAuthService
+    ) : IAuthService
 {
     private readonly ApiAuthenticationStateProvider _apiAuthenticationStateProvider =
         (ApiAuthenticationStateProvider)stateProvider;
@@ -29,7 +28,7 @@ public class AuthService(
     }
     public async Task<ResponseBaseWithData<TokenResponse>> Register(RegisterRequestClientDto model)
     {
-        var multipartContent = new MultipartFormDataContent().CreateFormContent(model,"avatar");
+        var multipartContent = new MultipartFormDataContent().CreateFormContent(model,nameOfFileContent:["Avatar"]);
 
         if (model.DateOfBirth.HasValue)
         {
@@ -74,5 +73,19 @@ public class AuthService(
                 .GetFromJsonAsync<ResponseBaseWithData<ExternalLoginCacheInfo>>(
                     $"/api/Auth/ExternalLoginInfo?cacheKey={cacheKey}", JsonCommonOptions.DefaultSerializer);
         return response!;
+    }
+
+    public Task<string> GetExternalLoginUrl(string provider, string? returnUrl)
+    {
+        //var response = await httpClient.GetAsync($"api/Auth/{provider}Login?{nameof(returnUrl)}={returnUrl}");
+
+        //if (response.StatusCode is System.Net.HttpStatusCode.Found or System.Net.HttpStatusCode.Redirect or System.Net.HttpStatusCode.MovedPermanently)
+        //{
+        //    var redirectUri = response.Headers.Location;
+        //    return redirectUri?.AbsoluteUri ?? "";
+        //}
+        //return string.Empty;
+
+        return Task.FromResult($"{ApiConstants.BaseUrl}/api/Auth/{provider}Login?{nameof(returnUrl)}={returnUrl}");
     }
 }

@@ -4,6 +4,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Xabe.FFmpeg.FFmpeg.SetExecutablesPath(Path.Combine(Environment.CurrentDirectory,"Tools"));
         var builder = WebApplication.CreateBuilder(args);
 
         builder.ConfigureBuilder();

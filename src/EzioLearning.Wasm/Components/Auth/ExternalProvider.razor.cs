@@ -1,4 +1,5 @@
-﻿using EzioLearning.Wasm.Utils.Common;
+﻿using EzioLearning.Wasm.Services.Interface;
+using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
 
 namespace EzioLearning.Wasm.Components.Auth;
@@ -7,36 +8,44 @@ public partial class ExternalProvider
 {
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
+    [Inject] private IAuthService AuthService { get; set; } = default!;
+
     private string GoogleCallbackUrl { get; set; } = string.Empty;
     private string FacebookCallbackUrl { get; set; } = string.Empty;
     private string MicrosoftCallbackUrl { get; set; } = string.Empty;
 
-    protected override void OnInitialized()
+    private string ReturnUrl { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
     {
-        GoogleCallbackUrl =
-            $"{ApiConstants.BaseUrl}api/Auth/GoogleLogin?returnUrl=" +
-            NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+        ReturnUrl = NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
 
-        FacebookCallbackUrl =
-            $"{ApiConstants.BaseUrl}api/Auth/FacebookLogin?returnUrl=" +
-            NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+        var googleCallbackUrlTask = AuthService.GetExternalLoginUrl(ExternalLoginProvider.Google, ReturnUrl);
+        var facebookCallbackUrlTask =  AuthService.GetExternalLoginUrl(ExternalLoginProvider.Facebook, ReturnUrl);
+        var microsoftCallbackUrlTask = AuthService.GetExternalLoginUrl(ExternalLoginProvider.Microsoft, ReturnUrl);
 
-        MicrosoftCallbackUrl =
-            $"{ApiConstants.BaseUrl}api/Auth/MicrosoftLogin?returnUrl=" +
-            NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
+        await Task.WhenAll(googleCallbackUrlTask, facebookCallbackUrlTask, microsoftCallbackUrlTask);
+
+        FacebookCallbackUrl = await facebookCallbackUrlTask;
+        GoogleCallbackUrl = await googleCallbackUrlTask;
+        MicrosoftCallbackUrl = await microsoftCallbackUrlTask;
     }
 
     public void ExternalLogin(string externalProvider)
     {
-        var uri = $"{ApiConstants.BaseUrl}api/Auth/{externalProvider}Login?returnUrl=" +
-                  NavigationManager.ToAbsoluteUri("/ExternalLogin").AbsoluteUri;
-        NavigationManager.NavigateTo(uri);
+        var redirectUrl = externalProvider switch
+        {
+            ExternalLoginProvider.Google => GoogleCallbackUrl,
+            ExternalLoginProvider.Facebook => FacebookCallbackUrl,
+            ExternalLoginProvider.Microsoft => MicrosoftCallbackUrl,
+            _ => RouteConstants.Index
+        };
+
+        NavigationManager.NavigateTo(redirectUrl);
     }
 }
-
 public static class ExternalLoginProvider
 {
-    public static string Google = nameof(Google);
-    public static string Facebook = nameof(Facebook);
-    public static string Microsoft = nameof(Microsoft);
+    public const string Google = nameof(Google);
+    public const string Facebook = nameof(Facebook);
+    public const string Microsoft = nameof(Microsoft);
 }

@@ -9,7 +9,9 @@ namespace EzioLearning.Core.Validators.Account
 {
     public class ChangeEmailConfirmApiDtoValidator : AbstractValidator<ChangeEmailConfirmApiDto>
     {
-        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager, IStringLocalizer<ChangeEmailConfirmApiDtoValidator> localizer, ChangeEmailConfirmDtoValidator changeEmailConfirmDtoValidator)
+        public ChangeEmailConfirmApiDtoValidator(UserManager<AppUser> userManager, 
+            IStringLocalizer<ChangeEmailConfirmApiDtoValidator> localizer, 
+            ChangeEmailConfirmDtoValidator changeEmailConfirmDtoValidator)
         {
             Include(changeEmailConfirmDtoValidator);
 

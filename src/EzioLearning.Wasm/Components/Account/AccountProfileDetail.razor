@@ -1,4 +1,5 @@
-﻿@inherits AccountComponentBase
+﻿@using EzioLearning.Share.Validators.Common
+@inherits AccountComponentBase
 <!-- Profile Details -->
 <div class="settings-widget profile-details">
     <div class="settings-menu p-0">
@@ -19,7 +20,7 @@
                     <InputFile OnChange="OnFileChange"
                                @bind-Value="Avatar"
                                class="pt-2 form-control"
-                               accept="@string.Join(',', FileConstants.AcceptTypes)" placeholder="@Localizer.GetString("InputImagePlaceholder")" />
+                               accept="@string.Join(',', FileConstants.ImageAcceptTypes)" placeholder="@Localizer.GetString("InputImagePlaceholder")" />
                 </button>
             </div>
             <div class="profile-share d-flex align-items-center justify-content-center">

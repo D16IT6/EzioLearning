@@ -394,8 +394,7 @@ public class AuthController(
         var redirectUrl = redirectUrlBuilder.ToString();
         var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
-
-        return new ChallengeResult(provider, properties);
+        return Challenge(properties, [provider]);
     }
 
     [HttpGet]
@@ -413,7 +412,7 @@ public class AuthController(
         var redirectUrl = redirectUrlBuilder.ToString();
         var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
-        return new ChallengeResult(provider, properties);
+        return Challenge(properties, [provider]);
     }
     [HttpGet]
     [Route(nameof(MicrosoftLogin))]
@@ -430,7 +429,7 @@ public class AuthController(
         var redirectUrl = redirectUrlBuilder.ToString();
         var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
-        return new ChallengeResult(provider, properties);
+        return Challenge(properties, [provider]);
     }
 
 

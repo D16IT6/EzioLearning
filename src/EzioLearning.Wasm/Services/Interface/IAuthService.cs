@@ -16,4 +16,6 @@ public interface IAuthService: IServiceBase
     public Task<ResponseBase?> ConfirmPassword(ConfirmPasswordDto confirmPasswordDto);
 
     public Task<ResponseBaseWithData<ExternalLoginCacheInfo>> GetExternalLoginInfo(string cacheKey);
+
+    public Task<string> GetExternalLoginUrl(string provider,string? returnUrl);
 }

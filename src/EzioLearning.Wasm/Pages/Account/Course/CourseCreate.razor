@@ -1,0 +1,373 @@
+﻿@using EzioLearning.Share.Dto.Learning.CourseCategory
+@using EzioLearning.Share.Validators.Common
+@using EzioLearning.Wasm.Dto.Learning.Course
+
+@attribute [Route(RouteConstants.AccountRoute.CourseCreate)]
+@attribute [Authorize(Permissions.Courses.Create)]
+
+@inherits AccountComponentBase
+<!-- New Course -->
+<section class="page-content course-sec">
+    <div class="container">
+        <div class="row" id="TimeLineRef">
+            <div class="col-md-12">
+                <div class="add-course-header">
+                    <h2>Thêm khoá học</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-12">
+
+                <MudTimeline TimelineOrientation="TimelineOrientation.Horizontal" TimelinePosition="TimelinePosition.Top">
+
+                    <MudTimelineItem Color="BaseInfoSuccess ? Color.Success : Color.Info" Variant="Variant.Filled">
+                        <ItemContent>
+                            <MudAlert Severity="BaseInfoSuccess ? Severity.Success : Severity.Info">Thông tin cơ bản</MudAlert>
+                        </ItemContent>
+
+                    </MudTimelineItem>
+                    @{
+                        var success = CourseSections.All(x => x.Id != Guid.Empty);
+                        var error = CourseSections.Any(x => x.Severity == Severity.Error);
+                        var successColor = error ? Color.Error : Color.Info;
+                        if (successColor != Color.Error)
+                        {
+                            successColor = success ? Color.Success : Color.Info;
+                        }
+                    }
+                    <MudTimelineItem Color="successColor" Variant="Variant.Filled">
+                        <ItemContent>
+                            @if (!CourseSections.Any())
+                            {
+                                <MudAlert Severity="BaseInfoSuccess && !BaseInfoSuccess ? Severity.Success : Severity.Info">Thông tin chi tiết</MudAlert>
+
+                            }
+                            @for (var i = 1; i <= CourseSections.Count; ++i)
+                            {
+                                var courseSection = CourseSections[i - 1];
+                                if (courseSection.Severity != Severity.Error)
+                                {
+                                    courseSection.Severity = courseSection.Id != Guid.Empty ? Severity.Success : Severity.Info;
+                                }
+                                <MudAlert Severity="@courseSection.Severity">Phần @i</MudAlert>
+                            }
+                        </ItemContent>
+                    </MudTimelineItem>
+                </MudTimeline>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="add-course-info m-2">
+
+
+                        <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" @bind-ActivePanelIndex="ActiveTab">
+
+                            <MudTabPanel Text="Thông tin cơ bản" ToolTip="Thông tin cơ bản">
+                                <div class="add-course-form">
+                                    <EditForm Enhance="true" Model="CourseCreateDto"
+                                              FormName="FrmCreateNewCourse"
+                                              OnValidSubmit="CreateNewCourseSubmit">
+                                        <FluentValidationValidator />
+                                        <div class="row">
+
+                                            <div class="col-lg-6">
+                                                <MudTextField T="string" Label="Tên khoá học" @bind-Value="CourseCreateDto.Name" />
+                                                <ValidationMessage For="() => CourseCreateDto.Name" class="text-danger" />
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <MudNumericField Immediate="false"
+                                                                 Label="Giá tiền (VNĐ)"
+                                                                 Format="N0"
+                                                                 Culture="@CultureInfo.CurrentCulture"
+                                                                 T="double" @bind-Value="@CourseCreateDto.Price" Step="500" />
+                                                <ValidationMessage For="() => CourseCreateDto.Price" class="text-danger" />
+                                            </div>
+
+                                            <div class="input-block my-2">
+                                                <MudField Label="Nội dung">
+
+                                                    <SfRichTextEditor EditorMode="EditorMode.HTML"
+                                                                      @bind-Value="@CourseCreateDto.Content"
+                                                                      Height="300">
+
+                                                        <RichTextEditorToolbarSettings Items="@Tools" />
+                                                        <RichTextEditorImageSettings SaveFormat="SaveFormat.Base64" />
+                                                    </SfRichTextEditor>
+
+                                                </MudField>
+                                                <ValidationMessage For="() => CourseCreateDto.Content" class="text-danger" />
+
+                                            </div>
+
+                                            <div class="input-block">
+                                                <MudField Label="Ảnh bìa ">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <div class="col-auto me-lg-2">
+                                                            <MudFileUpload T="IBrowserFile"
+                                                                           For="@(() => CourseCreateDto.PosterImage!)"
+                                                                           @bind-Files="CourseCreateDto.PosterImage"
+                                                                           OnFilesChanged="(e) => OnCoursePosterChanged(CourseCreateDto, e)"
+                                                                           Accept="@String.Join(',', FileConstants.ImageAcceptTypes)"
+                                                                           SuppressOnChangeWhenInvalid="true">
+                                                                <ButtonTemplate Context="uploadContext">
+                                                                    <MudButton HtmlTag="label"
+                                                                               Variant="Variant.Filled"
+                                                                               Color="Color.Info"
+                                                                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                                               ButtonType="ButtonType.Button"
+                                                                               for="@uploadContext.Id">
+                                                                        Chọn ảnh
+                                                                    </MudButton>
+                                                                </ButtonTemplate>
+                                                            </MudFileUpload>
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrWhiteSpace(ImagePreviewUrl))
+                                                    {
+                                                        <div class="row justify-content-center">
+                                                            <MudImage Src="@ImagePreviewUrl"
+                                                                      Height="400"
+                                                                      Class="col rounded-lg"
+                                                                      Elevation="25"
+                                                                      ObjectPosition="ObjectPosition.Center" />
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-danger my-1">Vui lòng chọn ảnh</span>
+                                                    }
+                                                </MudField>
+                                            </div>
+
+
+                                            <div class="col-lg-6">
+                                                <div class="input-block">
+                                                    <MudSelectExtended T="CourseCategoryViewDto"
+                                                                       Label="Danh mục khoá học"
+                                                                       AnchorOrigin="Origin.BottomCenter"
+                                                                       @bind-SelectedValues="SelectedCourseCategories"
+                                                                       MultiSelection="true">
+                                                        @CourseCategoriesRenderFragment
+                                                    </MudSelectExtended>
+                                                    <ValidationMessage For="() => CourseCreateDto.CourseCategoryIds" class="text-danger" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="input-block">
+                                                    <MudSelect T="CourseLevel" Label="Trình độ" @bind-Value="@CourseCreateDto.Level">
+                                                        @foreach (var value in Enum.GetValues<CourseLevel>())
+                                                        {
+                                                            <MudSelectItem Value="value">@value</MudSelectItem>
+                                                        }
+                                                    </MudSelect>
+                                                    <ValidationMessage For="() => CourseCreateDto.Level" class="text-danger" />
+
+                                                </div>
+                                            </div>
+                                            <MudButton ButtonType="ButtonType.Submit" Color="Color.Info" Variant="Variant.Filled" Class="p-2" Disabled="BaseInfoSuccess" OnClick="UpdateCourseCategories">
+                                                Tạo mới
+                                            </MudButton>
+                                        </div>
+
+                                    </EditForm>
+                                </div>
+                            </MudTabPanel>
+
+                            <MudTabPanel Text="Nội dung khoá học"
+                                         ToolTip="Nội dung khoá học" Disabled="!BaseInfoSuccess">
+
+                                <EditForm Enhance="true" Model="CourseSections" OnValidSubmit="CreateCourseDetail" Context="bigContext">
+                                    <EditForm Enhance Model="CourseSectionCreateDto" OnValidSubmit="CreateNewCourseSection">
+                                        <DataAnnotationsValidator />
+                                        <FluentValidationValidator />
+                                        <div class="row mb-3 justify-content-center align-items-end">
+                                            <div class="col-lg-8">
+                                                <MudTextField @bind-Value="CourseSectionCreateDto.Name" Label="Tên phần" Variant="Variant.Text" />
+                                                <ValidationMessage For="() => CourseSectionCreateDto.Name" class="text-danger" />
+
+                                            </div>
+
+                                            <div class="col-lg-auto">
+                                                <MudButton ButtonType="ButtonType.Submit"
+                                                           Color="Color.Info"
+                                                           Variant="Variant.Filled" Disabled="!BaseInfoSuccess" Class="me-2">
+                                                    Tạo phần mới
+                                                </MudButton>
+                                            </div>
+                                        </div>
+                                    </EditForm>
+
+                                    <MudExpansionPanels MultiExpansion="true">
+
+                                        @foreach (var courseSectionDto in CourseSections)
+                                        {
+                                            <MudDropContainer T="CourseLectureCreateBlazorDto"
+                                                              Items="courseSectionDto.CourseLectures"
+                                                              ItemsSelector="ItemsSelector"
+                                                              ItemDropped="CourseLessonUpdate"
+                                                              Class="d-lg-flex flex-wrap flex-grow-1 mb-2"
+                                                              Context="dropContext" @ref="courseSectionDto.CourseLectureDropContainer">
+                                                <ChildContent>
+                                                    <MudExpansionPanel Text="@courseSectionDto.Name">
+                                                        <TitleContent>
+                                                            <MudGrid Spacing="3" class="align-items-center px-3">
+                                                                <MudItem xs="6" class="d-lg-flex align-items-center">
+                                                                    <h4 class="h4">
+                                                                        @courseSectionDto.Name
+                                                                    </h4>
+                                                                </MudItem>
+                                                                <MudItem xs="6" class="d-lg-flex justify-content-end">
+                                                                    <MudButton ButtonType="ButtonType.Button"
+                                                                               Color="Color.Info"
+                                                                               Variant="Variant.Filled"
+                                                                               OnClick="() => CreateNewLesson(courseSectionDto)" Class="me-1">
+                                                                        Tạo bài học
+                                                                    </MudButton>
+                                                                    <MudButton ButtonType="ButtonType.Button"
+                                                                               Color="Color.Error"
+                                                                               Variant="Variant.Filled"
+                                                                               OnClick="() => DeleteLesson(courseSectionDto)">
+                                                                        Xoá
+                                                                    </MudButton>
+                                                                </MudItem>
+                                                            </MudGrid>
+                                                        </TitleContent>
+
+                                                        <ChildContent>
+                                                            <MudDropZone T="CourseLectureCreateBlazorDto"
+                                                                         Identifier="@courseSectionDto.Id.ToString()"
+                                                                         Class="rounded flex-grow-1" AllowReorder="true">
+                                                                <ChildContent>
+                                                                    @* Content zone *@
+                                                                </ChildContent>
+                                                            </MudDropZone>
+                                                        </ChildContent>
+                                                    </MudExpansionPanel>
+
+                                                </ChildContent>
+
+                                                <ItemRenderer>
+                                                    @{
+                                                        var formName = $"FrmAddCourseLesson{dropContext.Id.ToString()}";
+                                                    }
+                                                    <MudPaper Class="pa-4 my-4 mb-2" Elevation="3">
+                                                        <EditForm Enhance="true"
+                                                                  FormName="@formName"
+                                                                  Model="dropContext" Context="formContext">
+                                                            <FluentValidationValidator />
+                                                            <div class="row">
+                                                                <div class="col-lg-9">
+                                                                    <div class="row">
+                                                                        <div class="col d-lg-flex">
+                                                                            <div class="col-lg-8 me-2">
+                                                                                <MudTextField T="string"
+                                                                                              @bind-Value="dropContext.Name"
+                                                                                              Variant="Variant.Text"
+                                                                                              Label="Tên bài học" />
+                                                                                <ValidationMessage For="() => dropContext.Name" />
+                                                                            </div>
+                                                                            <div class="col-lg-4">
+                                                                                <MudSelect T="CourseLectureType"
+                                                                                           Value="dropContext.LectureType"
+                                                                                           ValueChanged="(e) => UpdateLectureType(dropContext, e)"
+                                                                                           Label="Kiểu bài học"
+                                                                                           OpenIcon="@Icons.Custom.FileFormats.FileDocument"
+                                                                                           AdornmentColor="Color.Info">
+
+                                                                                    @foreach (
+                                                                                   CourseLectureType item
+                                                                                   in Enum.GetValues(typeof(CourseLectureType)))
+                                                                                    {
+                                                                                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                                                                                    }
+                                                                                </MudSelect>
+                                                                                <ValidationMessage For="() => dropContext.LectureType" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col d-lg-flex">
+                                                                            <div class="col-lg-4 align-self-lg-center justify-content-center">
+
+                                                                                <MudFileUpload T="IBrowserFile"
+                                                                                               For="@(() => dropContext.FileUpload!)"
+                                                                                               @bind-Files="dropContext.FileUpload"
+                                                                                               @ref="dropContext.FileUploadContainer"
+                                                                                               OnFilesChanged="e => OnCourseLectureFileChanged(dropContext, e)">
+                                                                                    <ButtonTemplate>
+                                                                                        <MudButton HtmlTag="label"
+                                                                                                   Variant="Variant.Filled"
+                                                                                                   Color="Color.Info"
+                                                                                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                                                                   ButtonType="ButtonType.Button"
+                                                                                                   for="@context.Id">
+                                                                                            Upload
+                                                                                        </MudButton>
+                                                                                    </ButtonTemplate>
+                                                                                </MudFileUpload>
+                                                                            </div>
+
+                                                                            <div class="col-lg-8">
+                                                                                @if (dropContext.FileUpload != null)
+                                                                                {
+                                                                                    var file = dropContext.FileUpload;
+                                                                                    <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">
+                                                                                        @file.ShowShortedFileName()
+                                                                                        <code>@file.ShowFormatFileSize()</code>
+                                                                                    </MudListItem>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+                                                                <div class="col-lg-3 d-lg-flex justify-content-center align-items-center">
+
+                                                                    <MudButton Variant="Variant.Filled"
+                                                                               StartIcon="@Icons.Material.Filled.Delete"
+                                                                               Color="Color.Error"
+                                                                               OnClick="() => CourseDelete(courseSectionDto, dropContext)">
+                                                                        Xoá
+                                                                    </MudButton>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    @if (!String.IsNullOrWhiteSpace(dropContext.TempFileUrl) && dropContext.LectureType == CourseLectureType.Video)
+                                                                    {
+                                                                        <Video src="@dropContext.TempFileUrl"></Video>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </EditForm>
+                                                    </MudPaper>
+                                                </ItemRenderer>
+
+                                            </MudDropContainer>
+                                        }
+                                    </MudExpansionPanels>
+
+                                    <div class="col-lg mt-2 ">
+                                        <MudButton ButtonType="ButtonType.Submit"
+                                                   Color="Color.Info"
+                                                   Class="w-100 py-2"
+                                                   Variant="Variant.Filled">
+                                            Lưu
+                                        </MudButton>
+                                    </div>
+                                </EditForm>
+
+                            </MudTabPanel>
+
+                        </MudTabs>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /New Course -->

@@ -27,8 +27,12 @@ using Net.payOS;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using AutoMapper;
 using EzioLearning.Api.Hubs;
+using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Share.Dto.Learning.Course;
 using Microsoft.AspNetCore.ResponseCompression;
+using static EzioLearning.Core.Dto.MapperClass;
 
 
 namespace EzioLearning.Api;
@@ -41,6 +45,7 @@ internal static class Startup
         services.AddTransient<JwtService>();
         services.AddTransient<FileService>();
         services.AddTransient<PermissionService>();
+        services.AddTransient<VideoService>();
 
         services.AddSingleton(_ =>
         {
@@ -208,13 +213,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    //private static async Task MigrateData(this WebApplication app)
-    //{
-    //    using var scope = app.Services.CreateScope();
-    //    await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-    //    await context.Database.MigrateAsync();
-    //    await new DataSeeder().SeedAsync(context);
-    //}
+    private static async Task MigrateData(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+        await context.Database.MigrateAsync();
+        await new DataSeeder().SeedAsync(context);
+    }
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -316,6 +321,7 @@ internal static class Startup
 
         services.ConfigureAuthorization(configuration);
 
+
         services.AddTransient(_ =>
         {
             var jwtConfiguration = new JwtConfiguration
@@ -388,6 +394,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        //app.MigrateData().Wait();
+        app.MigrateData().Wait();
     }
 }

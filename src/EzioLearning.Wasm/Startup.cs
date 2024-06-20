@@ -2,14 +2,17 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using Blazorise;
+using Blazorise.Bootstrap5;
 using EzioLearning.Share.Dto.User;
-using EzioLearning.Share.Utils;
+using EzioLearning.Share.Validators;
 using EzioLearning.Wasm.Authorization;
 using EzioLearning.Wasm.Hubs;
-using EzioLearning.Wasm.Pages;
 using EzioLearning.Wasm.Providers;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
+using EzioLearning.Wasm.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -28,8 +31,14 @@ namespace EzioLearning.Wasm
     {
         public static Task ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddValidatorsFromAssemblies(
+                [
+                    typeof(ValidatorInjectBlazorClass).Assembly,
+                    typeof(ValidatorInjectShareClass).Assembly
+                ]
+            );
 
-
+            services.AddBlazorise().AddBootstrap5Providers();
             services.AddSyncfusionBlazor();
 
             services.AddBlazoredLocalStorage();
@@ -62,7 +71,7 @@ namespace EzioLearning.Wasm
             services.AddMudExtensions();
 
 
-            services.AddScoped(_ =>
+            services.AddKeyedScoped("DefaultHttpClient", (_, _) =>
             {
                 var httpClient = new HttpClient
                 {
@@ -71,6 +80,20 @@ namespace EzioLearning.Wasm
                 };
                 return httpClient;
             });
+            services.AddKeyedScoped("HttpClientWithoutRedirect", (_, _) =>
+            {
+                var httpClientHandler = new HttpClientHandler()
+                {
+                    AllowAutoRedirect = false
+                };
+                var httpClient = new HttpClient(httpClientHandler)
+                {
+                    BaseAddress = new Uri(ApiConstants.BaseUrl),
+                };
+                return httpClient;
+            });
+
+            services.AddScoped(provider => provider.GetRequiredKeyedService<HttpClient>("DefaultHttpClient"));
 
             using var log = new LoggerConfiguration()
                 .WriteTo.File("Logs/log.txt")
@@ -123,8 +146,13 @@ namespace EzioLearning.Wasm
         public static async Task LoadCurrentCulture(this WebAssemblyHost host)
         {
 
-            var jsInterop = host.Services.GetRequiredService<IJSRuntime>();
-            var currentCultureName = await jsInterop.InvokeAsync<string?>("blazorCulture.get") ?? "vi-VN";
+            var localStorageService = host.Services.GetRequiredService<ILocalStorageService>();
+            var currentCultureName = await localStorageService.GetItemAsync<string>(nameof(CultureInfo));
+            if (string.IsNullOrWhiteSpace(currentCultureName))
+            {
+                currentCultureName = "vi-VN";
+                await localStorageService.SetItemAsync(nameof(CultureInfo), currentCultureName);
+            }
 
             var culture = new CultureInfo(currentCultureName);
 
@@ -143,7 +171,7 @@ namespace EzioLearning.Wasm
             var hubConnectionManager = host.Services.GetRequiredService<HubConnectionManager>();
             var localStorage = host.Services.GetRequiredService<ILocalStorageService>();
 
-            var testHub = await hubConnectionManager.GetHubConnectionAsync(HubConnectionEndpoints.Test,needAuthenticate:false);
+            var testHub = await hubConnectionManager.GetHubConnectionAsync(HubConnectionEndpoints.Test, needAuthenticate: false);
 
             if (testHub != null)
             {

@@ -4,6 +4,7 @@ using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Domain.Entities.Resources;
 using EzioLearning.Domain.Entities.System;
 using EzioLearning.Share.Common;
+using EzioLearning.Share.Utils;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
     public DbSet<Culture> Cultures { get; set; } = default!;
     public DbSet<Video> Videos { get; set; } = default!;
     public DbSet<VideoStream> VideoStreams { get; set; } = default!;
-    public DbSet<Attachment> Attachments { get; set; } = default!;
+    public DbSet<Document> Documents { get; set; } = default!;
     #endregion
 
     #region Model Creating
@@ -41,14 +42,18 @@ public class EzioLearningDbContext(DbContextOptions options) : IdentityDbContext
 
     private void ConfigureFilters(ModelBuilder builder)
     {
-        builder.Entity<AppUser>().HasQueryFilter(user => user.IsDeleted == false);
 
         builder
             .Entity<AppUser>()
-                .ToTable(tb =>
+            .ToTable(tb =>
                 {
                     tb.UseSqlOutputClause(false);
-                });
+                })
+            .HasQueryFilter(user => user.IsDeleted == false);
+
+        builder.Entity<Course>()
+            .HasQueryFilter(course => !course.User!.IsDeleted);
+
     }
 
     public void ConfigureIdentity(ModelBuilder builder, string prefix = "App", string schema = SchemaConstants.Auth)

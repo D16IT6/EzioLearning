@@ -44,7 +44,7 @@ namespace EzioLearning.Wasm.Services.Implement
 
             if (avatar is { Size: > 0 })
             {
-                formContent.Add(new StreamContent(avatar.OpenReadStream()), nameof(AccountInfoDto.Avatar), avatar.Name);
+                formContent.Add(new StreamContent(avatar.OpenReadStream(avatar.Size)), nameof(AccountInfoDto.Avatar), avatar.Name);
             }
 
             var response = await httpClient.PutAsync("/api/Account/Avatar", formContent);

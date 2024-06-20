@@ -1,29 +1,36 @@
-﻿namespace EzioLearning.Api.Services;
+﻿using EzioLearning.Share.Validators.Common;
+
+namespace EzioLearning.Api.Services;
 
 public class FileService
 {
-    private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".bmp", ".ico"];
-
     public bool IsImageAccept(string fileName)
     {
         var extension = Path.GetExtension(fileName);
-        return ImageExtensions.Contains(extension);
+        return FileConstants.ImageAcceptTypes.Contains(extension);
     }
 
     public async Task<string> SaveFile(IFormFile file, string folderPath, string outputFileNameWithoutExtension)
     {
+
         var tempFilePath = Path.Combine(folderPath, outputFileNameWithoutExtension + Path.GetExtension(file.FileName));
 
         //var actuallyFilePath = GenerateActuallyFilePath(Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath));
 
-        var oldFilePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath);
-        if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
+        var actuallyFilePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", tempFilePath);
+        if (File.Exists(actuallyFilePath)) File.Delete(actuallyFilePath);
 
-        await using var fileStream = new FileStream(oldFilePath, FileMode.CreateNew);
+        var newDirectory = Path.GetDirectoryName(actuallyFilePath);
+        if (!Directory.Exists(newDirectory) && !string.IsNullOrWhiteSpace(newDirectory))
+        {
+            Directory.CreateDirectory(newDirectory);
+        }
+        await using var fileStream = new FileStream(actuallyFilePath, FileMode.CreateNew);
 
+        
         await file.CopyToAsync(fileStream);
 
-        var result = Path.Combine(folderPath, Path.GetFileName(oldFilePath));
+        var result = Path.Combine(folderPath, Path.GetFileName(actuallyFilePath));
 
         return result;
     }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Share.Common;
 using EzioLearning.Share.Utils;
 
@@ -15,6 +16,11 @@ namespace EzioLearning.Domain.Entities.Resources
         public VideoStatus Status { get; set; }
 
         public ICollection<VideoStream> VideoStreams { get; set; } = new List<VideoStream>();
+
+        public CourseLecture? Lecture { get; set; }
+
+        [ForeignKey(nameof(Lecture))]
+        public Guid LectureId { get; set; }
     }
 
    

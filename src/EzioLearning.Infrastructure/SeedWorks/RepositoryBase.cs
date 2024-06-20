@@ -49,6 +49,8 @@ public class RepositoryBase<T, TKey>(EzioLearningDbContext context) : IRepositor
         DbSet.AddRangeAsync(entities);
     }
 
+
+
     public virtual void Remove(T entity)
     {
         DbSet.Remove(entity);

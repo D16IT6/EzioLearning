@@ -207,6 +207,8 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AppUsers", "Auth");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.Course", b =>
@@ -308,9 +310,6 @@ namespace EzioLearning.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AttachmentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CourseSectionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -322,6 +321,9 @@ namespace EzioLearning.Infrastructure.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LectureType")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
@@ -338,16 +340,9 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("VideoId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AttachmentId");
-
                     b.HasIndex("CourseSectionId");
-
-                    b.HasIndex("VideoId");
 
                     b.ToTable("CourseLectures", "Learning");
                 });
@@ -481,10 +476,13 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.ToTable("Students", "Learning");
                 });
 
-            modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.Attachment", b =>
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.Document", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LectureId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -497,7 +495,10 @@ namespace EzioLearning.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attachments", "Resource");
+                    b.HasIndex("LectureId")
+                        .IsUnique();
+
+                    b.ToTable("Documents", "Resource");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.Video", b =>
@@ -513,6 +514,9 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.Property<long>("Duration")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid>("LectureId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -521,6 +525,9 @@ namespace EzioLearning.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LectureId")
+                        .IsUnique();
 
                     b.ToTable("Videos", "Resource");
                 });
@@ -740,25 +747,13 @@ namespace EzioLearning.Infrastructure.Migrations
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseLecture", b =>
                 {
-                    b.HasOne("EzioLearning.Domain.Entities.Resources.Attachment", "Attachment")
-                        .WithMany()
-                        .HasForeignKey("AttachmentId");
-
                     b.HasOne("EzioLearning.Domain.Entities.Learning.CourseSection", "CourseSection")
                         .WithMany("CourseLectures")
                         .HasForeignKey("CourseSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EzioLearning.Domain.Entities.Resources.Video", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideoId");
-
-                    b.Navigation("Attachment");
-
                     b.Navigation("CourseSection");
-
-                    b.Navigation("Video");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseRating", b =>
@@ -775,7 +770,7 @@ namespace EzioLearning.Infrastructure.Migrations
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseSection", b =>
                 {
                     b.HasOne("EzioLearning.Domain.Entities.Learning.Course", "Course")
-                        .WithMany()
+                        .WithMany("Sections")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -811,6 +806,28 @@ namespace EzioLearning.Infrastructure.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.Document", b =>
+                {
+                    b.HasOne("EzioLearning.Domain.Entities.Learning.CourseLecture", "Lecture")
+                        .WithOne("Document")
+                        .HasForeignKey("EzioLearning.Domain.Entities.Resources.Document", "LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lecture");
+                });
+
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.Video", b =>
+                {
+                    b.HasOne("EzioLearning.Domain.Entities.Learning.CourseLecture", "Lecture")
+                        .WithOne("Video")
+                        .HasForeignKey("EzioLearning.Domain.Entities.Resources.Video", "LectureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lecture");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Resources.VideoStream", b =>
@@ -920,12 +937,21 @@ namespace EzioLearning.Infrastructure.Migrations
                 {
                     b.Navigation("Ratings");
 
+                    b.Navigation("Sections");
+
                     b.Navigation("Students");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseCategory", b =>
                 {
                     b.Navigation("CourseCategoryTranslations");
+                });
+
+            modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseLecture", b =>
+                {
+                    b.Navigation("Document");
+
+                    b.Navigation("Video");
                 });
 
             modelBuilder.Entity("EzioLearning.Domain.Entities.Learning.CourseSection", b =>

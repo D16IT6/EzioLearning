@@ -1,72 +1,76 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-
-	</PropertyGroup>
-
-	<ItemGroup>
-		<None Remove="HomeTopCategory.razor.js" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Include="Components\Home\HomeTopCategory.razor.js" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="BlazorAnimate" Version="3.0.0" />
-		<PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
-		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.9.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.6" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-preview.3.24172.13" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.0-preview.3.24172.13" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="Syncfusion.Blazor" Version="25.1.35" />
-		<PackageReference Include="Syncfusion.Blazor.Themes" Version="25.1.35" />
-		<PackageReference Include="Syncfusion.Licensing" Version="25.1.35" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\EzioLearning.Share\EzioLearning.Share.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Update="Pages\Auth\Login.razor">
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Components\Layout\Footer.en.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Components\Layout\Footer.vi.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Components\Layout\Header.en.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Components\Layout\Header.vi.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Components\Course\" />
-	  <Folder Include="Resources\Components\Course\" />
-	  <Folder Include="Resources\Pages\Course\" />
-	</ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <EmccMaximumHeapSize>268435456</EmccMaximumHeapSize>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReactorLocation>"C:\Program Files (x86)\Eziriz\.NET Reactor\dotNET_Reactor.Console.exe"</ReactorLocation>
+    <ReactorProject>""</ReactorProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="HomeTopCategory.razor.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Components\Home\HomeTopCategory.razor.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BlazorAnimate" Version="3.0.0" />
+    <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.5.3" />
+    <PackageReference Include="Blazorise.Video" Version="1.5.3" />
+    <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.9.2" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-preview.3.24172.13" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.0-preview.3.24172.13" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Syncfusion.Blazor.PdfViewer" Version="25.1.35" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="25.1.35" />
+    <PackageReference Include="Syncfusion.Blazor.SfPdfViewer" Version="25.1.35" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="25.1.35" />
+    <PackageReference Include="Syncfusion.Licensing" Version="25.1.35" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EzioLearning.Share\EzioLearning.Share.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Pages\Auth\Login.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Components\Layout\Footer.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Components\Layout\Footer.vi.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Components\Layout\Header.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Components\Layout\Header.vi.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Components\Course\" />
+    <Folder Include="Resources\Pages\Course\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties Reactor_Commands="" Reactor_Configuration="Debug" Reactor_Deploy="0" Reactor_Enabled="0" Reactor_Output="&lt;AssemblyLocation&gt;\&lt;AssemblyFileName&gt;" Reactor_Project="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

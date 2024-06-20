@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Share.Validators.Common;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
 using EzioLearning.Wasm.Utils.Extensions;
@@ -121,14 +122,14 @@ namespace EzioLearning.Wasm.Components.Account
         private bool HandleAcceptFile(IBrowserFile file)
         {
             var fileExtension = Path.GetExtension(file.Name);
-            if (file.Size > FileConstants.UploadLimit)
+            if (file.Size > FileConstants.ImageUploadLimit)
             {
                 SnackBar.Add(FileConstants.FileTooLargeMessage, Severity.Error,
                     config => { config.ActionColor = Color.Warning; });
                 return false;
             }
 
-            if (FileConstants.AcceptTypes.Contains(fileExtension)) return true;
+            if (FileConstants.ImageAcceptTypes.Contains(fileExtension)) return true;
 
             SnackBar.Add(FileConstants.FileNowAllowExtensionMessage, Severity.Error,
                 config => { config.ActionColor = Color.Warning; });

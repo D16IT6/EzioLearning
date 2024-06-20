@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Net;
+using EzioLearning.Share.Validators.Common;
 using EzioLearning.Wasm.Utils.Common;
 using Microsoft.Extensions.Localization;
 using EzioLearning.Wasm.Utils.Extensions;
@@ -14,7 +15,7 @@ namespace EzioLearning.Wasm.Pages.Auth;
 public partial class Register : AuthComponentBase
 {
 
-    private string[] AcceptTypes => FileConstants.AcceptTypes;
+    private string[] AcceptTypes => FileConstants.ImageAcceptTypes;
 
     [SupplyParameterFromQuery] private string? Email { get; set; } = string.Empty;
 
@@ -96,7 +97,7 @@ public partial class Register : AuthComponentBase
         if (file != null)
         {
             var fileExtension = Path.GetExtension(file.Name);
-            if (file.Size > FileConstants.UploadLimit)
+            if (file.Size > FileConstants.ImageUploadLimit)
             {
                 SnackBar.Add(FileConstants.FileTooLargeMessage, Severity.Error, config => { config.ActionColor = Color.Warning; });
                 return;

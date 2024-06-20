@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Blazored.LocalStorage;
 using EzioLearning.Share.Dto.Culture;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
@@ -24,6 +25,7 @@ public partial class Header : AccountComponentBase
     [Inject] private IStringLocalizer<Header> Localizer { get; set; } = default!;
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
     [Inject] private ILogger<Header> Logger { get; set; } = default!;
+    [Inject] private ILocalStorageService LocalStorageService { get; set; } = default!;
     protected override void OnInitialized()
     {
         UpdateHeaderClass();
@@ -68,7 +70,7 @@ public partial class Header : AccountComponentBase
 
     private async Task OnChangeCulture(string  selectedCulture)
     {
-        await JsRuntime.InvokeVoidAsync("blazorCulture.set", selectedCulture);
+        await LocalStorageService.SetItemAsStringAsync(nameof(CultureInfo), selectedCulture);
 
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }

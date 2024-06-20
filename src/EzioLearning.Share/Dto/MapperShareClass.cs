@@ -1,4 +1,4 @@
-﻿namespace EzioLearning.Share.Dto;
+﻿	namespace EzioLearning.Share.Dto;
 
 public class MapperShareClass
 {

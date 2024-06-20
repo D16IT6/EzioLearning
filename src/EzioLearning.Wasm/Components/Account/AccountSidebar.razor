@@ -1,5 +1,4 @@
 ﻿@using System.Security.Claims
-@using EzioLearning.Share.Utils;
 @inherits EzioLearning.Wasm.Utils.Extensions.AccountComponentBase
 <!-- sidebar -->
 <div class="col-xl-3 col-md-4 theiaStickySidebar">
@@ -35,7 +34,7 @@
                 {
                     <div class="go-dashboard text-center">
                         <NavLink Match="NavLinkMatch.All"
-                                 href="@RouteConstants.CourseRoute.Create"
+                                 href="@RouteConstants.AccountRoute.CourseCreate"
                                  class="btn btn-primary">
                             Tạo khoá học
                         </NavLink>

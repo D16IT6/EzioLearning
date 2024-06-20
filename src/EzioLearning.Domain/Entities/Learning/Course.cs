@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using EzioLearning.Domain.Entities.Identity;
-using EzioLearning.Domain.Entities.System;
 using EzioLearning.Share.Common;
 using EzioLearning.Share.Utils;
 
@@ -20,6 +19,7 @@ public class Course : AuditableEntity
     public CourseStatus Status { get; set; }
 
     public ICollection<CourseCategory> Categories { get; set; } = [];
+    public ICollection<CourseSection> Sections { get; set; } = [];
     public ICollection<CourseRating> Ratings { get; set; } = [];
     public ICollection<Student> Students { get; set; } = [];
 

@@ -11,10 +11,12 @@ public class CourseCreateApiDtoValidator : AbstractValidator<CourseCreateApiDto>
 {
     public CourseCreateApiDtoValidator(
         ICourseCategoryRepository courseCategoryRepository,
+        ICourseRepository courseRepository,
         UserManager<AppUser> userManager,
         CourseCreateDtoValidator courseCreateDtoValidator)
     {
         Include(courseCreateDtoValidator);
+
         var availableUserIds = userManager.Users.Select(x => x.Id);
 
         var availableCourseCategoriesIds =
@@ -22,11 +24,22 @@ public class CourseCreateApiDtoValidator : AbstractValidator<CourseCreateApiDto>
                 .Where(x => x.IsActive)
                 .Select(x => x.Id).ToList();
 
-        RuleFor(x => x.CourseCategoryIds)
-            .Must(inputCourseCategories => !inputCourseCategories.Except(availableCourseCategoriesIds).Any())
-            .WithMessage("Danh mục không tồn tại");
+        var courseNames = (courseRepository.GetAllAsync()).Result.AsQueryable().Select(x => x.Name);
 
-        //RuleFor(x => x.CreatedBy)
-        //    .Must(x => availableUserIds.Contains(x)).WithMessage("Giáo viên không tồn tại");
+        RuleFor(x => x.Name)
+            .MinimumLength(5).WithMessage("Tên khoá học không ngắn hơn 5 ký tự")
+            .MaximumLength(200).WithMessage("Tên khoá học không dài quá 200 ký tự")
+            .Must(x => !courseNames.Contains(x)).WithMessage("Tên đã tồn tại, vui lòng chọn tên khác");
+
+        RuleFor(x => x.CourseCategoryIds)
+            .Must(inputCourseCategories =>
+            {
+                var except = inputCourseCategories.Except(availableCourseCategoriesIds);
+                return !except.Any();
+            })
+            .WithMessage("Danh mục không có");
+
+        RuleFor(x => x.CreatedBy)
+            .Must(x => availableUserIds.Contains(x)).WithMessage("Giáo viên không tồn tại");
     }
 }

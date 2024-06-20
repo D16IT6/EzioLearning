@@ -24,11 +24,13 @@ public abstract record RouteConstants
         public const string ConfirmChangeEmail = $"Account/{nameof(ConfirmChangeEmail)}";
         public const string ConfirmChangePassword = $"Account/{nameof(ConfirmChangePassword)}";
         public const string Delete = $"Account/{nameof(Delete)}";
+
+        public const string CourseCreate = "Account/Course/Create";
     }
 
-    public abstract record CourseRoute
+    public  record CourseRoute
     {
-        public const string Create = $"/Course/{nameof(Create)}";
+        //public const string Index = $"/Course";
     }
 
     public abstract record ErrorRoute

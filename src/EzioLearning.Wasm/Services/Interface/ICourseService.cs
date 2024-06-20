@@ -2,6 +2,7 @@
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Response;
+using EzioLearning.Wasm.Dto.Learning.Course;
 
 namespace EzioLearning.Wasm.Services.Interface
 {
@@ -13,5 +14,8 @@ namespace EzioLearning.Wasm.Services.Interface
 		Task<IEnumerable<InstructorViewDto>> GetFeatureInstructors(int take = 6);
 
 		Task<ResponseBaseWithData<CourseCreateDto>> CreateNewCourse(CourseCreateDto courseCreateDto);
+
+		Task<ResponseBaseWithData<CourseSectionCreateBlazorDto>> CreateCourseSection(
+			CourseSectionCreateBlazorDto courseSectionCreateDto);
 	}
 }
