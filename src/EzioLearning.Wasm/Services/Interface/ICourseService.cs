@@ -1,6 +1,8 @@
 ﻿using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Dto.User;
+using EzioLearning.Share.Models.Pages;
+using EzioLearning.Share.Models.Request;
 using EzioLearning.Share.Models.Response;
 using EzioLearning.Wasm.Dto.Learning.Course;
 
@@ -17,5 +19,7 @@ namespace EzioLearning.Wasm.Services.Interface
 
 		Task<ResponseBaseWithData<CourseSectionCreateBlazorDto>> CreateCourseSection(
 			CourseSectionCreateBlazorDto courseSectionCreateDto);
+
+		Task<ResponseBaseWithData<PageResult<CourseItemViewDto>>> GetCoursePage(CourseListOptions options);
 	}
 }

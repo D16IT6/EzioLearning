@@ -27,12 +27,9 @@ using Net.payOS;
 using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using AutoMapper;
 using EzioLearning.Api.Hubs;
-using EzioLearning.Domain.Entities.Learning;
-using EzioLearning.Share.Dto.Learning.Course;
 using Microsoft.AspNetCore.ResponseCompression;
-using static EzioLearning.Core.Dto.MapperClass;
+using Microsoft.AspNetCore.Http.Features;
 
 
 namespace EzioLearning.Api;
@@ -357,7 +354,12 @@ internal static class Startup
         }).AddMessagePackProtocol();
 
 
-
+        services.Configure<FormOptions>(x =>
+        {
+            x.BufferBodyLengthLimit = long.MaxValue;
+            x.ValueLengthLimit = int.MaxValue;
+            x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
+        });
 
     }
 
@@ -394,6 +396,6 @@ internal static class Startup
 
         app.UseMiddleware<HandleExceptionMiddleware>();
 
-        app.MigrateData().Wait();
+        //app.MigrateData().Wait();
     }
 }

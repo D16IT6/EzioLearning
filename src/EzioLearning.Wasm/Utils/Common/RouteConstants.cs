@@ -31,6 +31,8 @@ public abstract record RouteConstants
     public  record CourseRoute
     {
         //public const string Index = $"/Course";
+        public const string Detail = $"/{nameof(Detail)}";
+
     }
 
     public abstract record ErrorRoute

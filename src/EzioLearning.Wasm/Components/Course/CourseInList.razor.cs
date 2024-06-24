@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace EzioLearning.Wasm.Components.Course
 {
-	public partial class CourseInGrid
+	public partial class CourseInList
 	{
 		[CascadingParameter] public CourseItemViewDto CourseItemViewDto { get; set; } = new();
+
 	}
 }

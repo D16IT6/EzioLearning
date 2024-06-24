@@ -13,7 +13,6 @@ public class CourseLecture : AuditableEntity
 
     public CourseLectureType LectureType { get; set; }
 
-
     public Video? Video { get; set; }
     public Document? Document { get; set; }
 

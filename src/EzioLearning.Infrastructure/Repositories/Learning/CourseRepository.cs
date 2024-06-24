@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EzioLearning.Core.Repositories.Learning;
+using EzioLearning.Core.Repositories.Resources;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.SeedWorks;
@@ -12,6 +13,8 @@ public class CourseRepository(
     EzioLearningDbContext context, 
     ICourseSectionRepository courseSectionRepository,
     ICourseLectureRepository courseLectureRepository,
+    IVideoRepository videoRepository,
+    IDocumentRepository documentRepository,
     IMapper mapper
     ) : PagedRepositoryBase<Course, Guid>(context, mapper), ICourseRepository
 {
@@ -37,14 +40,48 @@ public class CourseRepository(
         var courseSectionNames = course.Sections.Select(x => x.Name);
         if (courseSectionNames.Contains(courseSection.Name)) return -1;
 
-        
-        courseLectureRepository.AddRange(courseSection.CourseLectures);
-
         courseSectionRepository.Add(courseSection);
-
         course.Sections.Add(courseSection);
 
+        foreach (var lecture in courseSection.CourseLectures)
+        {
+            courseLectureRepository.Add(lecture);
+            switch (lecture)
+            {
+                case { LectureType: CourseLectureType.Video, Video: not null }:
+                    videoRepository.Add(lecture.Video);
+                    break;
+                case { Document: not null, LectureType: CourseLectureType.Document }:
+                    documentRepository.Add(lecture.Document);
+                    break;
+            }
+        }
         return 1;
 
+    }
+
+    public async Task<Course?> GetCourseDetail(Guid courseId)
+    {
+
+
+        var queryable = DbSet.AsQueryable();
+
+        queryable = queryable
+            .Include(x => x.Sections)
+            .ThenInclude(s => s.CourseLectures)
+            .ThenInclude(l => l.Video)
+
+            .Include(x=>x.Sections)
+            .ThenInclude(s=>s.CourseLectures)
+            .ThenInclude(l => l.Document)
+
+            .AsSplitQuery()
+            ;
+
+
+
+        var course = await queryable
+            .FirstOrDefaultAsync(x => x.Id == courseId);
+        return course;
     }
 }

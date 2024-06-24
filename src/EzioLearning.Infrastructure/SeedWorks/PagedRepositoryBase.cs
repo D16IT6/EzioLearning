@@ -28,13 +28,14 @@ public class PagedRepositoryBase<T, TKey>(EzioLearningDbContext context, IMapper
         var query = DbSet.AsQueryable();
         if (expression != null) query = query.Where(expression);
 
+        var totalCount = await query.CountAsync();
         query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         return new PageResult<TDto>
         {
             Data = await mapper.ProjectTo<TDto>(query).ToListAsync(),
             CurrentPage = pageNumber,
             PageSize = pageSize,
-            RowCount = await query.CountAsync()
+            RowCount = totalCount
         };
     }
 

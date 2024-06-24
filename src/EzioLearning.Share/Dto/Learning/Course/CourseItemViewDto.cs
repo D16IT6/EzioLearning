@@ -2,7 +2,7 @@
 
 namespace EzioLearning.Share.Dto.Learning.Course
 {
-	public class CourseInGridViewDto
+	public class CourseItemViewDto
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; } = string.Empty;
@@ -10,8 +10,8 @@ namespace EzioLearning.Share.Dto.Learning.Course
 		public double Price { get; set; } = 0;
 		public double PromotionPrice { get; set; } = 0;
 		public CourseLevel Level { get; set; }
-		public CourseStatus Status { get; set; }
 		public Guid TeacherId { get; set; }
+		public string? TeacherName { get; set; }
 		public string? TeacherAvatar { get; set; }
 		public int LessonCount { get; set; }
 		public double Rating { get; set; } = 0;

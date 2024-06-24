@@ -46,6 +46,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EzioLearning.Core\EzioLearning.Core.csproj" />
     <ProjectReference Include="..\EzioLearning.Infrastructure\EzioLearning.Infrastructure.csproj" />
+    <ProjectReference Include="..\EzioLearning.ServiceDefaults\EzioLearning.ServiceDefaults.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="wwwroot\Uploads\Images\CourseCategories\default-course-category.png">

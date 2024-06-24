@@ -7,9 +7,13 @@ public class Program
         Xabe.FFmpeg.FFmpeg.SetExecutablesPath(Path.Combine(Environment.CurrentDirectory,"Tools"));
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.AddServiceDefaults();
+
         builder.ConfigureBuilder();
        
         var app = builder.Build();
+       
+        app.MapDefaultEndpoints();
 
         app.Configure();
 

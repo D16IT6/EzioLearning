@@ -78,7 +78,7 @@ public class MapperClass : Profile
         CreateMap<CourseSectionCreateApiDto, CourseSection>();
         CreateMap<CourseLectureCreateApiDto, CourseLecture>();
 
-        CreateProjection<Course, CourseInGridViewDto>()
+        CreateProjection<Course, CourseItemViewDto>()
             .ForMember(x => x.Duration,
                 cfg => cfg.MapFrom(
                     c => c.Sections
@@ -91,7 +91,45 @@ public class MapperClass : Profile
             .ForMember(x => x.LessonCount, cfg => cfg.MapFrom(
                 x => x.Sections.SelectMany(section => section.CourseLectures).Count()))
             .ForMember(x => x.TeacherId, cfg => cfg.MapFrom(x => x.CreatedBy))
-            .ForMember(x => x.TeacherAvatar, cfg => cfg.MapFrom(x => x.User!.Avatar))
+            .ForMember(x => x.TeacherName, cfg => cfg.MapFrom(x => x.User!.FullName))
+            .ForMember(x => x.TeacherAvatar, cfg => cfg.MapFrom(x => x.User!.Avatar));
+
+        CreateMap<Course, CourseDetailViewDto>()
+            .ForMember(x => x.TeacherId, 
+                cfg => cfg.MapFrom(c => c.User!.Id))
+            .ForMember(x => x.TeacherName, 
+                cfg => cfg.MapFrom(c => c.User!.FullName))
+            .ForMember(x => x.TeacherAvatar, 
+                cfg => cfg.MapFrom(c => c.User!.Avatar))
+
+            .ForMember(x => x.Rating, 
+                cfg => cfg.MapFrom(
+                x => x.Ratings.Any() ? x.Ratings.Average(r => r.Point) : 0))
+            .ForMember(x => x.RatingCount, 
+                cfg => cfg.MapFrom(r => r.Ratings.Any() ? r.Ratings.Count() : 0))
+
+            .ForMember(x => x.LessonCount, 
+                cfg => cfg.MapFrom(
+                x => x.Sections.SelectMany(section => section.CourseLectures).Count()))
+            .ForMember(x => x.Duration,
+                cfg => cfg.MapFrom(
+                    c => c.Sections
+                        .SelectMany(s => s.CourseLectures)
+                        .Sum(l => l.Video != null ? l.Video.Duration : 0)))
+            .ForMember(x=> x.StudentCount,
+                cfg => cfg.MapFrom(c=> c.Students.Any() ? c.Students.Count() : 0))
+            .ForMember(x => x.Sections, cfg => cfg.MapFrom(c => c.Sections))
+            ;
+
+        CreateMap<CourseSection, CourseSectionViewDto>()
+            .ForMember(dest => dest.Lectures, opt => opt.MapFrom(src => src.CourseLectures))
+            ;
+
+        CreateMap<CourseLecture, CourseLectureViewDto>()
+            .ForMember(x=> x.FileUrl,
+                cfg=>cfg.MapFrom(x=> x.Video != null ? x.Video.DefaultPath : (x.Document != null ? x.Document.Path : "")))
+            .ForMember(x=> x.Duration,
+                cfg=>cfg.MapFrom(x=> x.Video != null ? x.Video.Duration : 0))
             ;
     }
 

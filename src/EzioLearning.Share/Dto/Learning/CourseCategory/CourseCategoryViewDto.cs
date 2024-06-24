@@ -8,5 +8,8 @@ public class CourseCategoryViewDto
     public Guid? ParentId { get; init; }
     public string? ParentName { get; init; }
 
-
+    public override string? ToString()
+    {
+        return Name;
+    }
 }

@@ -1,5 +1,5 @@
-﻿<div class="col-lg-4 col-md-6 d-flex">
-    <div class="course-box course-design d-flex ">
+﻿<div class="col-lg-12 col-md-12 d-flex">
+    <div class="course-box course-design list-course d-flex">
         <div class="product">
             <div class="product-img">
                 <a href="course-details.html">
@@ -23,23 +23,17 @@
                 </div>
             </div>
             <div class="product-content">
-                <div class="course-group d-flex mb-1">
-                    <div class="course-group-img d-flex">
-                        <a href="#"><img src="@CourseItemViewDto.TeacherAvatar" alt="" class="img-fluid"></a>
-                        <div class="course-name d-flex align-items-center">
-                            <h4><a href="#">@CourseItemViewDto.TeacherName</a></h4>
-                        </div>
+                <div class="head-course-title">
+                    <h3 class="title">
+                        <a href="course-details.html">
+                            @CourseItemViewDto.Name.Substring(0, Math.Min(CourseItemViewDto.Name.Length, 30))
+                        </a>
+                    </h3>
+                    <div class="all-btn all-category d-flex align-items-center">
+                        <a href="checkout.html" class="btn btn-primary">BUY NOW</a>
                     </div>
-
-                    @* <div class="course-share d-flex align-items-center justify-content-center">
-                    <a href="#rate"><i class="fa-regular fa-heart"></i></a>
-                    </div> *@
-
                 </div>
-                <h3 class="title"><a href="course-details.html">
-                    @CourseItemViewDto.Name.Substring(0, Math.Min(CourseItemViewDto.Name.Length, 30))
-                </a></h3>
-                <div class="course-info d-flex align-items-center">
+                <div class="course-info border-bottom-0 pb-0 d-flex align-items-center">
                     <div class="rating-img d-flex align-items-center">
                         <img src="assets/img/icon/icon-01.svg" alt="">
                         <p>@(CourseItemViewDto.LessonCount)+ Lessons</p>
@@ -57,8 +51,16 @@
                         (@CourseItemViewDto.RatingCount)
                     </span>
                 </div>
-                <div class="all-btn all-category d-flex align-items-center">
-                    <a href="checkout.html" class="btn btn-primary">BUY NOW</a>
+                <div class="course-group d-flex mb-0">
+                    <div class="course-group-img d-flex">
+                        <a href="instructor-profile.html"><img src="@CourseItemViewDto.TeacherAvatar" alt="" class="img-fluid"></a>
+                        <div class="course-name d-flex align-items-center">
+                            <h4><a href="#">@CourseItemViewDto.TeacherName</a></h4>
+                        </div>
+                    </div>
+                    <div class="course-share d-flex align-items-center justify-content-center">
+                        <a href="#rate"><i class="fa-regular fa-heart"></i></a>
+                    </div>
                 </div>
             </div>
         </div>

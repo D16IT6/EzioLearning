@@ -158,6 +158,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
         private async Task CreateNewCourseSubmit()
         {
             CourseCreateDto.CreatedBy = Guid.Parse(AuthenticationState.User.Claims.First(x => x.Type.Equals(ClaimTypes.PrimarySid)).Value);
+
             var response = await CourseService.CreateNewCourse(CourseCreateDto);
             if (response.IsSuccess)
             {
@@ -177,7 +178,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
         {
             var file = obj.File;
 
-            ImagePreviewUrl = await file.GetBlobStream(JsRuntime);
+            //ImagePreviewUrl = await file.GetBlobStream(JsRuntime);
         }
         private void CreateNewCourseSection()
         {
@@ -299,7 +300,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
                     return;
                 }
 
-                lectureCreate.TempFileUrl = await file.GetBlobStream(JsRuntime);
+                //lectureCreate.TempFileUrl = await file.GetBlobStream(JsRuntime);
             }
             catch (Exception)
             {
@@ -370,6 +371,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
                 var finishedTask = await Task.WhenAny(taskList);
 
                 var result = await finishedTask;
+
                 if (result.IsSuccess)
                 {
                     var data = result.Data;
@@ -391,7 +393,6 @@ namespace EzioLearning.Wasm.Pages.Account.Course
 
                 }
                 taskList.Remove(finishedTask);
-
             }
 
             if (redirect)

@@ -50,7 +50,9 @@
                                 {
                                     courseSection.Severity = courseSection.Id != Guid.Empty ? Severity.Success : Severity.Info;
                                 }
-                                <MudAlert Severity="@courseSection.Severity">Phần @i</MudAlert>
+
+                                var i1 = i;
+                                <MudAlert Severity="@courseSection.Severity">Phần @i1</MudAlert>
                             }
                         </ItemContent>
                     </MudTimelineItem>

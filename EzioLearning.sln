@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{63DBBDAE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.Share", "src\EzioLearning.Share\EzioLearning.Share.csproj", "{C2725151-D45D-4552-BACF-BFD0D8688399}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzioLearning.AppHost", "src\EzioLearning.AppHost\EzioLearning.AppHost.csproj", "{A845079C-C778-41A8-890A-8456B86909EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzioLearning.ServiceDefaults", "src\EzioLearning.ServiceDefaults\EzioLearning.ServiceDefaults.csproj", "{119E57D3-8DB8-48ED-8334-230BC48B3BE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{C2725151-D45D-4552-BACF-BFD0D8688399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2725151-D45D-4552-BACF-BFD0D8688399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2725151-D45D-4552-BACF-BFD0D8688399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A845079C-C778-41A8-890A-8456B86909EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A845079C-C778-41A8-890A-8456B86909EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A845079C-C778-41A8-890A-8456B86909EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A845079C-C778-41A8-890A-8456B86909EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{119E57D3-8DB8-48ED-8334-230BC48B3BE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{119E57D3-8DB8-48ED-8334-230BC48B3BE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{119E57D3-8DB8-48ED-8334-230BC48B3BE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{119E57D3-8DB8-48ED-8334-230BC48B3BE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

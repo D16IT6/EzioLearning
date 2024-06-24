@@ -59,7 +59,23 @@
             transform: translate(-50%, -50%);
         }
     </style>
+    <script>
 
+        window.blobService = {
+            GetBlobStream: (streamArray, contentType) => {
+                let blob = new Blob([streamArray], { type: contentType });
+                return URL.createObjectURL(blob);
+            }
+        }
+        window.extensionMethods = {
+            scrollToElementById: (id) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>

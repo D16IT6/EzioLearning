@@ -65,6 +65,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\" />
     <Folder Include="Resources\Components\Course\" />
     <Folder Include="Resources\Pages\Course\" />
   </ItemGroup>
