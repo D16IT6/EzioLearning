@@ -71,30 +71,15 @@ namespace EzioLearning.Wasm
             services.AddMudExtensions();
 
 
-            services.AddKeyedScoped("DefaultHttpClient", (_, _) =>
+            services.AddScoped(_ =>
             {
                 var httpClient = new HttpClient
                 {
-                    BaseAddress = new Uri(ApiConstants.BaseUrl)
-
-                };
-                return httpClient;
-            });
-            services.AddKeyedScoped("HttpClientWithoutRedirect", (_, _) =>
-            {
-                var httpClientHandler = new HttpClientHandler()
-                {
-                    AllowAutoRedirect = false
-                };
-                var httpClient = new HttpClient(httpClientHandler)
-                {
                     BaseAddress = new Uri(ApiConstants.BaseUrl),
+                    Timeout = TimeSpan.FromHours(1)
                 };
                 return httpClient;
             });
-
-            services.AddScoped(provider => provider.GetRequiredKeyedService<HttpClient>("DefaultHttpClient"));
-
             using var log = new LoggerConfiguration()
                 .WriteTo.File("Logs/log.txt")
                 .CreateLogger();

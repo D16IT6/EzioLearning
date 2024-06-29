@@ -10,26 +10,24 @@
                         <p>@Localizer.GetString("Description")</p>
                     </div>
                     <div class="banner-content">
-                        <form class="form" action="https://dreamslms.dreamstechnologies.com/html/course-list.html">
-                            <div class="form-inner">
-                                <div class="input-group">
-                                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                                    <input type="email" class="form-control" placeholder="@Localizer.GetString("Placeholder")">
-                                    <span class="drop-detail">
-                                        <select class="form-select select">
-                                            <option value="@Guid.Empty">@Localizer.GetString("SelectCategory")</option>
-                                            @foreach (var courseCategory in CourseCategories)
-                                            {
-                                                <option value="@courseCategory.Name">@courseCategory.Name</option>
-                                            }
-                                        </select>
-                                    </span>
-                                    <button class="btn btn-primary sub-btn" type="submit">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>
+                        @* <div class="form-inner">
+                            <div class="input-group">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="email" class="form-control" placeholder="@Localizer.GetString("Placeholder")">
+                                <span class="drop-detail">
+                                    <select class="form-select select">
+                                        <option value="@Guid.Empty">@Localizer.GetString("SelectCategory")</option>
+                                        @foreach (var courseCategory in CourseCategories)
+                                        {
+                                            <option value="@courseCategory.Name">@courseCategory.Name</option>
+                                        }
+                                    </select>
+                                </span>
+                                <button class="btn btn-primary sub-btn" type="submit">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
                             </div>
-                        </form>
+                        </div> *@
                     </div>
                     <div class="trust-user">
                         <p>@(new MarkupString(Localizer.GetString("TrustUserDescription", "15K", "2023")))</p>

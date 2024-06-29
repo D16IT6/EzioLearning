@@ -1,0 +1,424 @@
+﻿@attribute [Route(RouteConstants.CourseRoute.CourseUpdate)]
+@attribute [Authorize(Permissions.Courses.Edit)]
+
+@using EzioLearning.Share.Dto.Learning.CourseCategory
+@using EzioLearning.Share.Validators.Common
+@using EzioLearning.Wasm.Dto.Learning.Course
+@inherits AccountComponentBase
+@layout AccountLayout
+
+<!-- Update Course -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="add-course-info m-2">
+
+                <EditForm Enhance Model="@CourseDto" OnValidSubmit="SubmitUpdateCourse">
+                    <FluentValidationValidator />
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+
+                    <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6">
+
+                        <MudTabPanel Text="Thông tin cơ bản" ToolTip="Thông tin cơ bản">
+                            <div class="add-course-form">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        <MudTextField T="string" Label="Tên khoá học" @bind-Value="CourseDto.Name" />
+                                        <ValidationMessage For="() => CourseDto.Name" class="text-danger" />
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <MudNumericField Immediate="false"
+                                                         Label="Giá tiền (VNĐ)"
+                                                         Format="N0"
+                                                         Culture="@CultureInfo.CurrentCulture"
+                                                         T="double" @bind-Value="@CourseDto.Price" Step="500" />
+                                        <ValidationMessage For="() => CourseDto.Price" class="text-danger" />
+                                    </div>
+
+                                    <div class="input-block">
+                                        <MudTextField T="string" Label="Mô tả ngắn" @bind-Value="CourseDto.Description" Lines="3" />
+
+                                        <ValidationMessage For="() => CourseDto.Description" class="text-danger" />
+
+                                    </div>
+                                    <div class="input-block my-2">
+                                        <MudField Label="Nội dung">
+
+                                            <SfRichTextEditor EditorMode="EditorMode.HTML"
+                                                              @bind-Value="@CourseDto.Content"
+                                                              Height="300">
+
+                                                <RichTextEditorToolbarSettings Items="@Tools" />
+                                                <RichTextEditorImageSettings SaveFormat="SaveFormat.Base64" />
+                                            </SfRichTextEditor>
+
+                                        </MudField>
+                                        <ValidationMessage For="() => CourseDto.Content" class="text-danger" />
+
+                                    </div>
+
+                                    <div class="input-block">
+                                        <MudField Label="Ảnh bìa ">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="col-auto me-lg-2 d-flex align-items-end">
+                                                    <MudFileUpload T="IBrowserFile?"
+                                                                   For="@(() => CourseDto.PosterImage)"
+                                                                   @bind-Files="CourseDto.PosterImage"
+                                                                   OnFilesChanged="(e) => OnCoursePosterChanged(CourseDto, e)"
+                                                                   Accept="@String.Join(',', FileConstants.ImageAcceptTypes)"
+                                                                   SuppressOnChangeWhenInvalid="true">
+                                                        <ButtonTemplate Context="uploadContext">
+                                                            <MudButton HtmlTag="label"
+                                                                       Variant="Variant.Filled"
+                                                                       Color="Color.Info"
+                                                                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                                       ButtonType="ButtonType.Button"
+                                                                       for="@uploadContext.Id">
+                                                                Chọn ảnh
+                                                            </MudButton>
+                                                        </ButtonTemplate>
+                                                    </MudFileUpload>
+                                                    <MudIconButton Color="Color.Warning"
+                                                                   Class="ms-2"
+                                                                   Variant="Variant.Filled"
+                                                                   Size="Size.Medium"
+                                                                   Icon="@Icons.Material.Filled.Delete" ButtonType="ButtonType.Button" OnClick="OnDeleteImageClick" />
+                                                </div>
+                                            </div>
+                                            @if (!string.IsNullOrWhiteSpace(ImagePreviewUrl))
+                                            {
+                                                <div class="row justify-content-center">
+                                                    <MudImage Src="@ImagePreviewUrl"
+                                                              Height="400"
+                                                              Class="col rounded-lg"
+                                                              Elevation="25"
+                                                              ObjectPosition="ObjectPosition.Center" />
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger my-1">Vui lòng chọn ảnh</span>
+                                            }
+                                        </MudField>
+                                    </div>
+
+
+                                    <div class="col-lg-6">
+                                        <div class="input-block">
+
+                                            <MudSelectExtended T="CourseCategoryViewDto"
+                                                               Label="Danh mục khoá học"
+                                                               AnchorOrigin="Origin.BottomCenter"
+                                                               @bind-SelectedValues="SelectedCourseCategories"
+                                                               MultiSelection="true">
+                                                @CourseCategoriesRenderFragment
+                                            </MudSelectExtended>
+
+                                            <ValidationMessage For="() => CourseDto.CourseCategories" class="text-danger" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="input-block">
+                                            <MudSelect T="CourseLevel" Label="Trình độ" @bind-Value="@CourseDto.Level">
+                                                @foreach (var value in Enum.GetValues<CourseLevel>())
+                                                {
+                                                    <MudSelectItem Value="value">@value</MudSelectItem>
+                                                }
+                                            </MudSelect>
+                                            <ValidationMessage For="() => CourseDto.Level" class="text-danger" />
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="Nội dung khoá học"
+                                     ToolTip="Nội dung khoá học">
+                            <div class="row mb-3 justify-content-center align-items-end">
+                                <div class="col-lg-8">
+                                    <MudTextField @bind-Value="CourseSectionCreateDto.Name" Label="Tên phần" Variant="Variant.Text" />
+                                    <ValidationMessage For="() => CourseSectionCreateDto.Name" class="text-danger" />
+
+                                </div>
+
+                                <div class="col-lg-auto">
+                                    <MudButton ButtonType="ButtonType.Button"
+                                               Color="Color.Info"
+                                               Variant="Variant.Filled" Class="me-2"
+                                               OnClick="CreateNewSection">
+                                        Tạo phần mới
+                                    </MudButton>
+                                </div>
+                            </div>
+
+                            <MudExpansionPanels MultiExpansion="true">
+
+                                @foreach (var courseSectionDto in CourseDto.Sections.Where(x => !x.Deleted))
+                                {
+                                    <MudDropContainer T="CourseLectureUpdateBlazorDto"
+                                                      Items="courseSectionDto.Lectures"
+                                                      ItemDropped="CourseLessonUpdate"
+                                                      Class="d-lg-flex flex-wrap flex-grow-1 mb-2"
+                                                      Context="dropContext" @ref="courseSectionDto.CourseLectureDropContainer">
+                                        <ChildContent>
+                                            <MudExpansionPanel Text="@courseSectionDto.Name">
+                                                <TitleContent>
+                                                    <MudGrid Spacing="3" class="align-items-center px-3">
+                                                        <MudItem xs="6" class="d-lg-flex align-items-center">
+                                                            <h4 class="h4">
+                                                                <MudInput @bind-Value="@courseSectionDto.Name" />
+                                                            </h4>
+                                                        </MudItem>
+                                                        <MudItem xs="6" class="d-lg-flex justify-content-end">
+                                                            <MudButton ButtonType="ButtonType.Button"
+                                                                       Color="Color.Info"
+                                                                       Variant="Variant.Filled"
+                                                                       OnClick="() => CreateNewLecture(courseSectionDto)" Class="me-1">
+                                                                Tạo bài học
+                                                            </MudButton>
+                                                            <MudButton ButtonType="ButtonType.Button"
+                                                                       Color="Color.Error"
+                                                                       Variant="Variant.Filled"
+                                                                       OnClick="() => DeleteSection(courseSectionDto)">
+                                                                Xoá
+                                                            </MudButton>
+                                                        </MudItem>
+                                                    </MudGrid>
+                                                </TitleContent>
+
+                                                <ChildContent>
+                                                    <MudDropZone T="CourseLectureUpdateBlazorDto"
+                                                                 Identifier="@courseSectionDto.Id.ToString()"
+                                                                 Class="rounded flex-grow-1" AllowReorder="true">
+                                                        <ChildContent>
+                                                            @* Content zone *@
+                                                            @if (courseSectionDto.Lectures.Any())
+                                                            {
+                                                                @foreach (var lecture in courseSectionDto.Lectures.Where(x => !x.Deleted))
+                                                                {
+                                                                    <MudPaper Class="pa-4 my-4 mb-2" Elevation="3">
+
+                                                                        <div class="row">
+                                                                            <div class="col-lg-9">
+                                                                                <div class="row">
+                                                                                    <div class="col d-lg-flex">
+                                                                                        <div class="col-lg-8 me-2">
+                                                                                            <MudTextField T="string"
+                                                                                                          @bind-Value="lecture.Name"
+                                                                                                          Variant="Variant.Text"
+                                                                                                          Label="Tên bài học" />
+                                                                                            <ValidationMessage For="() => lecture.Name" />
+                                                                                        </div>
+                                                                                        <div class="col-lg-4">
+                                                                                            <MudSelect T="CourseLectureType"
+                                                                                                       Value="lecture.LectureType"
+                                                                                                       ValueChanged="(e) => UpdateLectureType(lecture, e)"
+                                                                                                       Label="Kiểu bài học"
+                                                                                                       OpenIcon="@Icons.Custom.FileFormats.FileDocument"
+                                                                                                       AdornmentColor="Color.Info">
+
+                                                                                                @foreach (
+                                                                                               CourseLectureType item
+                                                                                               in Enum.GetValues(typeof(CourseLectureType)))
+                                                                                                {
+                                                                                                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                                                                                                }
+                                                                                            </MudSelect>
+                                                                                            <ValidationMessage For="() => lecture.LectureType" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col d-lg-flex">
+                                                                                        <div class="col-lg-4 align-self-lg-center justify-content-center">
+
+                                                                                            <MudFileUpload T="IBrowserFile?"
+                                                                                                           For="@(() => lecture.FileUpload)"
+                                                                                                           @bind-Files="lecture.FileUpload"
+                                                                                                           @ref="lecture.FileUploadContainer"
+                                                                                                           OnFilesChanged="e => OnCourseLectureFileChanged(lecture, e)">
+                                                                                                <ButtonTemplate Context="fileUploadContext">
+                                                                                                    <MudButton HtmlTag="label"
+                                                                                                               Variant="Variant.Filled"
+                                                                                                               Color="Color.Info"
+                                                                                                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                                                                               ButtonType="ButtonType.Button"
+                                                                                                               for="@fileUploadContext.Id">
+                                                                                                        Upload
+                                                                                                    </MudButton>
+                                                                                                </ButtonTemplate>
+                                                                                            </MudFileUpload>
+                                                                                        </div>
+
+                                                                                        <div class="col-lg-8 ps-5 pt-1">
+                                                                                            @if (lecture.FileUpload != null)
+                                                                                            {
+                                                                                                var file = lecture.FileUpload;
+                                                                                                <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">
+                                                                                                    @file.ShowShortedFileName()
+                                                                                                    <code>@file.ShowFormatFileSize()</code>
+                                                                                                </MudListItem>
+                                                                                            }
+                                                                                            @if (!string.IsNullOrEmpty(lecture.FileUrl) && lecture.FileUpload == null)
+                                                                                            {
+                                                                                                <a target="_blank" href="@lecture.FileUrl">
+                                                                                                    <MudIconButton Icon="@Icons.Material.Filled.FileCopy"
+                                                                                                                   Class="mt-2"
+                                                                                                                   Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium" />
+                                                                                                </a>
+
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="col-lg-3 d-lg-flex justify-content-center align-items-center">
+
+                                                                                <MudButton Variant="Variant.Filled"
+                                                                                           StartIcon="@Icons.Material.Filled.Delete"
+                                                                                           Color="Color.Error"
+                                                                                           OnClick="() => DeleteLecture(courseSectionDto, lecture)">
+                                                                                    Xoá
+                                                                                </MudButton>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row mt-2">
+                                                                            <div class="col">
+                                                                                @if (!string.IsNullOrWhiteSpace(lecture.TempFileUrl) && lecture.LectureType == CourseLectureType.Video)
+                                                                                {
+                                                                                    <Video src="@lecture.TempFileUrl"></Video>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    </MudPaper>
+                                                                }
+                                                            }
+                                                        </ChildContent>
+                                                    </MudDropZone>
+                                                </ChildContent>
+                                            </MudExpansionPanel>
+
+                                        </ChildContent>
+
+                                        <ItemRenderer>
+                                            <MudPaper Class="pa-4 my-4 mb-2" Elevation="3">
+
+                                                <div class="row">
+                                                    <div class="col-lg-9">
+                                                        <div class="row">
+                                                            <div class="col d-lg-flex">
+                                                                <div class="col-lg-8 me-2">
+                                                                    <MudTextField T="string"
+                                                                                  @bind-Value="dropContext.Name"
+                                                                                  Variant="Variant.Text"
+                                                                                  Label="Tên bài học" />
+                                                                    <ValidationMessage For="() => dropContext.Name" />
+                                                                </div>
+                                                                <div class="col-lg-4">
+                                                                    <MudSelect T="CourseLectureType"
+                                                                               Value="dropContext.LectureType"
+                                                                               ValueChanged="(e) => UpdateLectureType(dropContext, e)"
+                                                                               Label="Kiểu bài học"
+                                                                               OpenIcon="@Icons.Custom.FileFormats.FileDocument"
+                                                                               AdornmentColor="Color.Info">
+
+                                                                        @foreach (
+                                                                       CourseLectureType item
+                                                                       in Enum.GetValues(typeof(CourseLectureType)))
+                                                                        {
+                                                                            <MudSelectItem Value="@item">@item</MudSelectItem>
+                                                                        }
+                                                                    </MudSelect>
+                                                                    <ValidationMessage For="() => dropContext.LectureType" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col d-lg-flex">
+                                                                <div class="col-lg-4 align-self-lg-center justify-content-center">
+
+                                                                    <MudFileUpload T="IBrowserFile?"
+                                                                                   For="@(() => dropContext.FileUpload)"
+                                                                                   @bind-Files="dropContext.FileUpload"
+                                                                                   @ref="dropContext.FileUploadContainer"
+                                                                                   OnFilesChanged="e => OnCourseLectureFileChanged(dropContext, e)">
+                                                                        <ButtonTemplate Context="fileUploadContext">
+                                                                            <MudButton HtmlTag="label"
+                                                                                       Variant="Variant.Filled"
+                                                                                       Color="Color.Info"
+                                                                                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                                                                                       ButtonType="ButtonType.Button"
+                                                                                       for="@fileUploadContext.Id">
+                                                                                Upload
+                                                                            </MudButton>
+                                                                        </ButtonTemplate>
+                                                                    </MudFileUpload>
+                                                                </div>
+
+                                                                <div class="col-lg-8">
+                                                                    @if (dropContext.FileUpload != null)
+                                                                    {
+                                                                        var file = dropContext.FileUpload;
+                                                                        <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">
+                                                                            @file.ShowShortedFileName()
+                                                                            <code>@file.ShowFormatFileSize()</code>
+                                                                        </MudListItem>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-lg-3 d-lg-flex justify-content-center align-items-center">
+
+                                                        <MudButton Variant="Variant.Filled"
+                                                                   StartIcon="@Icons.Material.Filled.Delete"
+                                                                   Color="Color.Error"
+                                                                   OnClick="() => DeleteLecture(courseSectionDto, dropContext)">
+                                                            Xoá
+                                                        </MudButton>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-2">
+                                                    <div class="col">
+                                                        @if (!string.IsNullOrWhiteSpace(dropContext.TempFileUrl) && dropContext.LectureType == CourseLectureType.Video)
+                                                        {
+                                                            <Video src="@dropContext.TempFileUrl"></Video>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </MudPaper>
+                                        </ItemRenderer>
+
+                                    </MudDropContainer>
+                                }
+                            </MudExpansionPanels>
+
+
+
+                        </MudTabPanel>
+
+                    </MudTabs>
+
+                    <div class="col-lg mt-2 ">
+                        <MudButton ButtonType="ButtonType.Submit"
+                                   Color="Color.Info"
+                                   Class="w-100 py-2"
+                                   Variant="Variant.Filled">
+                            Lưu
+                        </MudButton>
+                    </div>
+                </EditForm>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Update Course -->

@@ -46,6 +46,7 @@ public partial class Home
 
         FeatureInstructors = await CourseService.GetFeatureInstructors();
 
+        StateHasChanged();
     }
 
 

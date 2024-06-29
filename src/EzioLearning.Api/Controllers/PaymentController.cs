@@ -1,17 +1,116 @@
 ﻿using EzioLearning.Api.Models.Payment;
 using EzioLearning.Api.Services;
+using EzioLearning.Api.Services.Vnpay;
+using EzioLearning.Domain.Entities.Learning;
+using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Models.Response;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Net.payOS;
 using Net.payOS.Types;
+using System.Net;
+using System.Security.Claims;
+using EzioLearning.Api.Filters;
+using EzioLearning.Core.Repositories.Learning;
+using EzioLearning.Core.SeedWorks;
+using EzioLearning.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace EzioLearning.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentController(PaypalClient paypalClient, PayOS payOs) : ControllerBase
+    public class PaymentController(
+        PaypalClient paypalClient,
+        PayOS payOs,
+        ICourseRepository courseRepository,
+        IStudentRepository studentRepository,
+        IUnitOfWork unitOfWork,
+        UserManager<AppUser> userManager,
+        VnPayService vnPayService
+        ) : ControllerBase
     {
+        [HttpPost("Course/VnPay")]
+        [VerifyToken]
+        [Authorize]
+        public async Task<IActionResult> BuyCourse([FromForm] CoursePaymentRequestDto model)
+        {
+            var userIdFromToken = Guid.Parse(User.Claims.First(x => x.Type == ClaimTypes.PrimarySid).Value);
+            if (model.UserId != userIdFromToken)
+                return BadRequest(new ResponseBase()
+                {
+                    Message = "Đừng hack server",
+                    Status = HttpStatusCode.BadRequest
+                });
 
+            var user = userManager.Users.Include(x=> x.Courses).FirstOrDefault(x => x.Id == model.UserId);
+            var course = (await courseRepository.Find(x => x.Id == model.CourseId)).FirstOrDefault();
+
+            var student = (await studentRepository.Find(x => x.CourseId == model.CourseId && x.UserId == model.UserId && x.Confirm))
+                .AsQueryable().FirstOrDefault();
+            if (user == null || course == null || user.Courses.Contains(course) || student != null)
+                return NotFound(new ResponseBase()
+                {
+                    Status = HttpStatusCode.NotFound,
+                    Message = "Thông tin gửi lỗi hoặc bạn đã mua rồi!"
+                });
+            var oldStudents = (await studentRepository.Find(x => x.CourseId == model.CourseId && x.UserId == model.UserId && !x.Confirm))
+                .AsQueryable();
+            if (oldStudents.Any())
+            {
+                studentRepository.RemoveRange(oldStudents);
+                await unitOfWork.CompleteAsync();
+            }
+            var newOrder = new Student()
+            {
+                Id = Guid.NewGuid(),
+                Course = course,
+                CourseId = model.CourseId,
+                User = user,
+                UserId = user.Id,
+                Price = course.Price,
+                Confirm = false
+            };
+
+            studentRepository.Add(newOrder);
+            course.Students.Add(newOrder);
+            var paymentUrl = vnPayService.CreatePaymentUrl(ControllerContext.HttpContext, new VnPaymentRequestModel()
+            {
+                Description = $"Mua khoá học {course.Name}",
+                Amount = model.Price,
+                CreatedDate = DateTime.UtcNow,
+                OrderId = newOrder.Id
+            });
+
+            await unitOfWork.CompleteAsync();
+            return Ok(new ResponseBaseWithData<CoursePaymentResponse>()
+            {
+                Status = HttpStatusCode.OK,
+                Data = new CoursePaymentResponse()
+                {
+                    OrderId = newOrder.Id,
+                    Url = paymentUrl
+                }
+            });
+        }
+
+        [HttpGet("Course/VnPay/Callback")]
+        public async Task<IActionResult> BuyCourseVnPayCallback()
+        {
+            var info = vnPayService.PaymentExecute(ControllerContext.HttpContext.Request.Query);
+            var order = await (await studentRepository.Find(x => x.Id == info.OrderId)).AsQueryable().FirstAsync();
+
+            order.Confirm = info.Success;
+            if (!info.Success)
+            {
+                studentRepository.Remove(order);
+            }
+            await unitOfWork.CompleteAsync();
+
+            var url = "https://localhost:17233/Checkout";
+            return Redirect($"{url}?Success={info.Success}&orderId={info.OrderId}");
+        }
 
         [HttpPost("Paypal")]
         public async Task<IActionResult> PaypalCreate(double price = 123)
@@ -20,6 +119,7 @@ namespace EzioLearning.Api.Controllers
 
             return Ok(order);
         }
+
 
         [HttpGet("Paypal/Capture")]
         public async Task<IActionResult> PaypalCapture(string orderId)

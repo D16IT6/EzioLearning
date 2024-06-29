@@ -34,7 +34,7 @@
                 {
                     <div class="go-dashboard text-center">
                         <NavLink Match="NavLinkMatch.All"
-                                 href="@RouteConstants.AccountRoute.CourseCreate"
+                                 href="@RouteConstants.CourseRoute.CourseCreate"
                                  class="btn btn-primary">
                             Tạo khoá học
                         </NavLink>
@@ -49,12 +49,15 @@
                 @if (AuthenticationState.User.IsInRole(RoleConstants.Admin) || AuthenticationState.User.IsInRole(RoleConstants.Teacher))
                 {
                     <MudNavGroup Title="Dashboard" Icon="@Icons.Material.Filled.Dashboard">
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
-                            <i class="feather-home"></i> My Dashboard
+
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.CourseRoute.CourseIndex">
+                            <i class="feather-home"></i> Courses
                         </MudNavLink>
+
                         <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
-                            <i class="feather-home"></i> My Dashboard
+                            <i class="feather-home"></i> Report
                         </MudNavLink>
+
 
                         <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
                             <i class="feather-home"></i> My Dashboard

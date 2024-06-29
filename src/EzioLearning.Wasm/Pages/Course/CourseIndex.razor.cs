@@ -80,5 +80,12 @@ namespace EzioLearning.Wasm.Pages.Course
                 await FetchCoursesView();
             }
         }
+
+        private async Task ChangeSearchText(ChangeEventArgs e)
+        {
+            CourseListOptions.SearchText = e.Value?.ToString();
+
+            await FetchCoursesView();
+        }
     }
 }

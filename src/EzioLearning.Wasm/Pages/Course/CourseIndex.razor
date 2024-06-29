@@ -1,5 +1,4 @@
-﻿@using EzioLearning.Share.Dto.Learning.CourseCategory
-@using EzioLearning.Share.Models.Request
+﻿@using EzioLearning.Share.Models.Request
 @using EzioLearning.Wasm.Components.Course
 @attribute [Route(RouteConstants.Course)]
 
@@ -51,7 +50,7 @@
                                         <div class="col-12 col-item">
                                             <div class=" search-group">
                                                 <i class="feather-search"></i>
-                                                <input type="text" class="form-control" placeholder="Search our courses">
+                                                <input type="text" class="form-control" placeholder="Search our courses" @oninput="ChangeSearchText"/>
                                             </div>
                                         </div>
                                     </div>

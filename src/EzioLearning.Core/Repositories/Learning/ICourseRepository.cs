@@ -9,4 +9,6 @@ public interface ICourseRepository : IPagedRepository<Course, Guid>
     Task<IEnumerable<Course>> GetFeaturedCourses(int take = 12);
     Task<int> AddNewSection(Guid courseId, CourseSection newSection);
     Task<Course?> GetCourseDetail(Guid courseId);
+    Task<Course?> GetCourseUpdate(Guid courseId, Guid teacherId);
+    Task<Course?> FindCourseUpdate(Guid courseId);
 }

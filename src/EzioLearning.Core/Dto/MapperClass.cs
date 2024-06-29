@@ -131,6 +131,38 @@ public class MapperClass : Profile
             .ForMember(x=> x.Duration,
                 cfg=>cfg.MapFrom(x=> x.Video != null ? x.Video.Duration : 0))
             ;
+
+
+        CreateMap<CourseSection, CourseSectionViewDto>()
+            .ForMember(dest => dest.Lectures, opt => opt.MapFrom(src => src.CourseLectures))
+            ;
+
+        CreateMap<CourseLecture, CourseLectureViewDto>()
+            .ForMember(x => x.FileUrl,
+                cfg => cfg.MapFrom(x => x.Video != null ? x.Video.DefaultPath : (x.Document != null ? x.Document.Path : "")))
+            .ForMember(x => x.Duration,
+                cfg => cfg.MapFrom(x => x.Video != null ? x.Video.Duration : 0))
+            ;
+
+        CreateMap<CourseSection, CourseSectionUpdateDto>()
+            .ForMember(dest => dest.Lectures, opt => opt.MapFrom(src => src.CourseLectures))
+            ;
+
+        CreateMap<CourseLecture, CourseLectureUpdateDto>()
+            .ForMember(x => x.FileUrl,
+                cfg => cfg.MapFrom(x => x.Video != null ? x.Video.DefaultPath : (x.Document != null ? x.Document.Path : "")))
+            .ForMember(x => x.Duration,
+                cfg => cfg.MapFrom(x => x.Video != null ? x.Video.Duration : 0))
+            ;
+
+        CreateMap<Course, CourseUpdateDto>()
+            .ForMember(x=> x.CourseCategories,opt => opt.MapFrom(x=>x.Categories));
+
+        CreateMap<CourseSectionUpdateApiDto, CourseSection>();
+        CreateMap<CourseLectureUpdateApiDto, CourseLecture>();
+
+
+
     }
 
 }

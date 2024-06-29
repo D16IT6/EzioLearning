@@ -6,5 +6,6 @@ namespace EzioLearning.Wasm.Components.Course
 	public partial class CourseInGrid
 	{
 		[CascadingParameter] public CourseItemViewDto CourseItemViewDto { get; set; } = new();
+
 	}
 }

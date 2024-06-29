@@ -452,6 +452,9 @@ namespace EzioLearning.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Confirm")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uniqueidentifier");
 

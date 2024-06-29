@@ -4,4 +4,6 @@ public static class LocalStorageConstants
 {
     public static string AccessToken = nameof(AccessToken);
     public static string RefreshToken = nameof(RefreshToken);
+    public static string WishList = nameof(WishList);
+
 }

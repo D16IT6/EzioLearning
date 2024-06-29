@@ -10,6 +10,7 @@ public class Student : AuditableTimeOnlyEntity
     public Guid Id { get; set; }
 
     public double Price { get; set; }
+    public bool Confirm { get; set; } = false;
 
     [ForeignKey(nameof(Course))] public Guid CourseId { get; set; }
 

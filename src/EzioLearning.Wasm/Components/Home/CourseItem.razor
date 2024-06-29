@@ -1,6 +1,6 @@
 ﻿<div class="product @CustomClass">
     <div class="product-img">
-        <a href="course-details.html">
+        <a href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam,CourseViewDto.Id.ToString())">
             <img class="img-fluid" alt="" src="@CourseViewDto.Poster">
         </a>
         @{
@@ -48,7 +48,7 @@
             </div>
         </div>
         <h3 class="title instructor-text">
-            <a href="course-details.html">@CourseViewDto.Name</a>
+            <a href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam,CourseViewDto.Id.ToString())">@CourseViewDto.Name</a>
         </h3>
         <div class="course-info d-flex align-items-center">
             <div class="rating-img d-flex align-items-center">

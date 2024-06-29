@@ -30,7 +30,7 @@ public class FileService
         
         await file.CopyToAsync(fileStream);
 
-        var result = Path.Combine(folderPath, Path.GetFileName(actuallyFilePath));
+        var result = Path.Combine(folderPath, Path.GetFileName(actuallyFilePath)).Replace(Path.DirectorySeparatorChar.ToString(),"/").Replace("\\","/");
 
         return result;
     }

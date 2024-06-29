@@ -75,11 +75,62 @@ public class CourseRepository(
             .ThenInclude(s=>s.CourseLectures)
             .ThenInclude(l => l.Document)
 
+            .Include(c=>c.User)
             .AsSplitQuery()
             ;
 
 
 
+        var course = await queryable
+            .FirstOrDefaultAsync(x => x.Id == courseId);
+        return course;
+    }
+
+    public async Task<Course?> GetCourseUpdate(Guid courseId, Guid teacherId)
+    {
+        var queryable = DbSet.AsQueryable();
+
+        queryable = queryable
+                .Include(x=>x.Categories)
+                .ThenInclude(x=>x.CourseCategoryTranslations)
+                .ThenInclude(x=>x.Culture)
+
+                .Include(x => x.Sections)
+                .ThenInclude(s => s.CourseLectures)
+                .ThenInclude(l => l.Video)
+
+                .Include(x => x.Sections)
+                .ThenInclude(s => s.CourseLectures)
+                .ThenInclude(l => l.Document)
+                
+                .AsSplitQuery()
+            ;
+
+
+        var course = await queryable
+            .FirstOrDefaultAsync(x => x.Id == courseId && x.CreatedBy == teacherId);
+        return course;
+    }
+
+    public async Task<Course?> FindCourseUpdate(Guid courseId)
+    {
+        var queryable = DbSet.AsQueryable();
+
+        queryable = queryable
+                .Include(x => x.Categories)
+                //.ThenInclude(x => x.CourseCategoryTranslations)
+                //.ThenInclude(x => x.Culture)
+
+                .Include(x => x.Sections)
+                .ThenInclude(s => s.CourseLectures)
+                .ThenInclude(l => l.Video)
+
+                .Include(x => x.Sections)
+                .ThenInclude(s => s.CourseLectures)
+                .ThenInclude(l => l.Document)
+
+                .AsSplitQuery()
+        ;
         var course = await queryable
             .FirstOrDefaultAsync(x => x.Id == courseId);
         return course;

@@ -1,0 +1,127 @@
+﻿@attribute [Route(RouteConstants.CourseRoute.CourseIndex)]
+@attribute [Authorize(Permissions.Courses.View)]
+
+@inherits AccountComponentBase
+@layout AccountLayout
+
+
+<!-- Instructor Dashboard -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="settings-widget">
+            <div class="settings-inner-blk p-0">
+                <div class="sell-course-head comman-space">
+                    <h3>Courses</h3>
+                    <p>Manage your courses and its update like live, draft and insight.</p>
+                </div>
+                <div class="comman-space pb-0">
+                    <div class="instruct-search-blk">
+                        <div class="show-filter choose-search-blk">
+                            <form action="#">
+                                <div class="row gx-2 align-items-center">
+                                    <div class="col-md-6 col-item">
+                                        <div class=" search-group">
+                                            <i class="feather-search"></i>
+                                            <input type="text" class="form-control" placeholder="Search our courses">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-6 col-item">
+                                        <div class="input-block select-form mb-0">
+                                            @*            <select class="form-select select" name="sellist1">
+                                            <option>Choose</option>
+                                            <option>Angular</option>
+                                            <option>React</option>
+                                            <option>Node</option>
+                                            </select>*@
+                                            <select class="form-select select" name="sellist1" @onchange="OnCourseCategoryChanged">
+                                                <option value="@Guid.Empty">Tất cả</option>
+                                                @if (CourseCategoryViewDtos.Any())
+                                                {
+                                                    foreach (var courseCategoryViewDto in CourseCategoryViewDtos)
+                                                    {
+                                                        <option value="@courseCategoryViewDto.Id">@courseCategoryViewDto.Name</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="settings-tickets-blk course-instruct-blk table-responsive">
+
+                        <!-- Referred Users-->
+                        <table class="table table-nowrap mb-2">
+                            <thead>
+                                <tr>
+                                    <th>COURSES</th>
+                                    <th>LEVEL</th>
+                                    <th>PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in CourseItemViewDtos)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="sell-table-group d-flex align-items-center">
+                                                <div class="sell-group-img">
+                                                    <NavLink href="@Path.Combine(RouteConstants.CourseRoute.CourseUpdateNoParam,item.Id.ToString())">
+                                                        <img src="@item.Poster" class="img-fluid " alt="">
+                                                    </NavLink>
+                                                </div>
+                                                <div class="sell-tabel-info">
+                                                    <p>
+                                                        <NavLink href="@Path.Combine(RouteConstants.CourseRoute.CourseUpdateNoParam, item.Id.ToString())">
+                                                            @item.Name
+                                                        </NavLink>
+                                                    </p>
+                                                    <div class="course-info d-flex align-items-center border-bottom-0 pb-0">
+                                                        <div class="rating-img d-flex align-items-center">
+                                                            <img src="assets/img/icon/icon-01.svg" alt="">
+                                                            <p>@item.LessonCount+ Lessons</p>
+                                                        </div>
+                                                        <div class="course-view d-flex align-items-center">
+                                                            <img src="assets/img/icon/timer-start.svg" alt="">
+                                                            <p>@item.Duration.ShowDurationFromSecond()</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge info-low">@item.Level</span></td>
+                                        <td>@item.Price</td>
+
+                                        <td>
+                                            <MudButtonGroup>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Success" Variant="Variant.Filled"></MudIconButton>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Variant="Variant.Filled"></MudIconButton>
+                                             
+                                            </MudButtonGroup>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <!-- /Referred Users-->
+
+                        @if (CourseItemViewDtos.Any())
+                        {
+                            <MudPagination Color="Color.Primary"
+                                           Count="@PageCount"
+                                           Selected="@CourseListOptions.PageNumber"
+                                           SelectedChanged="OnPageNumberChanged"
+                                           Class="mb-2"
+                                           Rectangular="true" />
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Instructor Dashboard -->

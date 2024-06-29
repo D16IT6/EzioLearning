@@ -2,7 +2,7 @@
 @using EzioLearning.Share.Validators.Common
 @using EzioLearning.Wasm.Dto.Learning.Course
 
-@attribute [Route(RouteConstants.AccountRoute.CourseCreate)]
+@attribute [Route(RouteConstants.CourseRoute.CourseCreate)]
 @attribute [Authorize(Permissions.Courses.Create)]
 
 @inherits AccountComponentBase
@@ -87,7 +87,13 @@
                                                                  T="double" @bind-Value="@CourseCreateDto.Price" Step="500" />
                                                 <ValidationMessage For="() => CourseCreateDto.Price" class="text-danger" />
                                             </div>
+                                            
+                                            <div class="input-block">
+                                                <MudTextField T="string" Label="Mô tả ngắn" @bind-Value="CourseCreateDto.Description" Lines="3"/>
 
+                                                <ValidationMessage For="() => CourseCreateDto.Description" class="text-danger" />
+
+                                            </div>
                                             <div class="input-block my-2">
                                                 <MudField Label="Nội dung">
 

@@ -28,6 +28,7 @@ using Serilog;
 using System.Globalization;
 using System.Text.Json.Serialization;
 using EzioLearning.Api.Hubs;
+using EzioLearning.Api.Services.Vnpay;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -43,6 +44,7 @@ internal static class Startup
         services.AddTransient<FileService>();
         services.AddTransient<PermissionService>();
         services.AddTransient<VideoService>();
+        services.AddTransient<VnPayService>();
 
         services.AddSingleton(_ =>
         {
@@ -210,13 +212,13 @@ internal static class Startup
         services.AddScoped<HandleExceptionMiddleware>();
     }
 
-    private static async Task MigrateData(this WebApplication app)
-    {
-        using var scope = app.Services.CreateScope();
-        await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
-        await context.Database.MigrateAsync();
-        await new DataSeeder().SeedAsync(context);
-    }
+    //private static async Task MigrateData(this WebApplication app)
+    //{
+    //    using var scope = app.Services.CreateScope();
+    //    await using var context = scope.ServiceProvider.GetRequiredService<EzioLearningDbContext>();
+    //    await context.Database.MigrateAsync();
+    //    await new DataSeeder().SeedAsync(context);
+    //}
 
     private static void ConfigurePayments(this IServiceCollection services, IConfiguration configuration)
     {
@@ -235,6 +237,8 @@ internal static class Startup
 
             return new PayOS(payOs.ClientId, payOs.ApiKey, payOs.ChecksumKey);
         });
+
+        services.AddScoped(_ => new VnPayClient(paymentSettings.VnPay));
 
     }
 

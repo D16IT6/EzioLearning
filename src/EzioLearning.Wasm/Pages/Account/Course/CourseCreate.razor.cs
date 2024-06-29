@@ -72,13 +72,13 @@ namespace EzioLearning.Wasm.Pages.Account.Course
             new ToolbarItemModel() { Command = ToolbarCommand.Separator },
         ];
 
-        public string? ImagePreviewUrl { get; set; }
+        private string? ImagePreviewUrl { get; set; }
 
+        private bool BaseInfoSuccess { get; set; }
 
         private CourseSectionCreateBlazorDto CourseSectionCreateDto { get; set; } = new();
 
         private int ActiveTab { get; set; }
-        private bool BaseInfoSuccess { get; set; }
 
         private List<CourseSectionCreateBlazorDto> CourseSections { get; } = new();
 
@@ -178,7 +178,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
         {
             var file = obj.File;
 
-            //ImagePreviewUrl = await file.GetBlobStream(JsRuntime);
+            ImagePreviewUrl = await file.GetBlobStream(JsRuntime);
         }
         private void CreateNewCourseSection()
         {
@@ -238,7 +238,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
         {
             var courseLessonDto = new CourseLectureCreateBlazorDto
             {
-                Name = $"Test Lesson {Random.Shared.Next(1000)}",
+                Name = $"Course Lecture {Random.Shared.Next(1000)}",
                 SortOrder = sectionCreate.CourseLectures.Count(),
                 LectureType = CourseLectureType.Video,
                 CourseSectionId = sectionCreate.Id,
@@ -261,7 +261,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
             StateHasChanged();
             return Task.CompletedTask;
         }
-        private async Task OnCourseLectureFileChanged(CourseLectureCreateBlazorDto lectureCreate, InputFileChangeEventArgs inputFile)
+        private Task OnCourseLectureFileChanged(CourseLectureCreateBlazorDto lectureCreate, InputFileChangeEventArgs inputFile)
         {
             try
             {
@@ -297,7 +297,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
 
                     lectureCreate.FileUpload = null;
                     lectureCreate.TempFileUrl = "";
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 //lectureCreate.TempFileUrl = await file.GetBlobStream(JsRuntime);
@@ -307,6 +307,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
                 Snackbar.Add("file quá nặng, không thể mở preview", Severity.Error);
             }
 
+            return Task.CompletedTask;
         }
 
         private Task UpdateLectureType(CourseLectureCreateBlazorDto courseLectureCreate, CourseLectureType target)

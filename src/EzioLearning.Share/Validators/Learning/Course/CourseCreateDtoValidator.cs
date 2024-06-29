@@ -13,6 +13,9 @@ namespace EzioLearning.Share.Validators.Learning.Course
                 .IsInEnum().WithMessage("Level không hợp lệ");
 
             RuleFor(x => x.Content)
+                .NotEmpty().WithMessage("Nội dung không được để trống");      
+            
+            RuleFor(x => x.Description)
                 .NotEmpty().WithMessage("Nội dung không được để trống");
 
             RuleFor(x => x.Name)

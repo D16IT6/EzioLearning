@@ -21,5 +21,15 @@ namespace EzioLearning.Wasm.Services.Interface
 			CourseSectionCreateBlazorDto courseSectionCreateDto);
 
 		Task<ResponseBaseWithData<PageResult<CourseItemViewDto>>> GetCoursePage(CourseListOptions options);
+
+		Task<ResponseBaseWithData<CourseDetailViewDto>> GetCourseDetailPage(Guid courseId);
+		Task<ResponseBaseWithData<PageResult<CourseItemViewDto>>> GetCourseByTeacher(Guid teacherId, CourseListOptions options);
+		Task<ResponseBaseWithData<CourseUpdateBlazorDto>> GetCourseUpdate(Guid courseId);
+		Task<ResponseBase> UpdateCourse(CourseUpdateBlazorDto course);
+
+		Task AddCourseToFavoriteList(Guid courseId);
+
+
+		Task<ResponseBaseWithData<CoursePaymentResponse>> BuyCourse(CoursePaymentRequestDto request);
 	}
 }

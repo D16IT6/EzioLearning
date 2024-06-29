@@ -1,9 +1,9 @@
-﻿using System.Linq.Expressions;
-using System.Net;
+﻿using System.Net;
 using System.Security.Claims;
 using AutoMapper;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
+using EzioLearning.Api.Services.Vnpay;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Learning.Course;
 using EzioLearning.Core.Repositories.Learning;
@@ -12,7 +12,6 @@ using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Domain.Entities.Resources;
-using EzioLearning.Share.Common;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Models.Pages;
@@ -23,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using static EzioLearning.Share.Common.Permissions;
 
 namespace EzioLearning.Api.Controllers;
 
@@ -34,6 +34,9 @@ public class CourseController(
     IUnitOfWork unitOfWork,
     FileService fileService,
     VideoService videoService,
+    VnPayService vnpayService,
+    ICourseSectionRepository courseSectionRepository,
+    ICourseLectureRepository courseLectureRepository,
     ICourseCategoryRepository courseCategoryRepository,
     IVideoRepository videoRepository,
     IDocumentRepository documentRepository,
@@ -66,8 +69,334 @@ public class CourseController(
         });
     }
 
-    [HttpGet("Detail")]
-    public async Task<IActionResult> GetCourseDetail([FromQuery] Guid courseId)
+    [HttpGet("Teacher/{teacherId:guid}")]
+    public async Task<IActionResult> GetCoursePageByTeacherId([FromRoute] Guid teacherId, [FromQuery] CourseListOptions options)
+    {
+        var pagedResult = await courseRepository.GetPageWithDto<CourseItemViewDto>(
+            expression: c => ((c.Price > 0 && options.PriceType == PriceType.Paid)
+                              || (c.Price >= 0 && options.PriceType == PriceType.All)
+                              || (c.Price == 0 && options.PriceType == PriceType.Free))
+                             && (options.SearchText == null || c.Name.Contains(options.SearchText))
+                             && (!options.CourseCategoryIds.Any() ||
+                                 options.CourseCategoryIds.Except(c.Categories.Select(x => x.Id).ToList()).Count() < options.CourseCategoryIds.Count)
+                             && teacherId == c.CreatedBy,
+            pageNumber: options.PageNumber,
+            pageSize: options.PageSize);
+
+        return Ok(new ResponseBaseWithData<PageResult<CourseItemViewDto>>()
+        {
+            Data = pagedResult,
+            Message = "Lấy danh sách thành công"
+        });
+    }
+
+    [HttpGet("Update/{courseId:guid}")]
+    [VerifyToken]
+    [Authorize(Courses.Edit)]
+    public async Task<IActionResult> GetCourseUpdateInfo([FromRoute] Guid courseId)
+    {
+        var teacherId = Guid.Parse(User.Claims.First(x => x.Type.Equals(ClaimTypes.PrimarySid)).Value);
+
+        var course = await courseRepository.GetCourseUpdate(courseId, teacherId);
+        if (course == null)
+            return NotFound(new ResponseBase()
+            {
+                Errors = new Dictionary<string, string[]>()
+                {
+                    { "NotFound", ["Không tìm thấy"] }
+                },
+                Status = HttpStatusCode.NotFound
+            });
+
+        var responseData = mapper.Map<CourseUpdateDto>(course);
+
+        return Ok(new ResponseBaseWithData<CourseUpdateDto>()
+        {
+            Data = responseData,
+            Status = HttpStatusCode.OK
+        });
+    }
+
+    [HttpPut]
+    [VerifyToken]
+    [Authorize(Courses.Edit)]
+    [RequestSizeLimit(long.MaxValue)]
+    public async Task<IActionResult> UpdateCourseInfo([FromForm] CourseUpdateApiDto courseUpdate)
+    {
+        var course = await courseRepository.FindCourseUpdate(courseUpdate.Id);
+        
+        if (course == null)
+        {
+            return NotFound(new ResponseBase()
+            {
+                Message = "Không tìm thấy khoá học",
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        course.Content = courseUpdate.Content;
+        course.Description= courseUpdate.Description;
+        course.Level = courseUpdate.Level;
+        course.Price = courseUpdate.Price;
+        course.Name = courseUpdate.Name;
+
+        var poster = courseUpdate.NewPoster;
+        if (poster is { Length: > 0 })
+        {
+            if (!fileService.IsImageAccept(poster.FileName))
+                return BadRequest(new ResponseBase
+                {
+                    Status = HttpStatusCode.BadRequest,
+                    Message = localizer.GetString("ImageExtensionNotAllow")
+                });
+
+            course.Poster = await fileService.SaveFile(poster, ImageFolderPath, course.Id.ToString());
+        }
+        #region Update Course Categories
+
+        var courseCategories = course.Categories.ToList(); // Ensure we're working with a concrete list
+        var courseCategoryIds = courseCategories.Select(x => x.Id).ToList();
+
+        var allCourseCategories = (await courseCategoryRepository.GetAllAsync()).ToList();
+
+        var newCourseCategoryIds = courseUpdate.CourseCategories.Select(c => c.Id).ToList();
+
+        // Find categories to be deleted
+        var deletedCourseCategories = courseCategories
+            .Where(x => !newCourseCategoryIds.Contains(x.Id))
+            .ToList(); // Convert to list to avoid modifying collection while iterating
+
+        // Remove the deleted categories
+        foreach (var deletedCourseCategory in deletedCourseCategories)
+        {
+            course.Categories.Remove(deletedCourseCategory);
+        }
+
+        // Find categories to be inserted
+        var insertCourseCategoryIds = newCourseCategoryIds.Except(courseCategoryIds).ToList();
+
+        foreach (var insertCourseCategoryId in insertCourseCategoryIds)
+        {
+            var insertCourseCategory = allCourseCategories.FirstOrDefault(x => x.Id == insertCourseCategoryId);
+            if (insertCourseCategory != null)
+            {
+                course.Categories.Add(insertCourseCategory);
+            }
+        }
+
+        #endregion
+
+
+        #region Update Course Sections
+
+        foreach (var sectionUpdateApiDto in courseUpdate.Sections)
+        {
+            if (sectionUpdateApiDto.Id == Guid.Empty)
+            {
+                sectionUpdateApiDto.Id = Guid.NewGuid();
+                var newSection = mapper.Map<CourseSection>(sectionUpdateApiDto);
+
+                foreach (var lecture in sectionUpdateApiDto.Lectures)
+                {
+                    lecture.Id = Guid.NewGuid();
+
+                    var file = lecture.File;
+
+                    var newLecture = mapper.Map<CourseLecture>(lecture);
+
+                    var saveFolder = lecture.LectureType == CourseLectureType.Document ? DocumentFolderPath : VideoFolderPath;
+                    saveFolder = Path.Combine(saveFolder, course.CreatedBy.ToString()!);
+
+                    if (file == null) throw new FileNotFoundException("Cần có file để tạo bài học");
+                    //Relative path
+                    var outputFilePath = await fileService.SaveFile(file, saveFolder, Guid.NewGuid().ToString());
+
+
+                    if (lecture.LectureType == CourseLectureType.Video)
+                    {
+                        var video = new Video()
+                        {
+                            Id = Guid.NewGuid(),
+                            DefaultPath = outputFilePath,
+                            Duration = await videoService.GetDurationFromVideo(outputFilePath),
+                            Name = Path.GetFileName(outputFilePath),
+                            Status = VideoStatus.Pending,
+                        };
+                        newLecture.LectureType = CourseLectureType.Video;
+                        newLecture.Video = video;
+                    }
+                    else
+                    {
+                        var document = new Document()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = Path.GetFileName(file.FileName),
+                            Path = outputFilePath,
+                        };
+                        newLecture.LectureType = CourseLectureType.Document;
+                        newLecture.Document = document;
+                    }
+
+                    courseLectureRepository.Add(newLecture);
+                    newSection.CourseLectures.Add(newLecture);
+                }
+                courseSectionRepository.Add(newSection);
+                course.Sections.Add(newSection);
+
+            }
+
+            else if (sectionUpdateApiDto.Deleted)
+            {
+                var deletedSection = course.Sections.First(x => x.Id == sectionUpdateApiDto.Id);
+                courseSectionRepository.Remove(deletedSection);
+                //course.Sections.Remove(deletedSection);
+
+            }
+            else
+            {
+                var courseSection = course.Sections.First(x => x.Id == sectionUpdateApiDto.Id);
+                courseSection.Name = sectionUpdateApiDto.Name;
+
+                foreach (var lectureUpdateApiDto in sectionUpdateApiDto.Lectures)
+                {
+                    if (lectureUpdateApiDto.Deleted)
+                    {
+                        var deletedLecture = course.Sections.SelectMany(x => x.CourseLectures)
+                            .FirstOrDefault(x => x.Id == lectureUpdateApiDto.Id);
+                        if (deletedLecture != null)
+                        {
+                            courseLectureRepository.Remove(deletedLecture);
+                        }
+                    }
+
+                    else if (lectureUpdateApiDto.Id == Guid.Empty)
+                    {
+                        lectureUpdateApiDto.Id = Guid.NewGuid();
+
+                        var file = lectureUpdateApiDto.File;
+
+                        var newLecture = mapper.Map<CourseLecture>(lectureUpdateApiDto);
+
+                        var saveFolder = lectureUpdateApiDto.LectureType == CourseLectureType.Document ? DocumentFolderPath : VideoFolderPath;
+                        saveFolder = Path.Combine(saveFolder, course.CreatedBy.ToString()!);
+
+                        if (file == null) throw new FileNotFoundException("Cần có file để tạo bài học");
+
+                        //Relative path
+                        var outputFilePath = await fileService.SaveFile(file, saveFolder, Guid.NewGuid().ToString());
+
+                        if (lectureUpdateApiDto.LectureType == CourseLectureType.Video)
+                        {
+                            var video = new Video()
+                            {
+                                Id = Guid.NewGuid(),
+                                DefaultPath = outputFilePath,
+                                Duration = await videoService.GetDurationFromVideo(outputFilePath),
+                                Name = Path.GetFileName(outputFilePath),
+                                Status = VideoStatus.Pending,
+                            };
+                            videoRepository.Add(video);
+
+                            newLecture.LectureType = CourseLectureType.Video;
+                            newLecture.Video = video;
+
+                        }
+                        else
+                        {
+                            var document = new Document()
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = Path.GetFileName(file.FileName),
+                                Path = outputFilePath,
+                            };
+                            documentRepository.Add(document);
+
+                            newLecture.LectureType = CourseLectureType.Document;
+                            newLecture.Document = document;
+                        }
+                        var sectionToInsert = course.Sections.FirstOrDefault(x=> x.Id == lectureUpdateApiDto.CourseSectionId);
+                        if (sectionToInsert != null)
+                        {
+                            courseLectureRepository.Add(newLecture);
+                            sectionToInsert.CourseLectures.Add(newLecture);
+                        }
+                    }
+                    else
+                    {
+                        var courseLecture = course.Sections.SelectMany(x =>x.CourseLectures).FirstOrDefault(x=> x.Id == lectureUpdateApiDto.Id);
+                        if(courseLecture == null) continue;
+
+
+                        courseLecture.Name = lectureUpdateApiDto.Name;
+                        courseLecture.SortOrder = lectureUpdateApiDto.SortOrder;
+                        if (lectureUpdateApiDto.File == null) continue;
+                        courseLecture.LectureType = lectureUpdateApiDto.LectureType;
+
+                        var saveFolder = lectureUpdateApiDto.LectureType == CourseLectureType.Document ? DocumentFolderPath : VideoFolderPath;
+                        saveFolder = Path.Combine(saveFolder, course.CreatedBy.ToString()!);
+
+                        var file = lectureUpdateApiDto.File;
+
+                        if (file == null || file.Length <= 0) continue;
+                        //Relative path
+                        var outputFilePath = await fileService.SaveFile(file, saveFolder, Guid.NewGuid().ToString());
+
+                        if (lectureUpdateApiDto.LectureType == CourseLectureType.Video)
+                        {
+                            var video = new Video()
+                            {
+                                Id = Guid.NewGuid(),
+                                DefaultPath = outputFilePath,
+                                Duration = await videoService.GetDurationFromVideo(outputFilePath),
+                                Name = Path.GetFileName(outputFilePath),
+                                Status = VideoStatus.Pending,
+                            };
+                            if (courseLecture.Video != null)
+                            {
+                                videoRepository.Remove(courseLecture.Video);
+                            }
+
+                            videoRepository.Add(video);
+
+                            courseLecture.LectureType = CourseLectureType.Video;
+                            courseLecture.Video = video;
+                        }
+                        else
+                        {
+                            var document = new Document()
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = Path.GetFileName(file.FileName),
+                                Path = outputFilePath,
+                            };
+                            if (courseLecture.Document != null)
+                            {
+                                documentRepository.Remove(courseLecture.Document);
+                            }
+                            documentRepository.Add(document);
+
+                            courseLecture.LectureType = CourseLectureType.Document;
+                            courseLecture.Document = document;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        await unitOfWork.CompleteAsync();
+        return Ok(new ResponseBase()
+        {
+            Message = "Cập nhật thành công",
+            Status = HttpStatusCode.Accepted
+        });
+    }
+
+    [HttpGet("Detail/{courseId:guid}")]
+    [VerifyToken]
+    public async Task<IActionResult> GetCourseDetail([FromRoute] Guid courseId)
     {
         var course = await courseRepository.GetCourseDetail(courseId);
 
@@ -89,6 +418,7 @@ public class CourseController(
             Data = count
         });
     }
+
 
     [HttpGet("FeaturedInstructor/{take:int?}")]
     public Task<IActionResult> GetFeatureInstructors([FromRoute] int take = 12)
@@ -123,7 +453,7 @@ public class CourseController(
     }
 
     [HttpPost]
-    [Authorize(Permissions.Courses.Create)]
+    [Authorize(Courses.Create)]
     [VerifyToken]
     public async Task<IActionResult> CreateNewCourse([FromForm] CourseCreateApiDto model)
     {
@@ -173,7 +503,7 @@ public class CourseController(
     }
 
     [HttpPost("Section")]
-    [Authorize(Permissions.Courses.Create)]
+    [Authorize(Courses.Create)]
     [VerifyToken]
     [RequestSizeLimit(long.MaxValue)]
     public async Task<IActionResult> CreateNewCourseSection([FromForm] CourseSectionCreateApiDto courseSectionCreateDto)

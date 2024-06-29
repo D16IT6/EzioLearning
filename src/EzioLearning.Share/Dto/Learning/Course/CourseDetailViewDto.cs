@@ -14,7 +14,6 @@ namespace EzioLearning.Share.Dto.Learning.Course
         public CourseLevel Level { get; set; }
         public CourseStatus Status { get; set; }
 
-
         public Guid TeacherId { get; set; }
         public string TeacherName { get; set; } = string.Empty;
         public string TeacherAvatar { get; set; } = string.Empty;
@@ -24,29 +23,10 @@ namespace EzioLearning.Share.Dto.Learning.Course
 
         public int LessonCount { get; set; }
 
-        public int Duration { get; set; }
+        public long Duration { get; set; }
         public int StudentCount { get; set; }
 
         public List<CourseSectionViewDto> Sections { get; set; } = [];
 
-    }
-
-    public class CourseSectionViewDto
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public List<CourseLectureViewDto> Lectures { get; set; } = [];
-    }
-
-    public class CourseLectureViewDto
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public CourseLectureType LectureType { get; set; }
-
-        public string FileUrl { get; set; } = string.Empty;
-
-        public bool IsPreview { get; set; }
-        public long Duration { get; set; }
     }
 }

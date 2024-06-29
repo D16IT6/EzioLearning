@@ -2,9 +2,9 @@
     <div class="course-box course-design list-course d-flex">
         <div class="product">
             <div class="product-img">
-                <a href="course-details.html">
+                <NavLink href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam,CourseItemViewDto.Id.ToString())">
                     <img class="img-fluid" alt="" src="@CourseItemViewDto.Poster">
-                </a>
+                </NavLink>
                 <div class="price">
                     @if (CourseItemViewDto.Price > 0)
                     {
@@ -25,13 +25,10 @@
             <div class="product-content">
                 <div class="head-course-title">
                     <h3 class="title">
-                        <a href="course-details.html">
+                        <a href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam,CourseItemViewDto.Id.ToString())">
                             @CourseItemViewDto.Name.Substring(0, Math.Min(CourseItemViewDto.Name.Length, 30))
                         </a>
                     </h3>
-                    <div class="all-btn all-category d-flex align-items-center">
-                        <a href="checkout.html" class="btn btn-primary">BUY NOW</a>
-                    </div>
                 </div>
                 <div class="course-info border-bottom-0 pb-0 d-flex align-items-center">
                     <div class="rating-img d-flex align-items-center">
@@ -57,9 +54,6 @@
                         <div class="course-name d-flex align-items-center">
                             <h4><a href="#">@CourseItemViewDto.TeacherName</a></h4>
                         </div>
-                    </div>
-                    <div class="course-share d-flex align-items-center justify-content-center">
-                        <a href="#rate"><i class="fa-regular fa-heart"></i></a>
                     </div>
                 </div>
             </div>
