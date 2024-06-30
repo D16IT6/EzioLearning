@@ -3,7 +3,6 @@ using Blazored.LocalStorage;
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Wasm.Components.Common;
 using EzioLearning.Wasm.Services.Interface;
-using EzioLearning.Wasm.Utils.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
@@ -26,9 +25,10 @@ namespace EzioLearning.Wasm.Pages.Course
 
         protected override async Task OnInitializedAsync()
         {
+            AuthenticationState = await AuthenticationStateTask;
+
             CourseDetailViewDto = (await CourseService.GetCourseDetailPage(CourseId)).Data!;
 
-            AuthenticationState = await AuthenticationStateTask;
         }
 
         private Task ShowPlayVideo(CourseLectureViewDto lecture)

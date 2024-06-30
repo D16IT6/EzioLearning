@@ -135,4 +135,7 @@
   <data name="Security" xml:space="preserve">
     <value>Security</value>
   </data>
+  <data name="PurchasedCourses" xml:space="preserve">
+    <value>Purchased Courses</value>
+  </data>
 </root>

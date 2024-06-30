@@ -1,0 +1,29 @@
+﻿@attribute [Route(RouteConstants.AccountRoute.Report)]
+
+@attribute [Authorize(Permissions.Dashboard.View)]
+@layout AccountLayout
+
+@inherits  AccountComponentBase
+
+@if (ChartRenders.Any())
+{
+    <SfChart Title="Doanh thu khoá học năm nay (triệu đồng)">
+        <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
+        </ChartPrimaryXAxis>
+
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@ChartRenders" XName="MonthString" YName="TotalPrice" Type="ChartSeriesType.Bar">
+            </ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+
+    
+    <div class="row mt-3">
+        <ul>
+            @foreach (var item in ChartRenders)
+            {
+                <li>@item.MonthString - @item.TotalPrice</li>
+            }
+        </ul>
+    </div>
+}

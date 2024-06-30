@@ -2,5 +2,5 @@
 
 public class PageResult<T> : PageResultBase where T : class
 {
-    public IEnumerable<T> Data { get; set; } = [];
+    public IEnumerable<T> PageData { get; set; } = [];
 }

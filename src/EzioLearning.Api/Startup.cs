@@ -31,6 +31,8 @@ using EzioLearning.Api.Hubs;
 using EzioLearning.Api.Services.Vnpay;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http.Features;
+using EzioLearning.Api.Services.SqlDependency;
+using Microsoft.Data.SqlClient;
 
 
 namespace EzioLearning.Api;
@@ -165,12 +167,10 @@ internal static class Startup
                     {
                         var accessToken = context.Request.Query["access_token"];
 
-                        // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/TestHub")))
+                            (path.StartsWithSegments($"/{nameof(ReportHub)}")))
                         {
-                            // Read the token out of the query string
                             context.Token = accessToken;
                         }
 
@@ -207,9 +207,14 @@ internal static class Startup
 
     private static void ConfigureCustomMiddleware(this IServiceCollection services)
     {
+
+
+
         services.AddScoped<Custom401ResponseMiddleware>();
         services.AddScoped<Custom403ResponseMiddleware>();
         services.AddScoped<HandleExceptionMiddleware>();
+
+
     }
 
     //private static async Task MigrateData(this WebApplication app)
@@ -353,16 +358,22 @@ internal static class Startup
 
         services.AddSignalR(options =>
         {
-            options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
-            options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+            options.ClientTimeoutInterval = TimeSpan.FromMinutes(60);
+            options.KeepAliveInterval = TimeSpan.FromMinutes(30);
+            options.EnableDetailedErrors = true;
         }).AddMessagePackProtocol();
+
+        services.AddSingleton<ReportHub>();
+
+        //Sql Dependencies
+        builder.Services.AddSingleton<SubscribeReportMonthlyRevenueDependency>();
 
 
         services.Configure<FormOptions>(x =>
         {
             x.BufferBodyLengthLimit = long.MaxValue;
             x.ValueLengthLimit = int.MaxValue;
-            x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
+            x.MultipartBodyLengthLimit = long.MaxValue;
         });
 
     }
@@ -370,8 +381,7 @@ internal static class Startup
     internal static void Configure(this WebApplication app)
     {
 
-        
-
+        SqlDependency.Start(app.Configuration.GetConnectionString(nameof(EzioLearning)));
         app.UseSwagger();
         app.UseSwaggerUI();
 
@@ -385,10 +395,7 @@ internal static class Startup
 
         app.UseResponseCompression();
 
-
-
-        app.MapHub<TestHub>("/TestHub");
-
+        app.MapHub<ReportHub>($"/{nameof(ReportHub)}");
 
 
         app.UseAuthentication();
@@ -396,9 +403,14 @@ internal static class Startup
         app.UseMiddleware<Custom403ResponseMiddleware>();
         app.UseAuthorization();
 
+        app.UseSqlTableDependency<SubscribeReportMonthlyRevenueDependency>();
+
         app.MapControllers();
 
+
         app.UseMiddleware<HandleExceptionMiddleware>();
+
+
 
         //app.MigrateData().Wait();
     }

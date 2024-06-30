@@ -41,7 +41,7 @@ namespace EzioLearning.Wasm.Pages.Course
         private async Task FetchCoursesView()
         {
             var response = await CourseService.GetCoursePage(CourseListOptions);
-            CourseItemViewDtos = response.Data!.Data.ToList();
+            CourseItemViewDtos = response.Data!.PageData.ToList();
             PageCount = response.Data.PageCount;
         }
         private async Task ChangeView(CourseViewEnum courseViewEnum)

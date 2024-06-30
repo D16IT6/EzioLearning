@@ -34,7 +34,7 @@
                 {
                     <div class="go-dashboard text-center">
                         <NavLink Match="NavLinkMatch.All"
-                                 href="@RouteConstants.CourseRoute.CourseCreate"
+                                 href="@RouteConstants.AccountRoute.CourseCreate"
                                  class="btn btn-primary">
                             Tạo khoá học
                         </NavLink>
@@ -50,33 +50,25 @@
                 {
                     <MudNavGroup Title="Dashboard" Icon="@Icons.Material.Filled.Dashboard">
 
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.CourseRoute.CourseIndex">
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.AccountRoute.CourseIndex">
                             <i class="feather-home"></i> Courses
                         </MudNavLink>
 
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
+                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.AccountRoute.Report">
                             <i class="feather-home"></i> Report
-                        </MudNavLink>
-
-
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
-                            <i class="feather-home"></i> My Dashboard
-                        </MudNavLink>
-
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
-                            <i class="feather-home"></i> My Dashboard
-                        </MudNavLink>
-
-                        <MudNavLink Match="NavLinkMatch.All" Class="nav-link" Href="@RouteConstants.DevLater">
-                            <i class="feather-home"></i> My Dashboard
                         </MudNavLink>
                     </MudNavGroup>
                 }
 
                 <MudNavGroup Title="@Localizer.GetString("AccountSection")" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="true">
+                    
+                    <MudNavLink href="@RouteConstants.AccountRoute.PurchasedCourse" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.FeaturedPlayList">
+                        @Localizer.GetString("PurchasedCourses")
+                    </MudNavLink>
                     <MudNavLink href="@RouteConstants.AccountRoute.Home" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Info">
                         @Localizer.GetString("Info")
                     </MudNavLink>
+
 
                     <MudNavLink href="@RouteConstants.AccountRoute.Security" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Security">
                         @Localizer.GetString("Security")
@@ -90,6 +82,8 @@
                     <MudNavLink href="@RouteConstants.Logout" Match="NavLinkMatch.All" Class="nav-link" Icon="@Icons.Material.Filled.Logout">
                         @Localizer.GetString("Logout")
                     </MudNavLink>
+
+
 
                 </MudNavGroup>
             </MudNavMenu>

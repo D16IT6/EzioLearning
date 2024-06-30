@@ -135,4 +135,7 @@
   <data name="Security" xml:space="preserve">
     <value>Bảo mật</value>
   </data>
+  <data name="PurchasedCourses" xml:space="preserve">
+    <value>Khoá học đã mua</value>
+  </data>
 </root>

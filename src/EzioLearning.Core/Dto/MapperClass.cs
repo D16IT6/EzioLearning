@@ -162,6 +162,7 @@ public class MapperClass : Profile
         CreateMap<CourseLectureUpdateApiDto, CourseLecture>();
 
 
+        CreateMap<Course, CoursePurchasedItemViewDto>();
 
     }
 

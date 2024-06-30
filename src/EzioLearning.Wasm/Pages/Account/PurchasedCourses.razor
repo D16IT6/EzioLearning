@@ -1,11 +1,7 @@
-﻿@attribute [Route(RouteConstants.AccountRoute.CourseIndex)]
-@attribute [Authorize(Permissions.Courses.View)]
-
-@inherits AccountComponentBase
+﻿@attribute [Route(RouteConstants.AccountRoute.PurchasedCourse)]
 @layout AccountLayout
+@inherits EzioLearning.Wasm.Utils.Extensions.AccountComponentBase
 
-
-<!-- Instructor Dashboard -->
 <div class="row">
     <div class="col-md-12">
         <div class="settings-widget">
@@ -58,8 +54,7 @@
                                 <tr>
                                     <th>COURSES</th>
                                     <th>LEVEL</th>
-                                    <th>PRICE</th>
-                                    <th>ACTION</th>
+                   
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,13 +64,13 @@
                                         <td>
                                             <div class="sell-table-group d-flex align-items-center">
                                                 <div class="sell-group-img">
-                                                    <NavLink href="@Path.Combine(RouteConstants.AccountRoute.CourseUpdateNoParam,item.Id.ToString())">
+                                                    <NavLink href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam,item.Id.ToString())">
                                                         <img src="@item.Poster" class="img-fluid " alt="">
                                                     </NavLink>
                                                 </div>
                                                 <div class="sell-tabel-info">
                                                     <p>
-                                                        <NavLink href="@Path.Combine(RouteConstants.AccountRoute.CourseUpdateNoParam, item.Id.ToString())">
+                                                        <NavLink href="@Path.Combine(RouteConstants.CourseRoute.CourseDetailNoParam, item.Id.ToString())">
                                                             @item.Name
                                                         </NavLink>
                                                     </p>
@@ -93,15 +88,6 @@
                                             </div>
                                         </td>
                                         <td><span class="badge info-low">@item.Level</span></td>
-                                        <td>@item.Price</td>
-
-                                        <td>
-                                            <MudButtonGroup>
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Success" Variant="Variant.Filled"></MudIconButton>
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Variant="Variant.Filled"></MudIconButton>
-                                             
-                                            </MudButtonGroup>
-                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -124,4 +110,3 @@
         </div>
     </div>
 </div>
-<!-- /Instructor Dashboard -->

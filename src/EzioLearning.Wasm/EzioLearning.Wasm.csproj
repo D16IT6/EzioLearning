@@ -32,6 +32,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="9.0.0-preview.3.24172.13" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Syncfusion.Blazor.Charts" Version="25.1.35" />
     <PackageReference Include="Syncfusion.Blazor.PdfViewer" Version="25.1.35" />
     <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="25.1.35" />
     <PackageReference Include="Syncfusion.Blazor.SfPdfViewer" Version="25.1.35" />

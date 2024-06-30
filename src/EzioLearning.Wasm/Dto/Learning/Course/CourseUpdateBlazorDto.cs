@@ -7,7 +7,7 @@ namespace EzioLearning.Wasm.Dto.Learning.Course
     public class CourseUpdateBlazorDto : CourseUpdateDto
     {
         public IBrowserFile? PosterImage { get; set; }
-        public new List<CourseSectionUpdateBlazorDto> Sections { get; set; } = [];
+        public List<CourseSectionUpdateBlazorDto> Sections { get; set; } = [];
     }
 
     public class CourseSectionUpdateBlazorDto : CourseSectionUpdateDto

@@ -4,13 +4,14 @@ using EzioLearning.Core.Repositories.Resources;
 using EzioLearning.Domain.Entities.Learning;
 using EzioLearning.Infrastructure.DbContext;
 using EzioLearning.Infrastructure.SeedWorks;
+using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace EzioLearning.Infrastructure.Repositories.Learning;
 
 public class CourseRepository(
-    EzioLearningDbContext context, 
+    EzioLearningDbContext context,
     ICourseSectionRepository courseSectionRepository,
     ICourseLectureRepository courseLectureRepository,
     IVideoRepository videoRepository,
@@ -26,7 +27,7 @@ public class CourseRepository(
     public async Task<IEnumerable<Course>> GetFeaturedCourses(int take = 12)
     {
         var data = (await GetAllAsync([nameof(Course.User)])).AsQueryable()
-            .Where(x=> x.Status == CourseStatus.Ready)
+            .Where(x => x.Status == CourseStatus.Ready)
             .OrderByDescending(x => x.Students.Count())
             .Take(take);
 
@@ -71,11 +72,11 @@ public class CourseRepository(
             .ThenInclude(s => s.CourseLectures)
             .ThenInclude(l => l.Video)
 
-            .Include(x=>x.Sections)
-            .ThenInclude(s=>s.CourseLectures)
+            .Include(x => x.Sections)
+            .ThenInclude(s => s.CourseLectures)
             .ThenInclude(l => l.Document)
 
-            .Include(c=>c.User)
+            .Include(c => c.User)
             .AsSplitQuery()
             ;
 
@@ -91,9 +92,9 @@ public class CourseRepository(
         var queryable = DbSet.AsQueryable();
 
         queryable = queryable
-                .Include(x=>x.Categories)
-                .ThenInclude(x=>x.CourseCategoryTranslations)
-                .ThenInclude(x=>x.Culture)
+                .Include(x => x.Categories)
+                .ThenInclude(x => x.CourseCategoryTranslations)
+                .ThenInclude(x => x.Culture)
 
                 .Include(x => x.Sections)
                 .ThenInclude(s => s.CourseLectures)
@@ -102,7 +103,7 @@ public class CourseRepository(
                 .Include(x => x.Sections)
                 .ThenInclude(s => s.CourseLectures)
                 .ThenInclude(l => l.Document)
-                
+
                 .AsSplitQuery()
             ;
 
@@ -135,4 +136,5 @@ public class CourseRepository(
             .FirstOrDefaultAsync(x => x.Id == courseId);
         return course;
     }
+
 }

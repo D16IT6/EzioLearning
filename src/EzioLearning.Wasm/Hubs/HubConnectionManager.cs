@@ -30,6 +30,7 @@ namespace EzioLearning.Wasm.Hubs
                     options.AccessTokenProvider = () => Task.FromResult(accessToken)!;
                 })
                 .AddMessagePackProtocol()
+                
                 .Build();
 
             HubConnections[hubConnectionEndpoint] = hubConnection;

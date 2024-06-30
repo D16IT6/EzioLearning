@@ -1,10 +1,8 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
 using Blazorise;
 using Blazorise.Bootstrap5;
-using EzioLearning.Share.Dto.User;
 using EzioLearning.Share.Validators;
 using EzioLearning.Wasm.Authorization;
 using EzioLearning.Wasm.Hubs;
@@ -16,8 +14,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
 using MudExtensions.Services;
@@ -150,32 +146,6 @@ namespace EzioLearning.Wasm
             httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(currentCultureName));
         }
 
-        public static async Task ConnectToHub(this WebAssemblyHost host)
-        {
-
-            var hubConnectionManager = host.Services.GetRequiredService<HubConnectionManager>();
-            var localStorage = host.Services.GetRequiredService<ILocalStorageService>();
-
-            var testHub = await hubConnectionManager.GetHubConnectionAsync(HubConnectionEndpoints.Test, needAuthenticate: false);
-
-            if (testHub != null)
-            {
-                if (testHub.State == HubConnectionState.Disconnected)
-                {
-                    await testHub.StartAsync();
-                }
-
-                Debug.WriteLine($"Đã kết nối tới {nameof(HubConnectionEndpoints.Test)}");
-
-                testHub.On<IEnumerable<UserDto>>("ReceiveUsers", async users =>
-                {
-                    await localStorage.SetItemAsync("Users", users);
-                });
-
-                await testHub.InvokeAsync("SendUsers");
-
-            }
-        }
 
     }
 }

@@ -23,26 +23,26 @@ public abstract record RouteConstants
     public abstract record AccountRoute
     {
         public const string Home = $"Account/{nameof(Home)}";
+        public const string Report = $"Account/{nameof(Report)}";
         public const string Security = $"Account/{nameof(Security)}";
         public const string ConfirmChangeEmail = $"Account/{nameof(ConfirmChangeEmail)}";
         public const string ConfirmChangePassword = $"Account/{nameof(ConfirmChangePassword)}";
         public const string Delete = $"Account/{nameof(Delete)}";
-    }
+        public const string PurchasedCourse = $"Account/{nameof(PurchasedCourse)}";
 
-    public record CourseRoute
-    {
 
         public const string CourseIndex = "/Account/Course/Index";
-
-        public const string CourseDetail = "/Course/Detail/{CourseId:guid}";
-        public const string CourseDetailNoParam = "/Course/Detail";
 
         public const string CourseCreate = "Account/Course/Create";
 
         public const string CourseUpdate = "Account/Course/Update/{CourseId:guid}";
         public const string CourseUpdateNoParam = "Account/Course/Update";
+    }
 
-
+    public record CourseRoute
+    {
+        public const string CourseDetail = "/Course/Detail/{CourseId:guid}";
+        public const string CourseDetailNoParam = "/Course/Detail";
     }
 
     public abstract record ErrorRoute

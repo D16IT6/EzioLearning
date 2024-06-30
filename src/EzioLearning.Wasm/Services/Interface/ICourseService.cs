@@ -31,5 +31,6 @@ namespace EzioLearning.Wasm.Services.Interface
 
 
 		Task<ResponseBaseWithData<CoursePaymentResponse>> BuyCourse(CoursePaymentRequestDto request);
+		Task<ResponseBaseWithData<PageResult<CoursePurchasedItemViewDto>>> GetPurchasedCourses(CourseListOptions courseListOptions);
 	}
 }

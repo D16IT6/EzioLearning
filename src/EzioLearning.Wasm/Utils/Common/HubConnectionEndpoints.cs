@@ -2,6 +2,7 @@
 {
     public enum HubConnectionEndpoints
     {
-        Test
+        Test,
+        Report
     }
 }

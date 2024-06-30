@@ -28,7 +28,8 @@ namespace EzioLearning.Api.Controllers
         IStudentRepository studentRepository,
         IUnitOfWork unitOfWork,
         UserManager<AppUser> userManager,
-        VnPayService vnPayService
+        VnPayService vnPayService,
+        CacheService cacheService
         ) : ControllerBase
     {
         [HttpPost("Course/VnPay")]
@@ -65,16 +66,14 @@ namespace EzioLearning.Api.Controllers
             var newOrder = new Student()
             {
                 Id = Guid.NewGuid(),
-                Course = course,
                 CourseId = model.CourseId,
-                User = user,
                 UserId = user.Id,
                 Price = course.Price,
-                Confirm = false
+                Confirm = true
             };
 
-            studentRepository.Add(newOrder);
-            course.Students.Add(newOrder);
+            cacheService.Set(newOrder.Id.ToString(), newOrder,TimeSpan.FromMinutes(15));
+
             var paymentUrl = vnPayService.CreatePaymentUrl(ControllerContext.HttpContext, new VnPaymentRequestModel()
             {
                 Description = $"Mua khoá học {course.Name}",
@@ -82,8 +81,7 @@ namespace EzioLearning.Api.Controllers
                 CreatedDate = DateTime.UtcNow,
                 OrderId = newOrder.Id
             });
-
-            await unitOfWork.CompleteAsync();
+            
             return Ok(new ResponseBaseWithData<CoursePaymentResponse>()
             {
                 Status = HttpStatusCode.OK,
@@ -99,14 +97,27 @@ namespace EzioLearning.Api.Controllers
         public async Task<IActionResult> BuyCourseVnPayCallback()
         {
             var info = vnPayService.PaymentExecute(ControllerContext.HttpContext.Request.Query);
-            var order = await (await studentRepository.Find(x => x.Id == info.OrderId)).AsQueryable().FirstAsync();
+            //var order = await (await studentRepository.Find(x => x.Id == info.OrderId)).AsQueryable().FirstAsync();
 
-            order.Confirm = info.Success;
-            if (!info.Success)
+            if (info.Success)
             {
-                studentRepository.Remove(order);
+                var cacheData = cacheService.Get<Student>(info.OrderId.ToString());
+                if(cacheData != null)
+                {
+
+                    var user = userManager.Users.First(x => x.Id == cacheData.UserId);
+                    var course = (await courseRepository.Find(x => x.Id == cacheData.CourseId)).AsQueryable().First();
+
+                    cacheData.Course = course;
+                    cacheData.User = user;
+                    cacheData.Confirm = true;
+
+                    course.Students.Add(cacheData);
+                    studentRepository.Add(cacheData);
+
+                    await unitOfWork.CompleteAsync();
+                }
             }
-            await unitOfWork.CompleteAsync();
 
             var url = "https://localhost:17233/Checkout";
             return Redirect($"{url}?Success={info.Success}&orderId={info.OrderId}");

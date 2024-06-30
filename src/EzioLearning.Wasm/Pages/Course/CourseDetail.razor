@@ -16,12 +16,11 @@
                         </div>
                         <div class="rating mb-0">
 
-                            <MudRating MaxValue="5" bind-SelectedValue="@((int)CourseDetailViewDto.Rating)" Size="Size.Medium" />
+                            <MudRating MaxValue="5" Size="Size.Medium" />
 
                             <span class="d-inline-block average-rating"><span>@CourseDetailViewDto.Rating</span> (@CourseDetailViewDto.RatingCount)</span>
                         </div>
                     </div>
-                    @* <span class="web-badge mb-3">WEB DEVELOPMENT</span> *@
                 </div>
                 <h2>@CourseDetailViewDto.Name</h2>
                 <p>@CourseDetailViewDto.Description</p>
@@ -91,7 +90,11 @@
                                                 <li class="d-flex align-items-baseline">
                                                     <p><img src="assets/img/icon/play.svg" alt="" class="me-2">@lecture.Name</p>
                                                     <div>
-                                                        <MudButton Color="Color.Primary" OnClick="() => ShowPlayVideo(lecture)">Preview</MudButton>
+                                                        @if (!string.IsNullOrWhiteSpace(lecture.FileUrl))
+                                                        {
+                                                            var text = CourseDetailViewDto.Purchased ? "Xem" : "Preview";
+                                                            <MudButton Color="Color.Primary" OnClick="() => ShowPlayVideo(lecture)">@(text)</MudButton>
+                                                        }
                                                         <span>@lecture.Duration.ShowDurationFromSecond()</span>
                                                     </div>
                                                 </li>
@@ -100,6 +103,14 @@
                                             {
                                                 <li>
                                                     <p><img src="assets/img/icon/document.svg" alt="" class="me-2" width="24" height="24">@lecture.Name</p>
+                                                    @if (CourseDetailViewDto.Purchased)
+                                                    {
+                                                        
+                                                        <a href="@lecture.FileUrl" target="_blank">
+                                                            <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="File" ButtonType="ButtonType.Button" Class="d-flex justify-content-center"/>
+                                                        </a>
+
+                                                    }
                                                 </li>
                                             }
                                         }
@@ -139,13 +150,20 @@
                                             <button class="btn btn-wish w-100"><i class="feather-heart" @onclick="AddCourseToFavoriteList"></i>Thêm vào yêu thích</button>
                                         </div>
                                         <div class="col-md-6">
-                                            @if (AuthenticationState is { User.Identity.IsAuthenticated: true })
+                                            @if (!CourseDetailViewDto.Purchased)
                                             {
-                                                <button class="btn btn-wish w-100" @onclick="OnClickBuyButton">Mua ngay</button>
+                                                @if (AuthenticationState is { User.Identity.IsAuthenticated: true })
+                                                {
+                                                    <button class="btn btn-wish w-100" @onclick="OnClickBuyButton">Mua ngay</button>
+                                                }
+                                                else
+                                                {
+                                                    <NavLink href="@RouteConstants.Login" class="btn btn-wish w-100">Đăng nhập để mua</NavLink>
+                                                }
                                             }
                                             else
                                             {
-                                                <NavLink href="@RouteConstants.Login" class="btn btn-wish w-100">Đăng nhập để mua</NavLink>
+                                                <h3>Cảm ơn bạn đã mua!</h3>
                                             }
                                         </div>
                                     </div>

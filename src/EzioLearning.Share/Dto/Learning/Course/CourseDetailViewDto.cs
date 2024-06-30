@@ -26,6 +26,7 @@ namespace EzioLearning.Share.Dto.Learning.Course
         public long Duration { get; set; }
         public int StudentCount { get; set; }
 
+        public bool Purchased { get; set; }
         public List<CourseSectionViewDto> Sections { get; set; } = [];
 
     }

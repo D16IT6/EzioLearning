@@ -2,17 +2,17 @@
 using EzioLearning.Share.Dto.Learning.Course;
 using EzioLearning.Share.Dto.Learning.CourseCategory;
 using EzioLearning.Share.Models.Request;
-using EzioLearning.Wasm.Services.Implement;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs;
 
-namespace EzioLearning.Wasm.Pages.Account.Course
+namespace EzioLearning.Wasm.Pages.Account
 {
-    public partial class CourseList : AccountComponentBase
+    public partial class PurchasedCourses : AccountComponentBase
     {
-        private List<CourseItemViewDto> CourseItemViewDtos { get; set; } = [];
+        private List<CoursePurchasedItemViewDto> CourseItemViewDtos { get; set; } = [];
         [Inject] private ICourseService CourseService { get; set; } = default!;
 
         private CourseListOptions CourseListOptions { get; set; } = new();
@@ -28,19 +28,18 @@ namespace EzioLearning.Wasm.Pages.Account.Course
         {
             await base.OnInitializedAsync();
 
-            await FetchCoursesView();
+            await FetchPurchasedCourses();
             CourseCategoryViewDtos = await CourseCategoryService.GetCourseCategories();
         }
-
         private async Task OnPageNumberChanged(int pageValue)
         {
             CourseListOptions.PageNumber = pageValue;
-            await FetchCoursesView();
+            await FetchPurchasedCourses();
         }
 
-        private async Task FetchCoursesView()
+        private async Task FetchPurchasedCourses()
         {
-            var response = await CourseService.GetCourseByTeacher(AccountInfoMinimal.Id, CourseListOptions);
+            var response = await CourseService.GetPurchasedCourses(CourseListOptions);
 
             PageCount = response.Data!.PageCount;
             CourseItemViewDtos = response.Data!.PageData.ToList();
@@ -58,9 +57,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
                 CourseListOptions.CourseCategoryIds.Add(selectedCategoryId);
             }
 
-            await FetchCoursesView();
+            await FetchPurchasedCourses();
         }
-
     }
-
 }

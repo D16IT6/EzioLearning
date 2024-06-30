@@ -9,7 +9,7 @@ namespace EzioLearning.Core.Dto.Learning.Course
         public IFormFile? NewPoster { get; set; }
 
         public new List<CourseCategoryViewDto> CourseCategories { get; set; } = [];
-        public new List<CourseSectionUpdateApiDto> Sections { get; set; } = [];
+        public List<CourseSectionUpdateApiDto> Sections { get; set; } = [];
     }
 
     public class CourseSectionUpdateApiDto: CourseSectionUpdateDto

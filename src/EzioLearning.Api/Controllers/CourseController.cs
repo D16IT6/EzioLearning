@@ -3,7 +3,6 @@ using System.Security.Claims;
 using AutoMapper;
 using EzioLearning.Api.Filters;
 using EzioLearning.Api.Services;
-using EzioLearning.Api.Services.Vnpay;
 using EzioLearning.Api.Utils;
 using EzioLearning.Core.Dto.Learning.Course;
 using EzioLearning.Core.Repositories.Learning;
@@ -34,7 +33,7 @@ public class CourseController(
     IUnitOfWork unitOfWork,
     FileService fileService,
     VideoService videoService,
-    VnPayService vnpayService,
+    IStudentRepository studentRepository,
     ICourseSectionRepository courseSectionRepository,
     ICourseLectureRepository courseLectureRepository,
     ICourseCategoryRepository courseCategoryRepository,
@@ -51,12 +50,12 @@ public class CourseController(
     public async Task<IActionResult> GetCourse([FromQuery] CourseListOptions options)
     {
         var pagedResult = await courseRepository.GetPageWithDto<CourseItemViewDto>(
-            expression: c=> ((c.Price > 0 && options.PriceType == PriceType.Paid )
+            expression: c => ((c.Price > 0 && options.PriceType == PriceType.Paid)
                             || (c.Price >= 0 && options.PriceType == PriceType.All)
                             || (c.Price == 0 && options.PriceType == PriceType.Free))
                             && (options.SearchText == null || c.Name.Contains(options.SearchText))
                             && (!options.CourseCategoryIds.Any() ||
-                            options.CourseCategoryIds.Except(c.Categories.Select(x=> x.Id).ToList()).Count() < options.CourseCategoryIds.Count)
+                            options.CourseCategoryIds.Except(c.Categories.Select(x => x.Id).ToList()).Count() < options.CourseCategoryIds.Count)
             ,
             pageNumber: options.PageNumber,
             pageSize: options.PageSize);
@@ -69,7 +68,32 @@ public class CourseController(
         });
     }
 
+    [HttpGet("Purchased")]
+    [Authorize]
+    public async Task<IActionResult> GetPagePurchasedCourses([FromQuery] CourseListOptions options)
+    {
+        var userId = Guid.Parse(User.Claims.First(x => x.Type.Equals(ClaimTypes.PrimarySid)).Value);
+
+        var pagedResult = await courseRepository.GetPageWithDto<CoursePurchasedItemViewDto>(
+            expression: c =>  (options.SearchText == null || c.Name.Contains(options.SearchText))
+                              && (!options.CourseCategoryIds.Any() ||
+                                  options.CourseCategoryIds.Except(c.Categories.Select(x => x.Id).ToList()).Count() < options.CourseCategoryIds.Count)
+                              && c.Students.Where(x=> x.Confirm && x.UserId == userId).Select(x=>x.UserId).Contains(userId),
+            pageNumber: options.PageNumber,
+            pageSize: options.PageSize,
+            includes: [nameof(Course.Students)]
+            );
+
+        return Ok(new ResponseBaseWithData<PageResult<CoursePurchasedItemViewDto>>()
+        {
+            Data = pagedResult,
+            Message = "Lấy danh sách thành công"
+        });
+    }
+
+
     [HttpGet("Teacher/{teacherId:guid}")]
+    [Authorize]
     public async Task<IActionResult> GetCoursePageByTeacherId([FromRoute] Guid teacherId, [FromQuery] CourseListOptions options)
     {
         var pagedResult = await courseRepository.GetPageWithDto<CourseItemViewDto>(
@@ -124,7 +148,7 @@ public class CourseController(
     public async Task<IActionResult> UpdateCourseInfo([FromForm] CourseUpdateApiDto courseUpdate)
     {
         var course = await courseRepository.FindCourseUpdate(courseUpdate.Id);
-        
+
         if (course == null)
         {
             return NotFound(new ResponseBase()
@@ -135,7 +159,7 @@ public class CourseController(
         }
 
         course.Content = courseUpdate.Content;
-        course.Description= courseUpdate.Description;
+        course.Description = courseUpdate.Description;
         course.Level = courseUpdate.Level;
         course.Price = courseUpdate.Price;
         course.Name = courseUpdate.Name;
@@ -314,7 +338,7 @@ public class CourseController(
                             newLecture.LectureType = CourseLectureType.Document;
                             newLecture.Document = document;
                         }
-                        var sectionToInsert = course.Sections.FirstOrDefault(x=> x.Id == lectureUpdateApiDto.CourseSectionId);
+                        var sectionToInsert = course.Sections.FirstOrDefault(x => x.Id == lectureUpdateApiDto.CourseSectionId);
                         if (sectionToInsert != null)
                         {
                             courseLectureRepository.Add(newLecture);
@@ -323,8 +347,8 @@ public class CourseController(
                     }
                     else
                     {
-                        var courseLecture = course.Sections.SelectMany(x =>x.CourseLectures).FirstOrDefault(x=> x.Id == lectureUpdateApiDto.Id);
-                        if(courseLecture == null) continue;
+                        var courseLecture = course.Sections.SelectMany(x => x.CourseLectures).FirstOrDefault(x => x.Id == lectureUpdateApiDto.Id);
+                        if (courseLecture == null) continue;
 
 
                         courseLecture.Name = lectureUpdateApiDto.Name;
@@ -395,15 +419,41 @@ public class CourseController(
     }
 
     [HttpGet("Detail/{courseId:guid}")]
-    [VerifyToken]
     public async Task<IActionResult> GetCourseDetail([FromRoute] Guid courseId)
     {
+        Guid.TryParse(User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.PrimarySid))?.Value,out var userId);
         var course = await courseRepository.GetCourseDetail(courseId);
 
+        var isPurchased =( await studentRepository.Find(x => x.Confirm && x.UserId == userId && x.CourseId == courseId)).Any();
         var courseDetailViewDto = mapper.Map<CourseDetailViewDto>(course);
+        courseDetailViewDto.Sections = courseDetailViewDto.Sections.OrderBy(x => x.Name).ToList();
+
+        if (!isPurchased)
+        {
+            foreach (var section in courseDetailViewDto.Sections)
+            {
+                var hasFirstVideoUrlBeenKept = false;
+
+                foreach (var lecture in section.Lectures)
+                {
+                    if (lecture.LectureType == CourseLectureType.Video && !hasFirstVideoUrlBeenKept)
+                    {
+                        hasFirstVideoUrlBeenKept = true;
+                    }
+                    else
+                    {
+                        lecture.FileUrl = string.Empty;
+                    }
+                }
+            }
+        }
+
+        courseDetailViewDto.Purchased = isPurchased;
+
         return Ok(new ResponseBaseWithData<CourseDetailViewDto>()
         {
-            Data = courseDetailViewDto
+            Data = courseDetailViewDto,
+            Message = "Lấy thông tin khoá học thành công"
         });
     }
 

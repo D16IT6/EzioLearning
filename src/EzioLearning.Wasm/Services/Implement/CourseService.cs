@@ -10,6 +10,7 @@ using EzioLearning.Wasm.Dto.Learning.Course;
 using EzioLearning.Wasm.Services.Interface;
 using EzioLearning.Wasm.Utils.Common;
 using EzioLearning.Wasm.Utils.Extensions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EzioLearning.Wasm.Services.Implement
 {
@@ -34,6 +35,29 @@ namespace EzioLearning.Wasm.Services.Implement
             var response = await httpClient.PostAsync("api/Payment/Course/VnPay", content);
 
             return await response.GetResponse<ResponseBaseWithData<CoursePaymentResponse>>();
+        }
+
+        public async Task<ResponseBaseWithData<PageResult<CoursePurchasedItemViewDto>>> GetPurchasedCourses(CourseListOptions courseListOptions)
+        {
+            var query = courseListOptions.CreateQueryString();
+
+            var response = await httpClient.GetFromJsonAsync<ResponseBaseWithData<PageResult<CoursePurchasedItemViewDto>>>($"api/Course/Purchased?{query}");
+
+            if (response?.Data != null && (response is not { IsSuccess: true } || !response.Data.PageData.Any()))
+                return response;
+
+            var pageData = response?.Data?.PageData;
+
+            if (pageData != null)
+            {
+                foreach (var item in pageData)
+                {
+                    item.Poster = ApiConstants.BaseUrl + item.Poster;
+                }
+
+            }
+            return response!;
+
         }
 
         public async Task<IEnumerable<CourseViewDto>> GetFeatureCourses(int take = 6)
@@ -125,7 +149,7 @@ namespace EzioLearning.Wasm.Services.Implement
                 await httpClient.GetFromJsonAsync<ResponseBaseWithData<PageResult<CourseItemViewDto>>>(
                     $"api/Course/?{queryBuilder}");
 
-            foreach (var courseInGridViewDto in response!.Data!.Data)
+            foreach (var courseInGridViewDto in response!.Data!.PageData)
             {
                 if (courseInGridViewDto.TeacherAvatar != null)
                     courseInGridViewDto.TeacherAvatar =
@@ -170,7 +194,7 @@ namespace EzioLearning.Wasm.Services.Implement
                 await httpClient.GetFromJsonAsync<ResponseBaseWithData<PageResult<CourseItemViewDto>>>(
                     $"api/Course/Teacher/{teacherId}?{queryBuilder}");
 
-            foreach (var courseInGridViewDto in response!.Data!.Data)
+            foreach (var courseInGridViewDto in response!.Data!.PageData)
             {
                 if (courseInGridViewDto.TeacherAvatar != null)
                     courseInGridViewDto.TeacherAvatar =

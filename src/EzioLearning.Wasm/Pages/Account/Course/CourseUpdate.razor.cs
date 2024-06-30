@@ -280,7 +280,7 @@ namespace EzioLearning.Wasm.Pages.Account.Course
 
             if (response.IsSuccess)
             {
-                await NavigationService.Navigate(RouteConstants.CourseRoute.CourseIndex, "", 1);
+                await NavigationService.Navigate(RouteConstants.AccountRoute.CourseIndex, "", 1);
             }
 
         }

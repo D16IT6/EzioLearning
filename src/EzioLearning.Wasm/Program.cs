@@ -28,8 +28,6 @@ public class Program
 
         await host.LoadCurrentCulture();
 
-        await host.ConnectToHub();
-
         await host.RunAsync();
 
 
