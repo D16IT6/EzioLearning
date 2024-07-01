@@ -1,4 +1,5 @@
-﻿using EzioLearning.Api.Models.Payment;
+﻿using System.Data;
+using EzioLearning.Api.Models.Payment;
 using EzioLearning.Api.Services;
 using EzioLearning.Api.Services.Vnpay;
 using EzioLearning.Domain.Entities.Learning;
@@ -10,12 +11,15 @@ using Net.payOS;
 using Net.payOS.Types;
 using System.Net;
 using System.Security.Claims;
+using Dapper;
 using EzioLearning.Api.Filters;
 using EzioLearning.Core.Repositories.Learning;
 using EzioLearning.Core.SeedWorks;
 using EzioLearning.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using static EzioLearning.Share.Common.Permissions;
 
 namespace EzioLearning.Api.Controllers
 {
@@ -26,6 +30,7 @@ namespace EzioLearning.Api.Controllers
         PayOS payOs,
         ICourseRepository courseRepository,
         IStudentRepository studentRepository,
+        IConfiguration configuration,
         IUnitOfWork unitOfWork,
         UserManager<AppUser> userManager,
         VnPayService vnPayService,
@@ -105,17 +110,31 @@ namespace EzioLearning.Api.Controllers
                 if(cacheData != null)
                 {
 
-                    var user = userManager.Users.First(x => x.Id == cacheData.UserId);
-                    var course = (await courseRepository.Find(x => x.Id == cacheData.CourseId)).AsQueryable().First();
+                    //var user = userManager.Users.First(x => x.Id == cacheData.UserId);
+                    //var course = (await courseRepository.Find(x => x.Id == cacheData.CourseId)).AsQueryable().First();
 
-                    cacheData.Course = course;
-                    cacheData.User = user;
-                    cacheData.Confirm = true;
+                    //cacheData.Course = course;
+                    //cacheData.User = user;
+                    //cacheData.Confirm = true;
 
-                    course.Students.Add(cacheData);
-                    studentRepository.Add(cacheData);
+                    //course.Students.Add(cacheData);
+                    //studentRepository.Add(cacheData);
 
-                    await unitOfWork.CompleteAsync();
+                    //await unitOfWork.CompleteAsync();
+
+                    var sqlConnection = new SqlConnection(configuration.GetConnectionString(nameof(EzioLearning)));
+
+                    await sqlConnection.ExecuteAsync("usp_CreateStudents", new
+                    {
+                        cacheData.Id,
+                        cacheData.Price,
+                        cacheData.CourseId,
+                        cacheData.UserId,
+                        CreatedDate = DateTime.UtcNow,
+                        ModifiedDate = DateTime.UtcNow,
+                        Confirm = true,
+                    },commandType:CommandType.StoredProcedure);
+
                 }
             }
 

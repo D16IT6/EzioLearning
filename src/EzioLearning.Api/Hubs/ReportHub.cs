@@ -12,6 +12,7 @@ namespace EzioLearning.Api.Hubs
     [Authorize(Permissions.Dashboard.View)]
     public class ReportHub(IConfiguration configuration) : Hub
     {
+
         public async Task SendMonthlyRevenue()
         {
             try
@@ -24,7 +25,7 @@ namespace EzioLearning.Api.Hubs
                     if (teacherId != Guid.Empty)
                     {
                         var data = await FetchData(teacherId);
-                        await Clients.All.SendAsync("ReceiveMonthlyRevenue", data);
+                        await Clients.Caller.SendAsync("ReceiveMonthlyRevenue", data);
                     }
                 }
             }

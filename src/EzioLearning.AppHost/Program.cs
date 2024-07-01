@@ -5,7 +5,6 @@ var apiService = builder
 
 builder
     .AddProject<Projects.EzioLearning_Wasm>("eziolearning-wasm", "https-no-browser")
-    .WithExternalHttpEndpoints()
     .WithReference(apiService);
 
 builder.Build().Run();

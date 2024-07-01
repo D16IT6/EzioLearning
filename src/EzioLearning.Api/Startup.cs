@@ -356,12 +356,7 @@ internal static class Startup
                 ["application/octet-stream"]);
         });
 
-        services.AddSignalR(options =>
-        {
-            options.ClientTimeoutInterval = TimeSpan.FromMinutes(60);
-            options.KeepAliveInterval = TimeSpan.FromMinutes(30);
-            options.EnableDetailedErrors = true;
-        }).AddMessagePackProtocol();
+        services.AddSignalR().AddJsonProtocol();
 
         services.AddSingleton<ReportHub>();
 
@@ -381,7 +376,6 @@ internal static class Startup
     internal static void Configure(this WebApplication app)
     {
 
-        SqlDependency.Start(app.Configuration.GetConnectionString(nameof(EzioLearning)));
         app.UseSwagger();
         app.UseSwaggerUI();
 
